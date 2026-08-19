@@ -99,6 +99,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
   const [error, setError] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [inviteToken, setInviteToken] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [connectToken, setConnectToken] = useState("");
   const [keyName, setKeyName] = useState("first-agent");
   const [topupDollars, setTopupDollars] = useState("10");
@@ -150,6 +151,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
       });
       setOneTimeSecret({ label: "Account recovery token", value: created.account_token });
       setInviteToken("");
+      setAcceptedTerms(false);
       await load();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Could not create the account.");
@@ -289,7 +291,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
                 autoComplete="email"
                 id="signup-email"
                 onChange={(event) => setSignupEmail(event.target.value)}
-                placeholder="you@company.com"
+                placeholder="you@example.com"
                 required
                 type="email"
                 value={signupEmail}
@@ -305,6 +307,18 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
                 type="password"
                 value={inviteToken}
               />
+              <label className="terms-check">
+                <input
+                  checked={acceptedTerms}
+                  onChange={(event) => setAcceptedTerms(event.target.checked)}
+                  required
+                  type="checkbox"
+                />
+                <span>
+                  I am using AEX for professional or business purposes and agree
+                  to the <a href="/terms" target="_blank">Founding beta terms</a>.
+                </span>
+              </label>
               <button className="button button-primary" disabled={loading} type="submit">
                 {loading ? "Creating…" : "Create account"} <span aria-hidden="true">→</span>
               </button>

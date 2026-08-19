@@ -30,17 +30,17 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const description =
-    "AEX is the durable session runtime for agents: model, tools, history, and Linux workspace in one resumable lifecycle.";
+    "Add an agent to your product with one API. AEX keeps its model, conversation, tools, and Linux workspace together.";
   const socialImage = new URL("/og.png", metadataBase);
   return {
     metadataBase,
     title: {
-      default: "aex — your agent keeps its place",
+      default: "aex — the session backend for AI apps",
       template: "%s · aex",
     },
     description,
     openGraph: {
-      title: "aex — your agent keeps its place",
+      title: "aex — the session backend for AI apps",
       description,
       images: [
         {
@@ -55,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "aex — your agent keeps its place",
+      title: "aex — the session backend for AI apps",
       description,
       images: [socialImage],
     },
