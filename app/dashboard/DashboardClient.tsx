@@ -58,7 +58,7 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
   });
   const body = (await response.json().catch(() => null)) as (T & ApiError) | null;
   if (!response.ok) {
-    const error = new Error(body?.error?.message ?? "The aex control plane returned an error.");
+    const error = new Error(body?.error?.message ?? "The Aex control plane returned an error.");
     Object.assign(error, { status: response.status });
     throw error;
   }
@@ -253,7 +253,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
     return (
       <section className="onboarding shell" aria-labelledby="dashboard-title">
         <div className="onboarding-copy">
-          <p className="section-index">AEX / BETA</p>
+          <p className="section-index">Aex · Alpha</p>
           <h1 id="dashboard-title">Start in the dashboard.</h1>
           <p>
             Join the waitlist, accept an invitation, and create your first API key here.
@@ -275,8 +275,8 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
 
           {mode === "waitlist" ? (
             <div className="onboarding-form-wrap">
-              <span className="step-label">01 / REQUEST ACCESS</span>
-              <h2>Join the beta.</h2>
+              <span className="step-label">Request access</span>
+              <h2>Join the alpha.</h2>
               <p>We are admitting a small number of developers while the product is still hands-on.</p>
               <WaitlistForm compact />
             </div>
@@ -284,7 +284,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
 
           {mode === "invite" ? (
             <form className="onboarding-form" onSubmit={acceptInvitation}>
-              <span className="step-label">02 / ACCEPT INVITATION</span>
+              <span className="step-label">Accept invitation</span>
               <h2>Create your account.</h2>
               <label htmlFor="signup-email">Invited email</label>
               <input
@@ -315,7 +315,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
                   type="checkbox"
                 />
                 <span>
-                  I agree to the <a href="/terms" target="_blank">Beta terms</a>.
+                  I agree to the <a href="/terms" target="_blank">Alpha terms</a>.
                 </span>
               </label>
               <button className="button button-primary" disabled={loading} type="submit">
@@ -326,7 +326,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
 
           {mode === "reconnect" ? (
             <form className="onboarding-form" onSubmit={reconnect}>
-              <span className="step-label">RETURNING ACCOUNT</span>
+              <span className="step-label">Returning account</span>
               <h2>Reconnect securely.</h2>
               <label htmlFor="account-token">Account recovery token</label>
               <input
@@ -358,7 +358,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
     <section className="dashboard shell" aria-labelledby="account-title">
       <div className="dashboard-topline">
         <div>
-          <p className="section-index">ACCOUNT / BETA</p>
+          <p className="section-index">Account · Alpha</p>
           <h1 id="account-title">{data.account.email}</h1>
           <p>{data.account.id} · metered {when(data.balance.metered_to)}</p>
         </div>
@@ -377,7 +377,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
           <div>
             <span>{oneTimeSecret.label} · shown once</span>
             <code>{oneTimeSecret.value}</code>
-            <p>Save this in a password manager. AEX stores only its hash and cannot show it again.</p>
+            <p>Save this in a password manager. Aex stores only its hash and cannot show it again.</p>
           </div>
           <button className="button button-dark" onClick={() => void copySecret()}>
             {copied ? "Copied" : "Copy secret"}
@@ -413,7 +413,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
 
       <div className="action-grid">
         <form className="dashboard-action-card" onSubmit={startTopup}>
-          <span className="step-label">01 / CREDIT</span>
+          <span className="step-label">Credit</span>
           <h2>Add credit.</h2>
           <p>
             Unused prepaid balance is refundable. Stripe handles the card details. Review{" "}
@@ -440,7 +440,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
         </form>
 
         <form className="dashboard-action-card" onSubmit={createKey}>
-          <span className="step-label">02 / API KEY</span>
+          <span className="step-label">API key</span>
           <h2>Create an API key.</h2>
           <p>This key creates and continues sessions. It cannot view billing or create another key.</p>
           <label htmlFor="key-name">Key name</label>
@@ -459,7 +459,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
 
       <article className="dashboard-card dashboard-quickstart">
         <header>
-          <div><span>GET STARTED</span><h2>Use your key.</h2></div>
+          <div><span>Get started</span><h2>Use your key.</h2></div>
           <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md" rel="noreferrer" target="_blank">
             Full quickstart
           </a>
@@ -481,7 +481,7 @@ const result = await session.output(
 
       <div className="dashboard-grid">
         <article className="dashboard-card session-card">
-          <header><div><span>USAGE LEDGER</span><h2>Sessions</h2></div><span>{sessions.length} total</span></header>
+          <header><div><span>Usage</span><h2>Sessions</h2></div><span>{sessions.length} total</span></header>
           {sessions.length === 0 ? (
             <div className="empty-state">Your rated session lines will appear here.</div>
           ) : (
@@ -504,7 +504,7 @@ const result = await session.output(
         </article>
 
         <article className="dashboard-card keys-card">
-          <header><div><span>IDENTITY</span><h2>API keys</h2></div></header>
+          <header><div><span>Access</span><h2>API keys</h2></div></header>
           <div className="key-list">
             {data.keys.length === 0 ? <div className="empty-state">Create your first key above.</div> : null}
             {data.keys.map((key) => (

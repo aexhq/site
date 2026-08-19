@@ -17,7 +17,7 @@ const product = [
   },
   {
     title: "Tools",
-    body: "Every session starts with a computer and a small, useful toolset. Additional capabilities compose into the same session model as the beta expands.",
+    body: "Every session starts with a computer and a small, useful toolset. Additional capabilities compose into the same session model over time.",
   },
   {
     title: "Output",
@@ -48,13 +48,13 @@ export default function Home() {
       <SiteHeader />
 
       <article className="site-overview prose-shell">
-        <p className="site-kicker">Beta</p>
+        <p className="site-kicker">Alpha</p>
 
         <header className="site-intro">
           <h1>The session backend for AI apps.</h1>
           <p>
             Start a session. Give it work. Get back text or validated data.
-            AEX keeps the context and working files, and manages the computer
+            Aex keeps the context and working files, and manages the computer
             for you.
           </p>
         </header>
@@ -66,7 +66,7 @@ export default function Home() {
           <Link href="/dashboard">Open the dashboard</Link>
         </nav>
 
-        <pre className="site-code" aria-label="AEX SDK example">
+        <pre className="site-code" aria-label="Aex SDK example">
           <code>{example}</code>
         </pre>
 
@@ -82,7 +82,7 @@ export default function Home() {
         <section className="site-section" id="pricing" aria-labelledby="pricing-title">
           <h2 id="pricing-title">Pricing</h2>
           <p>
-            No subscription and no model markup. Beta credit is prepaid and
+            No subscription and no model markup. Alpha credit is prepaid and
             unused credit is refundable.
           </p>
           <dl className="site-definition-list">
@@ -93,16 +93,16 @@ export default function Home() {
           </dl>
           <p className="site-small">
             See the <a href="https://api.aex.dev/v1/rates">live rate card</a>{" "}
-            for complete metering details. The beta has no uptime SLA.
+            for complete metering details. The alpha has no uptime SLA.
           </p>
         </section>
 
-        <section className="site-section" id="beta" aria-labelledby="beta-title">
-          <h2 id="beta-title">Join the beta</h2>
+        <section className="site-section" id="alpha" aria-labelledby="alpha-title">
+          <h2 id="alpha-title">Join the alpha</h2>
           <p>
             Access opens in small batches while the production service settles.
             Joining the list is not a paid registration and we will only use
-            your email to manage beta access.
+            your email to manage alpha access.
           </p>
           <WaitlistForm />
           <p className="site-small">

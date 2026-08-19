@@ -66,8 +66,9 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.match(html, /Every session starts with a computer/i);
   assert.match(html, /\$0\.12/);
   assert.match(html, /\$0\.003/);
-  assert.match(html, /Join the beta/);
-  assert.doesNotMatch(html, /Founding beta|eu-west-1|Linux workspace|Suspended machine/i);
+  assert.match(html, /Join the alpha/);
+  assert.doesNotMatch(html, /Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine/i);
+  assert.doesNotMatch(html, /\bAEX\b|\bBeta\b/);
   assert.match(html, /THINK SLOWLY LTD[\s\S]*17224795/i);
   assert.match(html, /Registered office:[\s\S]*E15 1DE/i);
   assert.doesNotMatch(html, /Platform-added TTFT|2,002|leakage-gate|Brain \/ Process/i);
@@ -76,12 +77,12 @@ test("server-renders the prose-first AI app backend page", async () => {
 test("public status and company legal pages render", async () => {
   const status = await render("/status");
   assert.equal(status.status, 200);
-  assert.match(await status.text(), /Service status[\s\S]*AEX API[\s\S]*Incidents/i);
+  assert.match(await status.text(), /Service status[\s\S]*Aex API[\s\S]*Incidents/);
 
   const privacy = await render("/privacy");
   assert.equal(privacy.status, 200);
   const privacyHtml = await privacy.text();
-  assert.match(privacyHtml, /<title>Privacy · aex<\/title>/i);
+  assert.match(privacyHtml, /<title>Privacy · Aex<\/title>/);
   assert.match(privacyHtml, /THINK SLOWLY LTD[\s\S]*data controller/i);
   assert.match(privacyHtml, /17224795[\s\S]*England and Wales/i);
   assert.doesNotMatch(privacyHtml, /Prelaunch preview/i);
@@ -92,29 +93,31 @@ test("public status and company legal pages render", async () => {
   const terms = await render("/terms");
   assert.equal(terms.status, 200);
   const termsHtml = await terms.text();
-  assert.match(termsHtml, /Beta terms/i);
+  assert.match(termsHtml, /Alpha terms/);
   assert.match(termsHtml, /THINK SLOWLY LTD[\s\S]*company number[\s\S]*17224795/i);
   assert.match(termsHtml, /registered office[\s\S]*E15 1DE/i);
   assert.match(termsHtml, /personal, educational,[\s\S]*commercial projects/i);
   assert.doesNotMatch(termsHtml, /beta is for people using AEX wholly or mainly for a/i);
+  assert.doesNotMatch(termsHtml, /\bAEX\b|\bBeta\b/);
 });
 
 test("server-renders dashboard-first waitlist and invited onboarding", async () => {
   const waitlist = await render("/dashboard");
   assert.equal(waitlist.status, 200);
   const waitlistHtml = await waitlist.text();
-  assert.match(waitlistHtml, /<title>Dashboard · aex<\/title>/i);
+  assert.match(waitlistHtml, /<title>Dashboard · Aex<\/title>/);
   assert.match(waitlistHtml, /Start in the dashboard\./);
-  assert.match(waitlistHtml, /Join the beta/);
+  assert.match(waitlistHtml, /Join the alpha/);
 
   const invited = await render("/dashboard?mode=invite");
   assert.equal(invited.status, 200);
   const invitedHtml = await invited.text();
   assert.match(invitedHtml, /Create your account\./);
   assert.match(invitedHtml, /aex_iv_/);
-  assert.match(invitedHtml, /I agree to the[\s\S]*Beta terms/i);
+  assert.match(invitedHtml, /I agree to the[\s\S]*Alpha terms/);
   assert.doesNotMatch(invitedHtml, /professional or business purposes/i);
   assert.doesNotMatch(invitedHtml, /Founding beta|eu-west-1/i);
+  assert.doesNotMatch(invitedHtml, /\bAEX\b|\bBeta\b/);
 });
 
 test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", async () => {

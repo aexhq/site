@@ -36,7 +36,7 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
         <span aria-hidden="true">✓</span>
         <p>
           You’re on the list.
-          <small>We’ll email {email.trim()} when a beta place is ready.</small>
+          <small>We’ll email {email.trim()} when an alpha place is ready.</small>
         </p>
       </div>
     );
@@ -44,12 +44,12 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
 
   return (
     <form className={compact ? "waitlist-form waitlist-form-compact" : "waitlist-form"} onSubmit={submit}>
-      <label className="sr-only" htmlFor={compact ? "beta-email-compact" : "beta-email"}>
+      <label className="sr-only" htmlFor={compact ? "alpha-email-compact" : "alpha-email"}>
         Email
       </label>
       <input
         autoComplete="email"
-        id={compact ? "beta-email-compact" : "beta-email"}
+        id={compact ? "alpha-email-compact" : "alpha-email"}
         onChange={(event) => setEmail(event.target.value)}
         placeholder="you@example.com"
         required
@@ -57,7 +57,7 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
         value={email}
       />
       <button className="button button-primary" disabled={state === "sending"} type="submit">
-        {state === "sending" ? "Joining…" : "Join the beta"}
+        {state === "sending" ? "Joining…" : "Join the alpha"}
         <span aria-hidden="true">→</span>
       </button>
       <p className="waitlist-note">

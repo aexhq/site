@@ -13,7 +13,7 @@ export async function GET() {
     return NextResponse.json(
       {
         checked_at: new Date().toISOString(),
-        service: "AEX API",
+        service: "Aex API",
         status: response.ok ? "operational" : "unavailable",
         response_ms: Date.now() - started,
       },
@@ -23,7 +23,7 @@ export async function GET() {
     return NextResponse.json(
       {
         checked_at: new Date().toISOString(),
-        service: "AEX API",
+        service: "Aex API",
         status: "unavailable",
         response_ms: Date.now() - started,
       },

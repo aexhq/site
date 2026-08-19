@@ -15,9 +15,9 @@ export default function PrivacyPage() {
         <h1>Privacy</h1>
 
         <p>
-          This notice explains how {identity.operator}, trading as AEX, uses
+          This notice explains how {identity.operator}, trading as Aex, uses
           personal information. {identity.operator} is the data controller. You
-          can contact AEX at{" "}
+          can contact Aex at{" "}
           <a href="mailto:support@aex.dev">support@aex.dev</a>.
         </p>
 
@@ -36,13 +36,13 @@ export default function PrivacyPage() {
           If you create an account, we also process account identifiers,
           essential session-cookie data, API-key metadata, top-ups, usage,
           support messages, and technical security records. Stripe processes
-          card details on its hosted checkout; AEX does not receive full card
+          card details on its hosted checkout; Aex does not receive full card
           numbers.
         </p>
 
         <h2>Why we use it</h2>
         <p>
-          We process this information to respond to your request for beta
+          We process this information to respond to your request for alpha
           access, provide and secure the service, keep an accurate usage and
           payment ledger, meet legal obligations, and handle support. We do not
           use the waitlist for marketing and do not sell personal information.
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
 
         <h2>Providers and location</h2>
         <p>
-          AEX uses infrastructure and service providers including AWS for the
+          Aex uses infrastructure and service providers including AWS for the
           production runtime, Vercel for website hosting, Cloudflare for DNS and
           edge proxying, and Stripe for payments. A provider may process limited
           account or technical data in another country under its contractual
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
 
         <h2>Retention</h2>
         <p>
-          Waitlist records are removed when no longer needed for the beta or on
+          Waitlist records are removed when no longer needed for the alpha or on
           a valid deletion request. Account and session data is retained while
           the account is active, then deleted or anonymised except where records
           must be kept for security, disputes, tax, or accounting. Deleted
