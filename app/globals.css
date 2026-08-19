@@ -306,6 +306,7 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
 .dashboard-action-card { background: var(--paper); color: var(--ink); padding: 28px; }
 .dashboard-action-card h2 { margin-bottom: 8px; }
 .dashboard-action-card > p { color: var(--muted); font-size: 10px; line-height: 1.5; margin: 0 0 18px; }
+.dashboard-action-card > p a { color: var(--citron-deep); text-decoration: underline; text-underline-offset: .16em; }
 .dashboard-action-card .button { margin-top: 11px; width: 100%; }
 .inline-input { align-items: center; background: var(--paper-bright); border: 1px solid var(--line); display: flex; }
 .inline-input > span { font-family: var(--font-geist-mono), monospace; padding-left: 15px; }

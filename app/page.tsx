@@ -70,7 +70,9 @@ export default function Home() {
           </p>
           <dl className="site-definition-list">
             <div><dt>Active 1 GB session</dt><dd>$0.12 / hour</dd></div>
-            <div><dt>Durable workspace</dt><dd>$0.03 / GB-month</dd></div>
+            <div><dt>Suspended machine state</dt><dd>$0.10 / GB-month</dd></div>
+            <div><dt>Workspace and artifacts</dt><dd>$0.03 / GB-month</dd></div>
+            <div><dt>Web search</dt><dd>$0.003 / query</dd></div>
             <div><dt>Models</dt><dd>Bring your own key</dd></div>
             <div><dt>Top-up</dt><dd>$10–$1,000 USD</dd></div>
           </dl>
