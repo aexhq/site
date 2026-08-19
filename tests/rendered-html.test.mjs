@@ -76,6 +76,8 @@ test("public status and prelaunch legal pages render", async () => {
   const privacyHtml = await privacy.text();
   assert.match(privacyHtml, /<title>Privacy · aex<\/title>/i);
   assert.match(privacyHtml, /legal operator name[\s\S]*must be configured/i);
+  assert.match(privacyHtml, /Vercel[\s\S]*Cloudflare/i);
+  assert.doesNotMatch(privacyHtml, /OpenAI Sites/i);
   assert.match(privacyHtml, /up to seven days/i);
 
   const terms = await render("/terms");
