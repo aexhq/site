@@ -95,7 +95,8 @@ test("public status and company legal pages render", async () => {
   assert.match(termsHtml, /Beta terms/i);
   assert.match(termsHtml, /THINK SLOWLY LTD[\s\S]*company number[\s\S]*17224795/i);
   assert.match(termsHtml, /registered office[\s\S]*E15 1DE/i);
-  assert.match(termsHtml, /business, trade, craft, or profession/i);
+  assert.match(termsHtml, /personal, educational,[\s\S]*commercial projects/i);
+  assert.doesNotMatch(termsHtml, /beta is for people using AEX wholly or mainly for a/i);
 });
 
 test("server-renders dashboard-first waitlist and invited onboarding", async () => {
@@ -111,6 +112,8 @@ test("server-renders dashboard-first waitlist and invited onboarding", async () 
   const invitedHtml = await invited.text();
   assert.match(invitedHtml, /Create your account\./);
   assert.match(invitedHtml, /aex_iv_/);
+  assert.match(invitedHtml, /I agree to the[\s\S]*Beta terms/i);
+  assert.doesNotMatch(invitedHtml, /professional or business purposes/i);
   assert.doesNotMatch(invitedHtml, /Founding beta|eu-west-1/i);
 });
 
