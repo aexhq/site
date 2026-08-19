@@ -45,13 +45,13 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
   return (
     <form className={compact ? "waitlist-form waitlist-form-compact" : "waitlist-form"} onSubmit={submit}>
       <label className="sr-only" htmlFor={compact ? "beta-email-compact" : "beta-email"}>
-        Work email
+        Email
       </label>
       <input
         autoComplete="email"
         id={compact ? "beta-email-compact" : "beta-email"}
         onChange={(event) => setEmail(event.target.value)}
-        placeholder="you@company.com"
+        placeholder="you@example.com"
         required
         type="email"
         value={email}
@@ -61,7 +61,7 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
         <span aria-hidden="true">→</span>
       </button>
       <p className="waitlist-note">
-        We use your email only to manage beta access and invitations. No marketing emails.
+        No marketing email. See our <a href="/privacy">privacy notice</a>.
       </p>
       <p className="form-error" aria-live="polite">
         {error}

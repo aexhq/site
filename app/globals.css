@@ -1,13 +1,13 @@
 :root {
-  --ink: #11140f;
-  --ink-soft: #2d332a;
-  --paper: #f3efe6;
-  --paper-bright: #fffdf8;
-  --paper-deep: #e5dfd2;
-  --citron: #d9ff61;
-  --citron-deep: #8fbd21;
-  --line: rgba(17, 20, 15, 0.16);
-  --muted: #687065;
+  --ink: #1a1917;
+  --ink-soft: #35322e;
+  --paper: #faf9f7;
+  --paper-bright: #ffffff;
+  --paper-deep: #f2f0ec;
+  --citron: #fbefe8;
+  --citron-deep: #9a3d16;
+  --line: #e2dfd8;
+  --muted: #55514a;
   --shell: min(1180px, calc(100vw - 48px));
 }
 
@@ -411,4 +411,274 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+/* Public pages: intentionally narrow and prose-first, matching the original AEX site. */
+
+.prose-shell {
+  margin-inline: auto;
+  width: min(46rem, calc(100vw - 3rem));
+}
+
+.site-header {
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+}
+
+.site-header.site-header-dark {
+  background: var(--ink);
+  border-color: rgba(255,255,255,.14);
+  color: var(--paper-bright);
+}
+
+.site-header.site-header-dark nav a { color: #b3aca1; }
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  min-height: 68px;
+}
+
+.wordmark {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -.04em;
+}
+
+.site-header nav {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+}
+
+.site-header nav a {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 450;
+}
+
+.site-header nav a:hover,
+.site-links a:hover,
+.site-overview a:hover,
+.legal-page a:hover,
+.site-footer a:hover {
+  color: var(--citron-deep);
+}
+
+.site-overview {
+  padding-block: 86px 112px;
+}
+
+.site-kicker {
+  color: #6b665d;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0;
+  margin: 0 0 24px;
+  text-transform: none;
+}
+
+.site-intro h1,
+.legal-page h1 {
+  font-size: clamp(31px, 5vw, 44px);
+  font-weight: 590;
+  letter-spacing: -.04em;
+  line-height: 1.12;
+  margin: 0;
+}
+
+.site-intro p {
+  color: var(--ink-soft);
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 24px 0 0;
+}
+
+.site-links {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 14px;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.site-links a,
+.site-overview a,
+.legal-page a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: .18em;
+}
+
+.site-feature-list {
+  border-top: 1px solid var(--line);
+  margin: 48px 0 0;
+  width: 100%;
+}
+
+.site-feature {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 10rem 1fr;
+  padding-block: 24px;
+}
+
+.site-feature dt {
+  font-size: 15px;
+  font-weight: 580;
+}
+
+.site-feature dd {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.site-section {
+  border-top: 1px solid var(--line);
+  margin-top: 64px;
+  padding-top: 32px;
+}
+
+.site-section h2,
+.legal-page h2 {
+  font-size: 25px;
+  font-weight: 590;
+  letter-spacing: -.025em;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.site-section > p,
+.legal-page > p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 16px 0 0;
+}
+
+.site-definition-list,
+.status-list {
+  border-top: 1px solid var(--line);
+  margin: 24px 0 0;
+}
+
+.site-definition-list > div,
+.status-list > div {
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  font-size: 14px;
+  gap: 24px;
+  justify-content: space-between;
+  padding-block: 14px;
+}
+
+.site-definition-list dt,
+.status-list dt { color: var(--muted); }
+.site-definition-list dd,
+.status-list dd { font-family: var(--font-geist-mono), monospace; margin: 0; }
+
+.site-overview .site-small,
+.legal-page .site-small {
+  color: #6b665d;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.site-overview .waitlist-form {
+  grid-template-columns: 1fr auto;
+  margin-top: 24px;
+  max-width: 100%;
+}
+
+.site-overview .waitlist-form input { min-width: 0; }
+.site-overview .waitlist-form .button { gap: 14px; }
+.site-overview .waitlist-note a { color: inherit; }
+
+.legal-page {
+  padding-block: 72px 104px;
+}
+
+.legal-page h2 {
+  border-top: 1px solid var(--line);
+  margin-top: 46px;
+  padding-top: 28px;
+}
+
+.launch-blocker {
+  background: var(--citron);
+  border: 1px solid #e6cabb;
+  color: #653019;
+  font-size: 13px;
+  line-height: 1.55;
+  margin-top: 28px;
+  padding: 14px 16px;
+}
+
+.status-list { margin-top: 34px; }
+.status-list dt { align-items: center; display: flex; gap: 10px; }
+.status-dot { background: #8b867e; border-radius: 50%; display: inline-block; height: 7px; width: 7px; }
+.status-dot-good,
+.status-dot-operational { background: #24813a; }
+.status-dot-unavailable { background: #b73328; }
+.status-dot-checking { background: #a68121; }
+.status-checked { min-height: 20px; }
+
+.site-footer {
+  background: transparent;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.dashboard-page .site-footer {
+  border-color: rgba(255,255,255,.14);
+  color: #b3aca1;
+}
+
+.footer-inner {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  justify-content: space-between;
+  min-height: 0;
+  padding-block: 26px;
+}
+
+.footer-inner p { font-size: 12px; margin: 0; }
+.footer-inner nav { display: flex; flex-wrap: wrap; font-size: 12px; gap: 16px; }
+
+.terms-check {
+  align-items: flex-start;
+  display: flex !important;
+  gap: 10px;
+  line-height: 1.5;
+  margin: 18px 0 0 !important;
+}
+
+.onboarding-form .terms-check input {
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 2px 0 0;
+  min-height: 0;
+  padding: 0;
+  width: 16px;
+}
+
+.terms-check span { color: var(--muted); font-size: 10px; font-weight: 500; }
+.terms-check a { color: var(--citron-deep); text-decoration: underline; }
+
+@media (max-width: 660px) {
+  .header-inner { height: auto; min-height: 62px; }
+  .site-header nav { display: flex; gap: 14px; }
+  .site-header nav a { font-size: 12px; }
+  .site-header nav a:first-child,
+  .site-header nav a:nth-child(2) { display: none; }
+  .site-overview { padding-block: 64px 84px; }
+  .site-feature { gap: 9px; grid-template-columns: 1fr; }
+  .site-overview .waitlist-form { grid-template-columns: 1fr; }
+  .site-overview .waitlist-form input { border-right: 1px solid var(--line); }
+  .footer-inner { flex-direction: column; }
 }

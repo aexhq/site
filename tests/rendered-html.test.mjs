@@ -15,18 +15,37 @@ async function render(path = "/") {
   );
 }
 
-test("server-renders the minimal agent-session product page", async () => {
+test("server-renders the prose-first AI app backend page", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
-  assert.match(html, /<title>Your agent keeps its place · aex<\/title>/i);
-  assert.match(html, /Your agent keeps its place\./);
-  assert.match(html, /AEX runs the agent session/);
-  assert.match(html, /Turn it off\. Come back\. Continue\./);
+  assert.match(html, /<title>The session backend for AI apps · aex<\/title>/i);
+  assert.match(html, /The session backend for AI apps\./);
+  assert.match(html, /Your app stays yours/);
+  assert.match(html, /stop[\s\S]*resume without losing its place/i);
   assert.match(html, /\$0\.12/);
   assert.match(html, /Join the beta/);
   assert.doesNotMatch(html, /Platform-added TTFT|2,002|leakage-gate|Brain \/ Process/i);
+});
+
+test("public status and prelaunch legal pages render", async () => {
+  const status = await render("/status");
+  assert.equal(status.status, 200);
+  assert.match(await status.text(), /Service status[\s\S]*AEX API[\s\S]*Incidents/i);
+
+  const privacy = await render("/privacy");
+  assert.equal(privacy.status, 200);
+  const privacyHtml = await privacy.text();
+  assert.match(privacyHtml, /<title>Privacy · aex<\/title>/i);
+  assert.match(privacyHtml, /legal operator name[\s\S]*must be configured/i);
+  assert.match(privacyHtml, /up to seven days/i);
+
+  const terms = await render("/terms");
+  assert.equal(terms.status, 200);
+  const termsHtml = await terms.text();
+  assert.match(termsHtml, /Founding beta terms/i);
+  assert.match(termsHtml, /business, trade, craft, or profession/i);
 });
 
 test("server-renders dashboard-first waitlist and invited onboarding", async () => {
