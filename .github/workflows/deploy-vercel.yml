@@ -75,9 +75,9 @@ jobs:
         run: |
           for attempt in {1..12}; do
             if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
-              && grep -Fq "session.output" homepage.html; then
-              grep -Fq "Join the alpha" homepage.html
-              ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+              && grep -Fq "session.output" homepage.html \
+              && grep -Fq "Join the alpha" homepage.html \
+              && ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
