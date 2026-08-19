@@ -10,7 +10,7 @@ export default function StatusPage() {
     <main>
       <SiteHeader />
       <article className="legal-page prose-shell">
-        <p className="site-kicker">Production · eu-west-1</p>
+        <p className="site-kicker">Production</p>
         <h1>Service status</h1>
         <p>
           Current reachability from this site. Independent AWS health checks

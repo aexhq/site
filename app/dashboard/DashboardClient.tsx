@@ -253,11 +253,11 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
     return (
       <section className="onboarding shell" aria-labelledby="dashboard-title">
         <div className="onboarding-copy">
-          <p className="section-index">AEX / FOUNDING BETA</p>
+          <p className="section-index">AEX / BETA</p>
           <h1 id="dashboard-title">Start in the dashboard.</h1>
           <p>
-            Join the waitlist, accept an invitation, and create your first session key here.
-            The CLI and agent skill come later.
+            Join the waitlist, accept an invitation, and create your first API key here.
+            Then use the SDK or CLI from your application.
           </p>
         </div>
         <div className="onboarding-panel">
@@ -276,8 +276,8 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
           {mode === "waitlist" ? (
             <div className="onboarding-form-wrap">
               <span className="step-label">01 / REQUEST ACCESS</span>
-              <h2>Join the Founding Beta.</h2>
-              <p>We are admitting a small number of teams while the product is still hands-on.</p>
+              <h2>Join the beta.</h2>
+              <p>We are admitting a small number of developers while the product is still hands-on.</p>
               <WaitlistForm compact />
             </div>
           ) : null}
@@ -316,7 +316,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
                 />
                 <span>
                   I am using AEX for professional or business purposes and agree
-                  to the <a href="/terms" target="_blank">Founding beta terms</a>.
+                  to the <a href="/terms" target="_blank">Beta terms</a>.
                 </span>
               </label>
               <button className="button button-primary" disabled={loading} type="submit">
@@ -359,7 +359,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
     <section className="dashboard shell" aria-labelledby="account-title">
       <div className="dashboard-topline">
         <div>
-          <p className="section-index">ACCOUNT / FOUNDING BETA</p>
+          <p className="section-index">ACCOUNT / BETA</p>
           <h1 id="account-title">{data.account.email}</h1>
           <p>{data.account.id} · metered {when(data.balance.metered_to)}</p>
         </div>
@@ -401,7 +401,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
           <small>Across {sessions.length} sessions</small>
         </article>
         <article>
-          <span>Session keys</span>
+          <span>API keys</span>
           <strong>{liveKeys.length}</strong>
           <small>{data.keys.length - liveKeys.length} revoked</small>
         </article>
@@ -415,7 +415,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
       <div className="action-grid">
         <form className="dashboard-action-card" onSubmit={startTopup}>
           <span className="step-label">01 / CREDIT</span>
-          <h2>Fund the runtime.</h2>
+          <h2>Add credit.</h2>
           <p>
             Unused prepaid balance is refundable. Stripe handles the card details. Review{" "}
             <a href="/#pricing" rel="noreferrer" target="_blank">pricing</a> or the{" "}
@@ -441,9 +441,9 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
         </form>
 
         <form className="dashboard-action-card" onSubmit={createKey}>
-          <span className="step-label">02 / SESSION KEY</span>
+          <span className="step-label">02 / API KEY</span>
           <h2>Create an API key.</h2>
-          <p>This key runs sessions. It cannot view billing or create another key.</p>
+          <p>This key creates and continues sessions. It cannot view billing or create another key.</p>
           <label htmlFor="key-name">Key name</label>
           <input
             id="key-name"
@@ -457,6 +457,28 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
           </button>
         </form>
       </div>
+
+      <article className="dashboard-card dashboard-quickstart">
+        <header>
+          <div><span>GET STARTED</span><h2>Use your key.</h2></div>
+          <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md" rel="noreferrer" target="_blank">
+            Full quickstart
+          </a>
+        </header>
+        <pre><code>{`npm install @aexhq/sdk zod
+
+import { Aex } from "@aexhq/sdk";
+import { z } from "zod";
+
+const aex = new Aex({ apiKey: "aex_sk_..." });
+const session = await aex.sessions.create({
+  model: { provider: "anthropic", name: "claude-sonnet-5", apiKey: "sk-ant-..." },
+});
+const result = await session.output(
+  z.object({ answer: z.string() }),
+  "Do the work.",
+);`}</code></pre>
+      </article>
 
       <div className="dashboard-grid">
         <article className="dashboard-card session-card">

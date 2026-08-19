@@ -36,7 +36,7 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
         <span aria-hidden="true">✓</span>
         <p>
           You’re on the list.
-          <small>We’ll email {email.trim()} when a Founding Beta place is ready.</small>
+          <small>We’ll email {email.trim()} when a beta place is ready.</small>
         </p>
       </div>
     );

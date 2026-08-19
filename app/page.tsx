@@ -7,27 +7,40 @@ import { WaitlistForm } from "./components/WaitlistForm";
 export const metadata: Metadata = {
   title: "The session backend for AI apps",
   description:
-    "Add an agent to your product with one API. AEX keeps its model, conversation, tools, and Linux workspace together.",
+    "Start a durable AI session, give it work, and get back text or validated data.",
 };
 
 const product = [
   {
-    title: "One session",
-    body: "The conversation, model calls, tools, files, and artifacts share one durable identity. Your application has one thing to create, observe, and resume.",
+    title: "Sessions",
+    body: "One durable identity holds the conversation, model, tools, and working files. Send another message whenever you need to continue.",
   },
   {
-    title: "A Linux workspace",
-    body: "Each session can work in an isolated machine. Compute can stop between turns while the workspace and session state stay in place.",
+    title: "Tools",
+    body: "Every session starts with a computer and a small, useful toolset. Additional capabilities compose into the same session model as the beta expands.",
   },
   {
-    title: "Your model key",
-    body: "Use OpenAI or Anthropic with your own provider key. AEX encrypts it for the session and adds no markup to model usage.",
-  },
-  {
-    title: "Your app stays yours",
-    body: "Keep your frontend, database, authentication, and deployment. Call AEX only for the agent runtime behind your product.",
+    title: "Output",
+    body: "Use send() for text or output() for data validated against your Zod schema. Schema handling and one bounded repair stay outside the session conversation.",
   },
 ];
+
+const example = `import { Aex } from "@aexhq/sdk";
+import { z } from "zod";
+
+const aex = new Aex({ apiKey: "aex_sk_..." });
+const session = await aex.sessions.create({
+  model: {
+    provider: "anthropic",
+    name: "claude-sonnet-5",
+    apiKey: "sk-ant-...",
+  },
+});
+
+const result = await session.output(
+  z.object({ summary: z.string(), nextSteps: z.array(z.string()) }),
+  "Review this repository.",
+);`;
 
 export default function Home() {
   return (
@@ -35,14 +48,14 @@ export default function Home() {
       <SiteHeader />
 
       <article className="site-overview prose-shell">
-        <p className="site-kicker">Founding beta · eu-west-1</p>
+        <p className="site-kicker">Beta</p>
 
         <header className="site-intro">
           <h1>The session backend for AI apps.</h1>
           <p>
-            Add an agent to your product with one API. AEX keeps its model,
-            conversation, tools, and Linux workspace together, so it can stop
-            and resume without losing its place.
+            Start a session. Give it work. Get back text or validated data.
+            AEX keeps the context and working files, and manages the computer
+            for you.
           </p>
         </header>
 
@@ -52,6 +65,10 @@ export default function Home() {
           </a>
           <Link href="/dashboard">Open the dashboard</Link>
         </nav>
+
+        <pre className="site-code" aria-label="AEX SDK example">
+          <code>{example}</code>
+        </pre>
 
         <dl className="site-feature-list" id="product">
           {product.map((feature) => (
@@ -65,26 +82,23 @@ export default function Home() {
         <section className="site-section" id="pricing" aria-labelledby="pricing-title">
           <h2 id="pricing-title">Pricing</h2>
           <p>
-            There is no subscription and no model markup. Founding beta credit
-            is prepaid and unused credit is refundable.
+            No subscription and no model markup. Beta credit is prepaid and
+            unused credit is refundable.
           </p>
           <dl className="site-definition-list">
-            <div><dt>Active 1 GB session</dt><dd>$0.12 / hour</dd></div>
-            <div><dt>Suspended machine state</dt><dd>$0.10 / GB-month</dd></div>
-            <div><dt>Workspace and artifacts</dt><dd>$0.03 / GB-month</dd></div>
+            <div><dt>Active computer</dt><dd>$0.12 / hour</dd></div>
+            <div><dt>Stored working files</dt><dd>$0.03 / GB-month</dd></div>
             <div><dt>Web search</dt><dd>$0.003 / query</dd></div>
             <div><dt>Models</dt><dd>Bring your own key</dd></div>
-            <div><dt>Top-up</dt><dd>$10–$1,000 USD</dd></div>
           </dl>
           <p className="site-small">
-            The beta has one session shape and no uptime SLA. See the{" "}
-            <a href="https://api.aex.dev/v1/rates">live rate card</a> for the
-            machine-readable source of truth.
+            See the <a href="https://api.aex.dev/v1/rates">live rate card</a>{" "}
+            for complete metering details. The beta has no uptime SLA.
           </p>
         </section>
 
         <section className="site-section" id="beta" aria-labelledby="beta-title">
-          <h2 id="beta-title">Join the founding beta</h2>
+          <h2 id="beta-title">Join the beta</h2>
           <p>
             Access opens in small batches while the production service settles.
             Joining the list is not a paid registration and we will only use

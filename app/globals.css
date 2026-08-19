@@ -511,6 +511,19 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
   text-underline-offset: .18em;
 }
 
+.site-code {
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 42px 0 0;
+  overflow-x: auto;
+  padding: 22px 24px;
+  tab-size: 2;
+  width: 100%;
+}
+
 .site-feature-list {
   border-top: 1px solid var(--line);
   margin: 48px 0 0;
@@ -626,6 +639,24 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
 .status-dot-unavailable { background: #b73328; }
 .status-dot-checking { background: #a68121; }
 .status-checked { min-height: 20px; }
+
+.dashboard-quickstart { margin-bottom: 28px; }
+.dashboard-quickstart header > a {
+  color: var(--muted);
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.dashboard-quickstart pre {
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.65;
+  margin: 0 24px 24px;
+  overflow-x: auto;
+  padding: 18px;
+}
 
 .site-footer {
   background: transparent;

@@ -1,6 +1,6 @@
 # aex site
 
-The Founding Beta product site and account dashboard for AEX.
+The Beta product site and account dashboard for AEX.
 
 - The home page explains the durable-session product, launch envelope, pricing, and waitlist.
 - The dashboard handles invitation-only signup, prepaid checkout, API-key management, usage,
@@ -17,7 +17,7 @@ to another HTTPS control-plane origin at runtime.
 
 The site is a native Next.js deployment on Vercel. Generated deployment URLs remain
 protected. A pinned GitHub Actions workflow stages each `main` build without assigning
-custom domains; `aex.dev` is assigned only when a reviewed production build is promoted.
+custom domains; an explicit promotion assigns the reviewed build to `aex.dev`.
 
     npm install
     npm run dev
