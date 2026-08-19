@@ -25,6 +25,8 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.match(html, /Your app stays yours/);
   assert.match(html, /stop[\s\S]*resume without losing its place/i);
   assert.match(html, /\$0\.12/);
+  assert.match(html, /\$0\.10/);
+  assert.match(html, /\$0\.003/);
   assert.match(html, /Join the beta/);
   assert.doesNotMatch(html, /Platform-added TTFT|2,002|leakage-gate|Brain \/ Process/i);
 });

@@ -416,7 +416,11 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
         <form className="dashboard-action-card" onSubmit={startTopup}>
           <span className="step-label">01 / CREDIT</span>
           <h2>Fund the runtime.</h2>
-          <p>Unused prepaid balance is refundable. Stripe handles the card details.</p>
+          <p>
+            Unused prepaid balance is refundable. Stripe handles the card details. Review{" "}
+            <a href="/#pricing" rel="noreferrer" target="_blank">pricing</a> or the{" "}
+            <a href="https://api.aex.dev/v1/rates" rel="noreferrer" target="_blank">live rate card</a> before checkout.
+          </p>
           <label htmlFor="topup-dollars">Top-up amount (USD)</label>
           <div className="inline-input">
             <span>$</span>
