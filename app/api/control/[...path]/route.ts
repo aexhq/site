@@ -116,7 +116,10 @@ async function forward(
       redirect: "manual",
       signal: AbortSignal.timeout(12_000),
     });
-    const responseBody = await response.arrayBuffer();
+    // Fetch forbids constructing a 204 response with a body, including a zero-byte
+    // ArrayBuffer. Preserve the upstream no-content response instead of turning a
+    // successful DELETE into a dashboard 502.
+    const responseBody = response.status === 204 ? null : await response.arrayBuffer();
     return new Response(responseBody, {
       status: response.status,
       headers: {

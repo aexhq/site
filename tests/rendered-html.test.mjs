@@ -119,6 +119,7 @@ test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", a
   assert.match(proxy, /SameSite=Lax/);
   assert.match(proxy, /Secure/);
   assert.match(proxy, /redirect: "manual"/);
+  assert.match(proxy, /response\.status === 204 \? null : await response\.arrayBuffer\(\)/);
   assert.doesNotMatch(proxy, /request\.nextUrl\.searchParams\.get\(["'](?:url|origin|host)/);
   assert.doesNotMatch(dashboard, /localStorage|sessionStorage/);
   await assert.rejects(access(new URL("../app/_sites-preview", templateRoot)));
