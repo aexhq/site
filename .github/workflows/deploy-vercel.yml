@@ -2,6 +2,12 @@ name: Deploy to Vercel
 
 on:
   workflow_dispatch:
+    inputs:
+      promote:
+        description: Assign this exact build to aex.dev after its staging smoke test
+        required: true
+        default: false
+        type: boolean
   push:
     branches: [main]
 
@@ -9,8 +15,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: site-vercel-production
-  cancel-in-progress: true
+  group: site-vercel
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -33,4 +39,47 @@ jobs:
       - name: Build production artifact
         run: npx --yes vercel@59.1.4 build --prod
       - name: Deploy protected staging build
-        run: npx --yes vercel@59.1.4 deploy --prebuilt --prod --skip-domain
+        id: deploy
+        shell: bash
+        run: |
+          deployment_url="$(npx --yes vercel@59.1.4 deploy --prebuilt --prod --skip-domain | tail -n 1)"
+          [[ "$deployment_url" == https://*.vercel.app ]] || {
+            echo "Vercel did not return a deployment URL" >&2
+            exit 1
+          }
+          echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "Staged $deployment_url" >> "$GITHUB_STEP_SUMMARY"
+      - name: Smoke test the staged website
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment_url }}
+        shell: bash
+        run: |
+          for attempt in {1..12}; do
+            if npx --yes vercel@59.1.4 curl / --deployment "$DEPLOYMENT_URL" > homepage.html; then
+              break
+            fi
+            sleep 5
+          done
+          grep -Fq "The session backend for AI apps" homepage.html
+          grep -Fq "session.output" homepage.html
+          ! grep -Eiq "Founding beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+      - name: Promote the staged build to aex.dev
+        if: github.event_name == 'workflow_dispatch' && inputs.promote
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment_url }}
+        run: npx --yes vercel@59.1.4 alias set "$DEPLOYMENT_URL" aex.dev
+      - name: Verify aex.dev
+        if: github.event_name == 'workflow_dispatch' && inputs.promote
+        shell: bash
+        run: |
+          for attempt in {1..12}; do
+            if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
+              && grep -Fq "session.output" homepage.html; then
+              ! grep -Eiq "Founding beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+              echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "aex.dev did not serve the promoted build" >&2
+          exit 1

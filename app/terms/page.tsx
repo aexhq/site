@@ -3,7 +3,7 @@ import { SiteFooter } from "../components/SiteFooter";
 import { SiteHeader } from "../components/SiteHeader";
 import { getLegalIdentity } from "../legal";
 
-export const metadata: Metadata = { title: "Founding beta terms" };
+export const metadata: Metadata = { title: "Beta terms" };
 
 export default function TermsPage() {
   const identity = getLegalIdentity();
@@ -12,7 +12,7 @@ export default function TermsPage() {
       <SiteHeader />
       <article className="legal-page prose-shell">
         <p className="site-kicker">Last updated 19 August 2026</p>
-        <h1>Founding beta terms</h1>
+        <h1>Beta terms</h1>
 
         <p>
           These terms apply when you accept an AEX invitation. The waitlist is
@@ -28,7 +28,7 @@ export default function TermsPage() {
 
         <h2>Who the beta is for</h2>
         <p>
-          The founding beta is for people using AEX wholly or mainly for a
+          The beta is for people using AEX wholly or mainly for a
           business, trade, craft, or profession, including individual developers
           building production applications. You must be at least 18 and able to
           enter a contract.

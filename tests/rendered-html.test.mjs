@@ -57,12 +57,13 @@ test("server-renders the prose-first AI app backend page", async () => {
   const html = await response.text();
   assert.match(html, /<title>The session backend for AI apps<\/title>/i);
   assert.match(html, /The session backend for AI apps\./);
-  assert.match(html, /Your app stays yours/);
-  assert.match(html, /stop[\s\S]*resume without losing its place/i);
+  assert.match(html, /session\.output/);
+  assert.match(html, /validated data/i);
+  assert.match(html, /Every session starts with a computer/i);
   assert.match(html, /\$0\.12/);
-  assert.match(html, /\$0\.10/);
   assert.match(html, /\$0\.003/);
   assert.match(html, /Join the beta/);
+  assert.doesNotMatch(html, /Founding beta|eu-west-1|Linux workspace|Suspended machine/i);
   assert.match(html, /THINK SLOWLY LTD[\s\S]*17224795/i);
   assert.match(html, /Registered office:[\s\S]*E15 1DE/i);
   assert.doesNotMatch(html, /Platform-added TTFT|2,002|leakage-gate|Brain \/ Process/i);
@@ -87,7 +88,7 @@ test("public status and company legal pages render", async () => {
   const terms = await render("/terms");
   assert.equal(terms.status, 200);
   const termsHtml = await terms.text();
-  assert.match(termsHtml, /Founding beta terms/i);
+  assert.match(termsHtml, /Beta terms/i);
   assert.match(termsHtml, /THINK SLOWLY LTD[\s\S]*company number[\s\S]*17224795/i);
   assert.match(termsHtml, /registered office[\s\S]*E15 1DE/i);
   assert.match(termsHtml, /business, trade, craft, or profession/i);
@@ -99,13 +100,14 @@ test("server-renders dashboard-first waitlist and invited onboarding", async () 
   const waitlistHtml = await waitlist.text();
   assert.match(waitlistHtml, /<title>Dashboard · aex<\/title>/i);
   assert.match(waitlistHtml, /Start in the dashboard\./);
-  assert.match(waitlistHtml, /Join the Founding Beta/);
+  assert.match(waitlistHtml, /Join the beta/);
 
   const invited = await render("/dashboard?mode=invite");
   assert.equal(invited.status, 200);
   const invitedHtml = await invited.text();
   assert.match(invitedHtml, /Create your account\./);
   assert.match(invitedHtml, /aex_iv_/);
+  assert.doesNotMatch(invitedHtml, /Founding beta|eu-west-1/i);
 });
 
 test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", async () => {

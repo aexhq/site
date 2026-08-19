@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const description =
-    "Add an agent to your product with one API. AEX keeps its model, conversation, tools, and Linux workspace together.";
+    "Start a durable AI session, give it work, and get back text or validated data.";
   const socialImage = new URL("/og.png", metadataBase);
   return {
     metadataBase,
@@ -45,9 +45,9 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         {
           url: socialImage,
-          width: 1740,
-          height: 904,
-          alt: "aex. Your agent keeps its place.",
+          width: 1731,
+          height: 909,
+          alt: "aex — the session backend for AI apps.",
         },
       ],
       type: "website",
