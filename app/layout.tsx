@@ -30,25 +30,24 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const description =
-    "A full agent runtime with 1.4 ms platform-added TTFT and isolated Lambda MicroVM workspaces.";
+    "AEX is the durable session runtime for agents: model, tools, history, and Linux workspace in one resumable lifecycle.";
   const socialImage = new URL("/og.png", metadataBase);
   return {
     metadataBase,
     title: {
-      default: "aex — agent sessions, kept alive",
+      default: "aex — your agent keeps its place",
       template: "%s · aex",
     },
-    description:
-      "A session-oriented runtime for agents: one brain, one isolated workspace, durable state, and measured overhead.",
+    description,
     openGraph: {
-      title: "aex — agent sessions, kept alive",
+      title: "aex — your agent keeps its place",
       description,
       images: [
         {
           url: socialImage,
-          width: 1732,
-          height: 909,
-          alt: "aex. Agent sessions, kept alive. 1.4 ms platform-added TTFT.",
+          width: 1740,
+          height: 904,
+          alt: "aex. Your agent keeps its place.",
         },
       ],
       type: "website",
@@ -56,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "aex — agent sessions, kept alive",
+      title: "aex — your agent keeps its place",
       description,
       images: [socialImage],
     },

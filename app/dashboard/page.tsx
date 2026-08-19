@@ -5,14 +5,19 @@ import { DashboardClient } from "./DashboardClient";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Read your aex balance, usage, sessions, and API keys.",
+  description: "Join AEX, fund an account, create session keys, and see exact usage.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string }>;
+}) {
+  const { mode } = await searchParams;
   return (
     <main className="dashboard-page">
       <SiteHeader dark />
-      <DashboardClient />
+      <DashboardClient initialMode={mode === "invite" ? "invite" : "waitlist"} />
       <SiteFooter />
     </main>
   );
