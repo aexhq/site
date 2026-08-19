@@ -1,18 +1,53 @@
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { once } from "node:events";
 import { access, readFile } from "node:fs/promises";
-import test from "node:test";
+import { fileURLToPath } from "node:url";
+import test, { after, before } from "node:test";
 
 const templateRoot = new URL("../", import.meta.url);
+const projectRoot = fileURLToPath(templateRoot);
+const nextBin = fileURLToPath(new URL("../node_modules/next/dist/bin/next", import.meta.url));
+const port = 31_000 + (process.pid % 1_000);
+const origin = `http://127.0.0.1:${port}`;
+let server;
+let serverOutput = "";
+
+before(async () => {
+  server = spawn(
+    process.execPath,
+    [nextBin, "start", "--hostname", "127.0.0.1", "--port", String(port)],
+    { cwd: projectRoot, env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" }, stdio: ["ignore", "pipe", "pipe"] },
+  );
+  for (const stream of [server.stdout, server.stderr]) {
+    stream.on("data", (chunk) => {
+      serverOutput = (serverOutput + chunk.toString()).slice(-8_000);
+    });
+  }
+
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    if (server.exitCode !== null) {
+      throw new Error(`Next.js exited before tests started.\n${serverOutput}`);
+    }
+    try {
+      const response = await fetch(origin, { redirect: "manual" });
+      if (response.status < 500) return;
+    } catch {
+      // The server is still starting.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`Next.js did not become ready.\n${serverOutput}`);
+});
+
+after(async () => {
+  if (!server || server.exitCode !== null) return;
+  server.kill();
+  await Promise.race([once(server, "exit"), new Promise((resolve) => setTimeout(resolve, 5_000))]);
+});
 
 async function render(path = "/") {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", String(process.pid) + "-" + String(Date.now()));
-  const { default: worker } = await import(workerUrl.href);
-  return worker.fetch(
-    new Request("http://localhost" + path, { headers: { accept: "text/html" } }),
-    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
-    { waitUntil() {}, passThroughOnException() {} },
-  );
+  return fetch(origin + path, { headers: { accept: "text/html" } });
 }
 
 test("server-renders the prose-first AI app backend page", async () => {
@@ -20,7 +55,7 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
-  assert.match(html, /<title>The session backend for AI apps · aex<\/title>/i);
+  assert.match(html, /<title>The session backend for AI apps<\/title>/i);
   assert.match(html, /The session backend for AI apps\./);
   assert.match(html, /Your app stays yours/);
   assert.match(html, /stop[\s\S]*resume without losing its place/i);
