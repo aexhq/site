@@ -2,25 +2,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
+import { WaitlistForm } from "./components/WaitlistForm";
 
 export const metadata: Metadata = {
-  title: "Agent sessions, kept alive",
+  title: "Your agent keeps its place",
   description:
-    "Measured agent infrastructure: durable sessions, isolated workspaces, and a brain that adds 1.4 ms before the model.",
+    "AEX is the durable session runtime for agents: model, tools, history, and Linux workspace in one resumable lifecycle.",
 };
 
-const brainBenchmarks = [
-  ["Platform-added TTFT", "1.4 ms", "p50 · 2.2 ms p99"],
-  ["Unpaced throughput", "2,002 turns/s", "K=64 sessions"],
-  ["Parallel tool loop", "≈3,430 calls/s", "4 calls × 2 rounds"],
-  ["Resident session", "21–31 KiB", "private memory"],
-];
-
-const handBenchmarks = [
-  ["Endpoint round trip", "2.1 ms", "p50 · 3.4 ms p99"],
-  ["Tool call round trip", "4.4 ms", "p50 · 5.3 ms p99"],
-  ["Workspace boundary", "MicroVM", "Firecracker-backed"],
-  ["Guest credentials", "None", "IMDS gate: pass"],
+const productPoints = [
+  {
+    index: "01",
+    title: "A session, not a sandbox",
+    body: "The model loop, tools, conversation, files, and artifacts share one durable lifecycle.",
+  },
+  {
+    index: "02",
+    title: "Continue, don’t reconstruct",
+    body: "A session can release compute between turns and return to the same workspace when work resumes.",
+  },
+  {
+    index: "03",
+    title: "Your models, one ledger",
+    body: "Bring OpenAI or Anthropic keys. AEX meters the runtime clearly and adds no model markup.",
+  },
 ];
 
 export default function Home() {
@@ -28,266 +33,166 @@ export default function Home() {
     <main>
       <SiteHeader />
 
-      <section className="hero shell" aria-labelledby="hero-title">
-        <div className="hero-copy">
+      <section className="home-hero shell" aria-labelledby="hero-title">
+        <div className="home-hero-copy">
           <p className="eyebrow">
             <span className="pulse-dot" aria-hidden="true" />
-            Measured on production-shaped ARM
+            Founding Beta · eu-west-1
           </p>
-          <h1 id="hero-title">
-            Agent sessions,
-            <br />
-            <span>kept alive.</span>
-          </h1>
-          <p className="hero-lede">
-            One durable session. One isolated Linux workspace. A small, fast
-            brain that remembers every decision without standing between you
-            and the model.
+          <h1 id="hero-title">Your agent keeps its place.</h1>
+          <p className="home-hero-lede">
+            AEX gives an agent one durable session for its model, tools, history,
+            and Linux workspace. Turn it off. Come back. Continue.
           </p>
-          <div className="hero-actions">
-            <Link className="button button-primary" href="#benchmarks">
-              Read the measurements
-              <span aria-hidden="true">↘</span>
-            </Link>
-            <Link className="button button-quiet" href="/dashboard">
-              Open dashboard
-              <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-        </div>
-
-        <aside className="hero-instrument" aria-label="Headline benchmark">
-          <div className="instrument-topline">
-            <span>PLATFORM-ADDED TTFT</span>
-            <span>p50</span>
-          </div>
-          <div className="instrument-value">
-            1.4<span>ms</span>
-          </div>
-          <div className="instrument-scale" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <b />
-          </div>
-          <p>
-            From <code>POST /messages</code> to the first assistant delta,
-            through the real HTTP + SSE surface.
-          </p>
-        </aside>
-      </section>
-
-      <section className="proof-strip" aria-label="Headline measurements">
-        <div className="shell proof-grid">
-          <div>
-            <strong>2,002</strong>
-            <span>turns / second</span>
-          </div>
-          <div>
-            <strong>4.4 ms</strong>
-            <span>isolated tool call</span>
-          </div>
-          <div>
-            <strong>21–31 KiB</strong>
-            <span>resident session</span>
-          </div>
-          <div>
-            <strong>0</strong>
-            <span>guest IAM credentials</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="system-section shell" id="system" aria-labelledby="system-title">
-        <div className="section-heading">
-          <p className="section-index">01 / THE SYSTEM</p>
-          <h2 id="system-title">Long-lived context. Short-lived compute.</h2>
-          <p>
-            The expensive parts wake when they are useful. Everything needed to
-            continue survives in the journal and workspace.
-          </p>
-        </div>
-
-        <div className="architecture" aria-label="aex request flow">
-          <article className="architecture-card control-card">
-            <p>01</p>
-            <h3>Control</h3>
-            <span>Identity · prepaid billing · admission</span>
-          </article>
-          <div className="architecture-link" aria-hidden="true">
-            <span>authorized</span>
-            <i />
-          </div>
-          <article className="architecture-card brain-card">
-            <p>02</p>
-            <h3>Brain</h3>
-            <span>Model loop · sealed prefix · durable journal</span>
-          </article>
-          <div className="architecture-link" aria-hidden="true">
-            <span>tool intent</span>
-            <i />
-          </div>
-          <article className="architecture-card hand-card">
-            <p>03</p>
-            <h3>Hand</h3>
-            <span>Isolated Linux · persistent workspace · real tools</span>
-          </article>
-        </div>
-
-        <div className="principle-grid">
-          <article>
-            <span className="principle-mark">A</span>
-            <h3>A session is the product</h3>
-            <p>
-              It can span many messages and many machine incarnations. The same
-              sealed agent definition and workspace return every time.
-            </p>
-          </article>
-          <article>
-            <span className="principle-mark">B</span>
-            <h3>The journal is the truth</h3>
-            <p>
-              Tool intent lands before dispatch. Tool results land before
-              release. The event stream and the bill derive from the same log.
-            </p>
-          </article>
-          <article>
-            <span className="principle-mark">C</span>
-            <h3>Isolation is admission</h3>
-            <p>
-              Untrusted code runs in a hardware-backed MicroVM. The guest has no
-              execution role and no provider credentials to leak.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="benchmark-section" id="benchmarks" aria-labelledby="benchmarks-title">
-        <div className="shell">
-          <div className="section-heading light-heading">
-            <p className="section-index">02 / THE NUMBERS</p>
-            <h2 id="benchmarks-title">Method before marketing.</h2>
-            <p>
-              These figures measure the platform, not a model: scripted instant
-              provider, in-process echo hand, real public HTTP API and SSE path.
-            </p>
-          </div>
-
-          <div className="benchmark-panels">
-            <article className="benchmark-panel">
-              <header>
-                <div>
-                  <span>BRAIN / PROCESS</span>
-                  <h3>Decision plane</h3>
-                </div>
-                <span className="status-chip">CI gated</span>
-              </header>
-              <div className="benchmark-rows">
-                {brainBenchmarks.map(([label, value, note]) => (
-                  <div className="benchmark-row" key={label}>
-                    <div>
-                      <span>{label}</span>
-                      <small>{note}</small>
-                    </div>
-                    <strong>{value}</strong>
-                  </div>
-                ))}
-              </div>
-            </article>
-
-            <article className="benchmark-panel hand-panel">
-              <header>
-                <div>
-                  <span>HAND / EU-WEST-1</span>
-                  <h3>Execution plane</h3>
-                </div>
-                <span className="status-chip">Real wire</span>
-              </header>
-              <div className="benchmark-rows">
-                {handBenchmarks.map(([label, value, note]) => (
-                  <div className="benchmark-row" key={label}>
-                    <div>
-                      <span>{label}</span>
-                      <small>{note}</small>
-                    </div>
-                    <strong>{value}</strong>
-                  </div>
-                ))}
-              </div>
-            </article>
-          </div>
-
-          <div className="method-note">
-            <span className="method-number">46→5</span>
-            <div>
-              <h3>The benchmark already paid for itself.</h3>
-              <p>
-                The TTFT gate exposed a 46 ms Nagle + delayed-ACK floor under
-                every turn. Disabling it on the SSE path took the same run to 5
-                ms; the gate now stops that regression returning.
-              </p>
-            </div>
-            <a
-              href="https://github.com/aexhq/brain/blob/main/BENCHMARKS.md"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Full record <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section className="security-section shell" id="security" aria-labelledby="security-title">
-        <div className="section-heading">
-          <p className="section-index">03 / THE BOUNDARY</p>
-          <h2 id="security-title">The workspace is real Linux. The boundary is real hardware.</h2>
-        </div>
-        <div className="security-layout">
-          <div className="security-terminal" aria-label="Security gate results">
-            <div className="terminal-bar">
-              <span />
-              <span />
-              <span />
-              <code>leakage-gate / latest</code>
-            </div>
-            <pre>
-              {"$ probe workspace.cross_session\nPASS  foreign path not found\n\n$ probe journal.secrets\nPASS  provider key absent\n\n$ probe guest.imds\nPASS  role list 404\nPASS  credentials unreachable\n\nresult: 4 passed · 0 leaked"}
-            </pre>
-          </div>
-          <div className="security-copy">
-            <p>
-              Two adversarially interleaved tenants. Different model dialects.
-              Real files on disk. The continuous gate verifies that no workspace
-              content, prompt, model identity, event, or provider key crosses the
-              session boundary.
-            </p>
-            <ul>
-              <li>One workspace per session</li>
-              <li>No execution role in the guest</li>
-              <li>Secrets encrypted outside the journal</li>
-              <li>Interrupted work is never replayed</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="cta-section">
-        <div className="shell cta-inner">
-          <div>
-            <p className="section-index">CONTROL PLANE / LIVE</p>
-            <h2>See every session. See the exact bill.</h2>
-          </div>
-          <Link className="button button-dark" href="/dashboard">
-            Open dashboard <span aria-hidden="true">→</span>
+          <WaitlistForm />
+          <Link className="invited-link" href="/dashboard?mode=invite">
+            Already invited? Finish setup <span aria-hidden="true">→</span>
           </Link>
+        </div>
+
+        <div className="continuity-card" aria-label="A session continuing across two turns">
+          <header>
+            <span>SESSION / AEX</span>
+            <span className="live-label"><i /> resumable</span>
+          </header>
+          <div className="continuity-track">
+            <article>
+              <span className="track-node">01</span>
+              <div>
+                <small>TURN 12 · COMPLETE</small>
+                <strong>Research and write</strong>
+                <p>Files, decisions, and context committed.</p>
+              </div>
+            </article>
+            <article className="track-hold">
+              <span className="track-node">—</span>
+              <div>
+                <small>BETWEEN TURNS</small>
+                <strong>Compute released</strong>
+                <p>The session and workspace stay ready.</p>
+              </div>
+            </article>
+            <article className="track-resume">
+              <span className="track-node">02</span>
+              <div>
+                <small>TURN 13 · READY</small>
+                <strong>Continue from here</strong>
+                <p>Same agent. Same place. New turn.</p>
+              </div>
+            </article>
+          </div>
+          <footer>
+            <span>MODEL <b>BYOK</b></span>
+            <span>HAND <b>1 GB</b></span>
+            <span>STATE <b>HELD</b></span>
+          </footer>
+        </div>
+      </section>
+
+      <section className="category-line" aria-label="AEX product category">
+        <div className="shell">
+          <p>Deployment platforms run apps.</p>
+          <p>Sandbox clouds run code.</p>
+          <p><strong>AEX runs the agent session.</strong></p>
+        </div>
+      </section>
+
+      <section className="product-section shell" id="product" aria-labelledby="product-title">
+        <div className="minimal-heading">
+          <p className="section-index">THE PRODUCT</p>
+          <h2 id="product-title">One boundary for the whole job.</h2>
+          <p>
+            An agent is more than a process. AEX keeps the parts that must agree
+            under one session identity, from the first model call to the last artifact.
+          </p>
+        </div>
+        <div className="product-points">
+          {productPoints.map((point) => (
+            <article key={point.index}>
+              <span>{point.index}</span>
+              <h3>{point.title}</h3>
+              <p>{point.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="lifecycle-section" aria-labelledby="lifecycle-title">
+        <div className="shell lifecycle-inner">
+          <div>
+            <p className="section-index">THE DIFFERENCE</p>
+            <h2 id="lifecycle-title">Long-lived state. Short-lived compute.</h2>
+          </div>
+          <div className="lifecycle-rail" aria-label="Session lifecycle">
+            <div>
+              <span>01</span>
+              <strong>Start</strong>
+              <small>Agent + workspace</small>
+            </div>
+            <i aria-hidden="true" />
+            <div>
+              <span>02</span>
+              <strong>Work</strong>
+              <small>Model + tools</small>
+            </div>
+            <i aria-hidden="true" />
+            <div className="rail-accent">
+              <span>03</span>
+              <strong>Hold</strong>
+              <small>No active compute</small>
+            </div>
+            <i aria-hidden="true" />
+            <div>
+              <span>04</span>
+              <strong>Resume</strong>
+              <small>Continue in place</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="pricing-section shell" id="pricing" aria-labelledby="pricing-title">
+        <div className="minimal-heading pricing-heading">
+          <p className="section-index">FOUNDING BETA PRICING</p>
+          <h2 id="pricing-title">Pay for the runtime, not the promise.</h2>
+          <p>No subscription. No model markup. Prepaid credit is refundable while unused.</p>
+        </div>
+        <div className="price-grid">
+          <article className="price-primary">
+            <span>Active 1 GB session</span>
+            <strong><b>$0.12</b> / hour</strong>
+            <p>Charged while the agent is actively working.</p>
+          </article>
+          <article>
+            <span>Durable workspace</span>
+            <strong><b>$0.03</b> / GB-month</strong>
+            <p>Files remain available between turns.</p>
+          </article>
+          <article>
+            <span>Models</span>
+            <strong><b>BYOK</b></strong>
+            <p>OpenAI and Anthropic, billed by your provider.</p>
+          </article>
+        </div>
+        <div className="pricing-note">
+          <p><strong>$10 minimum</strong> top-up · <strong>$1,000 maximum</strong> · USD</p>
+          <a href="https://api.aex.dev/v1/rates" rel="noreferrer" target="_blank">
+            Live rate card <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+
+      <section className="beta-section" id="beta" aria-labelledby="beta-title">
+        <div className="shell beta-inner">
+          <div>
+            <p className="section-index">FOUNDING BETA</p>
+            <h2 id="beta-title">A small launch, on purpose.</h2>
+            <p>
+              One 1 GB shape in eu-west-1, OpenAI and Anthropic models, bring-your-own keys,
+              and direct support. No uptime SLA during the beta.
+            </p>
+          </div>
+          <WaitlistForm compact />
         </div>
       </section>
 

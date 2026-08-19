@@ -8,12 +8,12 @@ export function SiteHeader({ dark = false }: { dark?: boolean }) {
           aex<span>.</span>
         </Link>
         <nav aria-label="Main navigation">
-          <Link href="/#system">System</Link>
-          <Link href="/#benchmarks">Benchmarks</Link>
-          <Link href="/#security">Security</Link>
+          <Link href="/#product">Product</Link>
+          <Link href="/#pricing">Pricing</Link>
+          <Link href="/#beta">Beta</Link>
         </nav>
         <Link className="header-dashboard" href="/dashboard">
-          Dashboard <span aria-hidden="true">↗</span>
+          Dashboard <span aria-hidden="true">→</span>
         </Link>
       </div>
     </header>
