@@ -28,10 +28,9 @@ export default function TermsPage() {
 
         <h2>Who the beta is for</h2>
         <p>
-          The beta is for people using AEX wholly or mainly for a
-          business, trade, craft, or profession, including individual developers
-          building production applications. You must be at least 18 and able to
-          enter a contract.
+          The beta is open to developers using AEX for personal, educational,
+          open-source, experimental, or commercial projects. You must be at
+          least 18 and able to enter a contract.
         </p>
 
         <h2>The service</h2>

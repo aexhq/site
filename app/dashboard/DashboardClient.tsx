@@ -315,8 +315,7 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
                   type="checkbox"
                 />
                 <span>
-                  I am using AEX for professional or business purposes and agree
-                  to the <a href="/terms" target="_blank">Beta terms</a>.
+                  I agree to the <a href="/terms" target="_blank">Beta terms</a>.
                 </span>
               </label>
               <button className="button button-primary" disabled={loading} type="submit">
