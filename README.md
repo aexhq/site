@@ -8,7 +8,7 @@ The public benchmark record and minimal read-only account dashboard for aex.
   The account token stays in component memory and passes through a fixed, read-only same-origin
   proxy; it is never written to browser storage.
 
-The default control plane is https://api-dev.aex.dev. Operators may set AEX_API_BASE_URL
+The default control plane is https://api.aex.dev. Operators may set AEX_API_BASE_URL
 to another HTTPS control-plane origin at runtime.
 
     npm install

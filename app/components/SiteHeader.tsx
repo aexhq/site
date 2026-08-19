@@ -1,18 +1,20 @@
+import Link from "next/link";
+
 export function SiteHeader({ dark = false }: { dark?: boolean }) {
   return (
     <header className={"site-header" + (dark ? " site-header-dark" : "")}>
       <div className="shell header-inner">
-        <a className="wordmark" href="/" aria-label="aex home">
+        <Link className="wordmark" href="/" aria-label="aex home">
           aex<span>.</span>
-        </a>
+        </Link>
         <nav aria-label="Main navigation">
-          <a href="/#system">System</a>
-          <a href="/#benchmarks">Benchmarks</a>
-          <a href="/#security">Security</a>
+          <Link href="/#system">System</Link>
+          <Link href="/#benchmarks">Benchmarks</Link>
+          <Link href="/#security">Security</Link>
         </nav>
-        <a className="header-dashboard" href="/dashboard">
+        <Link className="header-dashboard" href="/dashboard">
           Dashboard <span aria-hidden="true">↗</span>
-        </a>
+        </Link>
       </div>
     </header>
   );

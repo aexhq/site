@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
 
@@ -44,14 +45,14 @@ export default function Home() {
             and the model.
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href="#benchmarks">
+            <Link className="button button-primary" href="#benchmarks">
               Read the measurements
               <span aria-hidden="true">↘</span>
-            </a>
-            <a className="button button-quiet" href="/dashboard">
+            </Link>
+            <Link className="button button-quiet" href="/dashboard">
               Open dashboard
               <span aria-hidden="true">→</span>
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -281,12 +282,12 @@ export default function Home() {
       <section className="cta-section">
         <div className="shell cta-inner">
           <div>
-            <p className="section-index">CONTROL PLANE / DEV</p>
+            <p className="section-index">CONTROL PLANE / LIVE</p>
             <h2>See every session. See the exact bill.</h2>
           </div>
-          <a className="button button-dark" href="/dashboard">
+          <Link className="button button-dark" href="/dashboard">
             Open dashboard <span aria-hidden="true">→</span>
-          </a>
+          </Link>
         </div>
       </section>
 

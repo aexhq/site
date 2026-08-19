@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 export const dynamic = "force-dynamic";
 
 const allowedReads = new Set(["account", "balance", "usage", "keys", "rates"]);
-const defaultControlOrigin = "https://api-dev.aex.dev";
+const defaultControlOrigin = "https://api.aex.dev";
 
 function jsonError(status: number, message: string) {
   return Response.json(

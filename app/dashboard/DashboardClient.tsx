@@ -34,6 +34,8 @@ type UsageLine = {
   running_ms: number;
   compute_microusd: number;
   storage_microusd: number;
+  web_search_queries: number;
+  web_search_microusd: number;
   total_microusd: number;
   storage: {
     workspace_bytes: number;
@@ -53,6 +55,7 @@ type Usage = {
     gb_hour_microusd: number;
     suspended_gb_month_microusd: number;
     workspace_gb_month_microusd: number;
+    web_search_query_microusd: number;
   };
 };
 
@@ -159,13 +162,14 @@ export function DashboardClient() {
     [data],
   );
   const activeSessions = sessions.filter((session) => session.state !== "deleted").length;
+  const searchQueries = sessions.reduce((total, session) => total + session.web_search_queries, 0);
   const liveKeys = data?.keys.filter((key) => !key.revoked_at) ?? [];
 
   if (!data) {
     return (
       <section className="dashboard-connect shell" aria-labelledby="dashboard-title">
         <div className="dashboard-intro">
-          <p className="section-index">DASHBOARD / DEV CONTROL PLANE</p>
+          <p className="section-index">DASHBOARD / LIVE CONTROL PLANE</p>
           <h1 id="dashboard-title">The bill is a fold, not a guess.</h1>
           <p>
             Connect with your account token to read the current balance, every
@@ -190,7 +194,7 @@ export function DashboardClient() {
         <form className="token-panel" onSubmit={connect}>
           <div className="token-panel-head">
             <span className="pulse-dot" aria-hidden="true" />
-            api-dev.aex.dev
+            api.aex.dev
           </div>
           <label htmlFor="account-token">Account token</label>
           <input
@@ -207,7 +211,7 @@ export function DashboardClient() {
             <span aria-hidden="true">→</span>
           </button>
           <p className="token-note">
-            Your token is sent through this site only to the fixed aex dev control-plane origin.
+            Your token is sent through this site only to the fixed aex control-plane origin.
             It is never written to browser storage.
           </p>
           <div className="form-error" aria-live="polite">
@@ -252,7 +256,7 @@ export function DashboardClient() {
         <article>
           <span>Session lines</span>
           <strong>{sessions.length}</strong>
-          <small>{activeSessions} not deleted</small>
+          <small>{activeSessions} live · {searchQueries} searches</small>
         </article>
         <article>
           <span>Live API keys</span>
@@ -281,6 +285,7 @@ export function DashboardClient() {
                     <th>State</th>
                     <th>Runtime</th>
                     <th>Workspace</th>
+                    <th>Search</th>
                     <th>Cost</th>
                   </tr>
                 </thead>
@@ -297,8 +302,14 @@ export function DashboardClient() {
                       <td>{duration(session.running_ms)}</td>
                       <td>{bytes(session.storage.workspace_bytes + session.storage.artifact_bytes)}</td>
                       <td>
+                        {session.web_search_queries}
+                        <small>{money(session.web_search_microusd)}</small>
+                      </td>
+                      <td>
                         <strong>{money(session.total_microusd)}</strong>
-                        <small>{money(session.compute_microusd)} compute</small>
+                        <small>
+                          {money(session.compute_microusd)} compute · {money(session.storage_microusd)} storage
+                        </small>
                       </td>
                     </tr>
                   ))}
@@ -358,7 +369,10 @@ export function DashboardClient() {
         <p>
           Workspace GB-month <strong>{money(data.usage.rates.workspace_gb_month_microusd, 4)}</strong>
         </p>
-        <a href="https://api-dev.aex.dev/v1/rates" rel="noreferrer" target="_blank">
+        <p>
+          Web search <strong>{money(data.usage.rates.web_search_query_microusd, 4)} / query</strong>
+        </p>
+        <a href="https://api.aex.dev/v1/rates" rel="noreferrer" target="_blank">
           JSON <span aria-hidden="true">↗</span>
         </a>
       </div>

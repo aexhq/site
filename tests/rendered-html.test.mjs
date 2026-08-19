@@ -57,7 +57,7 @@ test("dashboard proxy is a fixed read allowlist", async () => {
     "utf8",
   );
   assert.match(proxy, /allowedReads = new Set/);
-  assert.match(proxy, /https:\/\/api-dev\.aex\.dev/);
+  assert.match(proxy, /https:\/\/api\.aex\.dev/);
   assert.match(proxy, /upstream\.protocol !== "https:"/);
   assert.match(proxy, /redirect: "manual"/);
   assert.doesNotMatch(proxy, /request\.nextUrl\.searchParams\.get\(["'](?:url|origin|host)/);

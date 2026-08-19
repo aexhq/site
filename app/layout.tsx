@@ -31,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const description =
     "A full agent runtime with 1.4 ms platform-added TTFT and isolated Lambda MicroVM workspaces.";
+  const socialImage = new URL("/og.png", metadataBase);
   return {
     metadataBase,
     title: {
@@ -44,20 +45,20 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       images: [
         {
-          url: "/og.png",
+          url: socialImage,
           width: 1732,
           height: 909,
           alt: "aex. Agent sessions, kept alive. 1.4 ms platform-added TTFT.",
         },
       ],
       type: "website",
-      url: "/",
+      url: metadataBase,
     },
     twitter: {
       card: "summary_large_image",
       title: "aex — agent sessions, kept alive",
       description,
-      images: ["/og.png"],
+      images: [socialImage],
     },
   };
 }
