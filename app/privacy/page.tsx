@@ -53,10 +53,10 @@ export default function PrivacyPage() {
         <h2>Providers and location</h2>
         <p>
           AEX uses infrastructure and service providers including AWS for the
-          production runtime, OpenAI Sites and Cloudflare for the website, and
-          Stripe for payments. Production session data is hosted in AWS
-          eu-west-1. A provider may process limited account or technical data in
-          another country under its contractual safeguards.
+          production runtime, Vercel for website hosting, Cloudflare for DNS and
+          edge proxying, and Stripe for payments. Production session data is
+          hosted in AWS eu-west-1. A provider may process limited account or
+          technical data in another country under its contractual safeguards.
         </p>
 
         <h2>Retention</h2>
