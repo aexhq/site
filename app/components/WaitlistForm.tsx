@@ -61,7 +61,7 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
         <span aria-hidden="true">→</span>
       </button>
       <p className="waitlist-note">
-        We use your email only for beta access and AEX product updates. Opt out at any time.
+        We use your email only to manage beta access and invitations. No marketing emails.
       </p>
       <p className="form-error" aria-live="polite">
         {error}
