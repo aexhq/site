@@ -1,10 +1,10 @@
 import Link from "next/link";
 
-export function SiteHeader({ dark = false }: { dark?: boolean }) {
+export function SiteHeader() {
   return (
-    <header className={"site-header" + (dark ? " site-header-dark" : "")}>
+    <header className="site-header">
       <div className="shell header-inner">
-        <Link className="wordmark" href="/" aria-label="aex home">aex</Link>
+        <Link className="wordmark" href="/" aria-label="Aex home">Aex</Link>
         <nav aria-label="Main navigation">
           <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">Docs</a>
           <Link href="/#pricing">Pricing</Link>

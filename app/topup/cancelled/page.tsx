@@ -10,7 +10,7 @@ export default function TopupCancelledPage() {
     <main>
       <SiteHeader />
       <section className="topup-return shell">
-        <p className="section-index">CHECKOUT / CANCELLED</p>
+        <p className="section-index">Checkout cancelled</p>
         <h1>No charge was made.</h1>
         <p>You can return to the dashboard and start a new checkout whenever you’re ready.</p>
         <Link className="button button-primary" href="/dashboard">Return to dashboard <span aria-hidden="true">→</span></Link>

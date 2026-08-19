@@ -1,4 +1,4 @@
-name: Deploy to Vercel
+name: Deploy Aex site to Vercel
 
 on:
   workflow_dispatch:
@@ -62,7 +62,8 @@ jobs:
           done
           grep -Fq "The session backend for AI apps" homepage.html
           grep -Fq "session.output" homepage.html
-          ! grep -Eiq "Founding beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+          grep -Fq "Join the alpha" homepage.html
+          ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
       - name: Promote the staged build to aex.dev
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         env:
@@ -75,7 +76,8 @@ jobs:
           for attempt in {1..12}; do
             if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
               && grep -Fq "session.output" homepage.html; then
-              ! grep -Eiq "Founding beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+              grep -Fq "Join the alpha" homepage.html
+              ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi

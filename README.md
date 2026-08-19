@@ -1,6 +1,6 @@
-# aex site
+# Aex site
 
-The Beta product site and account dashboard for AEX.
+The Alpha product site and account dashboard for Aex.
 
 - The home page explains the durable-session product, launch envelope, pricing, and waitlist.
 - The dashboard handles invitation-only signup, prepaid checkout, API-key management, usage,

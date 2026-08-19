@@ -19,7 +19,7 @@ export function StatusClient() {
     } catch {
       setHealth({
         checked_at: new Date().toISOString(),
-        service: "AEX API",
+        service: "Aex API",
         status: "unavailable",
         response_ms: 0,
       });
@@ -45,7 +45,7 @@ export function StatusClient() {
         </div>
         <div>
           <dt>
-            <i className={`status-dot status-dot-${apiState}`} /> AEX API
+            <i className={`status-dot status-dot-${apiState}`} /> Aex API
           </dt>
           <dd>{apiState === "checking" ? "Checking…" : apiState === "operational" ? "Operational" : "Unavailable"}</dd>
         </div>

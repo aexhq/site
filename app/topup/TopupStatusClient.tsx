@@ -41,7 +41,7 @@ export function TopupStatusClient() {
   }, []);
 
   const copy = {
-    checking: ["Checking the ledger…", "Stripe has returned you to AEX. We’re confirming the credit."],
+    checking: ["Checking the ledger…", "Stripe has returned you to Aex. We’re confirming the credit."],
     pending: ["Payment received.", "Settlement is still arriving. The dashboard will refresh it again."],
     paid: ["Credit confirmed.", "Your prepaid balance is ready for agent sessions."],
     signed_out: ["Reconnect your account.", "Your payment is safe, but this browser no longer has its dashboard session."],
@@ -50,7 +50,7 @@ export function TopupStatusClient() {
 
   return (
     <section className="topup-return shell">
-      <p className="section-index">CHECKOUT / RETURN</p>
+      <p className="section-index">Checkout return</p>
       <h1>{copy[0]}</h1>
       <p>{copy[1]}</p>
       <Link className="button button-primary" href="/dashboard">

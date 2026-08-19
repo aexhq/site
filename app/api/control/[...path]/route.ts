@@ -129,7 +129,7 @@ async function forward(
       },
     });
   } catch {
-    return jsonError(502, "The aex control plane could not be reached.", "upstream_error");
+    return jsonError(502, "The Aex control plane could not be reached.", "upstream_error");
   }
 }
 
@@ -189,7 +189,7 @@ async function handle(
 
   const token = request.cookies.get(accountCookie)?.value;
   if (route.needsAccount && !token?.startsWith("aex_at_")) {
-    return jsonError(401, "Sign in with your aex account token.", "unauthorized");
+    return jsonError(401, "Sign in with your Aex account token.", "unauthorized");
   }
 
   const response = await forward(request, route, bodyOrError, token);

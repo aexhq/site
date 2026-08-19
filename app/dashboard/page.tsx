@@ -5,7 +5,7 @@ import { DashboardClient } from "./DashboardClient";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Join AEX, add credit, create API keys, and see exact usage.",
+  description: "Join Aex, add credit, create API keys, and see exact usage.",
 };
 
 export default async function DashboardPage({
@@ -16,7 +16,7 @@ export default async function DashboardPage({
   const { mode } = await searchParams;
   return (
     <main className="dashboard-page">
-      <SiteHeader dark />
+      <SiteHeader />
       <DashboardClient initialMode={mode === "invite" ? "invite" : "waitlist"} />
       <SiteFooter />
     </main>

@@ -35,19 +35,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase,
     title: {
-      default: "aex — the session backend for AI apps",
-      template: "%s · aex",
+      default: "Aex — the session backend for AI apps",
+      template: "%s · Aex",
     },
     description,
     openGraph: {
-      title: "aex — the session backend for AI apps",
+      title: "Aex — the session backend for AI apps",
       description,
       images: [
         {
           url: socialImage,
-          width: 1731,
-          height: 909,
-          alt: "aex — the session backend for AI apps.",
+          width: 1733,
+          height: 908,
+          alt: "Aex — the session backend for AI apps.",
         },
       ],
       type: "website",
@@ -55,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "aex — the session backend for AI apps",
+      title: "Aex — the session backend for AI apps",
       description,
       images: [socialImage],
     },
