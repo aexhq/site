@@ -14,23 +14,21 @@ export default function PrivacyPage() {
         <p className="site-kicker">Last updated 19 August 2026</p>
         <h1>Privacy</h1>
 
-        {!identity.configured ? (
-          <aside className="launch-blocker">
-            Prelaunch preview: the legal operator name, service address, and
-            country must be configured before the public waitlist opens.
-          </aside>
-        ) : null}
-
         <p>
-          This notice explains how {identity.operator || "the AEX operator"},
-          trading as AEX, uses personal information. The operator is the data
-          controller. You can contact AEX at{" "}
+          This notice explains how {identity.operator}, trading as AEX, uses
+          personal information. {identity.operator} is the data controller. You
+          can contact AEX at{" "}
           <a href="mailto:support@aex.dev">support@aex.dev</a>.
         </p>
 
-        {identity.configured ? (
-          <p><strong>Service address:</strong> {identity.address}, {identity.country}.</p>
-        ) : null}
+        <p>
+          <strong>Company:</strong>{" "}
+          <a href={identity.companiesHouseUrl}>
+            {identity.companyNumber}, registered in {identity.registrationJurisdiction}
+          </a>
+          . <strong>Registered office:</strong> {identity.registeredOffice},{" "}
+          {identity.country}.
+        </p>
 
         <h2>Information we use</h2>
         <p>

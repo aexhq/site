@@ -14,19 +14,16 @@ export default function TermsPage() {
         <p className="site-kicker">Last updated 19 August 2026</p>
         <h1>Founding beta terms</h1>
 
-        {!identity.configured ? (
-          <aside className="launch-blocker">
-            Prelaunch preview: the legal operator name, service address, and
-            country must be configured before paid invitations are issued.
-          </aside>
-        ) : null}
-
         <p>
           These terms apply when you accept an AEX invitation. The waitlist is
           free and does not create a service contract. AEX is operated by{" "}
-          {identity.operator || "the operator identified here at launch"}
-          {identity.configured ? `, trading as AEX from ${identity.address}, ${identity.country}` : ""}.
-          Contact <a href="mailto:support@aex.dev">support@aex.dev</a>.
+          {identity.operator}, trading as AEX (
+          <a href={identity.companiesHouseUrl}>
+            company number {identity.companyNumber}
+          </a>
+          ), registered in {identity.registrationJurisdiction}. Its registered
+          office is {identity.registeredOffice}, {identity.country}. Contact{" "}
+          <a href="mailto:support@aex.dev">support@aex.dev</a>.
         </p>
 
         <h2>Who the beta is for</h2>
