@@ -15,6 +15,9 @@ The Founding Beta product site and account dashboard for AEX.
 The default control plane is https://api.aex.dev. Operators may set AEX_API_BASE_URL
 to another HTTPS control-plane origin at runtime.
 
+The site is a native Next.js deployment on Vercel. Generated deployment URLs remain
+protected; `aex.dev` is assigned only when a reviewed production build is promoted.
+
     npm install
     npm run dev
     npm run build
