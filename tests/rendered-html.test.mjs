@@ -63,10 +63,12 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.match(html, /\$0\.10/);
   assert.match(html, /\$0\.003/);
   assert.match(html, /Join the beta/);
+  assert.match(html, /THINK SLOWLY LTD[\s\S]*17224795/i);
+  assert.match(html, /Registered office:[\s\S]*E15 1DE/i);
   assert.doesNotMatch(html, /Platform-added TTFT|2,002|leakage-gate|Brain \/ Process/i);
 });
 
-test("public status and prelaunch legal pages render", async () => {
+test("public status and company legal pages render", async () => {
   const status = await render("/status");
   assert.equal(status.status, 200);
   assert.match(await status.text(), /Service status[\s\S]*AEX API[\s\S]*Incidents/i);
@@ -75,7 +77,9 @@ test("public status and prelaunch legal pages render", async () => {
   assert.equal(privacy.status, 200);
   const privacyHtml = await privacy.text();
   assert.match(privacyHtml, /<title>Privacy · aex<\/title>/i);
-  assert.match(privacyHtml, /legal operator name[\s\S]*must be configured/i);
+  assert.match(privacyHtml, /THINK SLOWLY LTD[\s\S]*data controller/i);
+  assert.match(privacyHtml, /17224795[\s\S]*England and Wales/i);
+  assert.doesNotMatch(privacyHtml, /Prelaunch preview/i);
   assert.match(privacyHtml, /Vercel[\s\S]*Cloudflare/i);
   assert.doesNotMatch(privacyHtml, /OpenAI Sites/i);
   assert.match(privacyHtml, /up to seven days/i);
@@ -84,6 +88,8 @@ test("public status and prelaunch legal pages render", async () => {
   assert.equal(terms.status, 200);
   const termsHtml = await terms.text();
   assert.match(termsHtml, /Founding beta terms/i);
+  assert.match(termsHtml, /THINK SLOWLY LTD[\s\S]*company number[\s\S]*17224795/i);
+  assert.match(termsHtml, /registered office[\s\S]*E15 1DE/i);
   assert.match(termsHtml, /business, trade, craft, or profession/i);
 });
 

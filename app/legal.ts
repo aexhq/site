@@ -1,18 +1,23 @@
 export type LegalIdentity = {
-  configured: boolean;
   operator: string;
-  address: string;
+  companyNumber: string;
+  companiesHouseUrl: string;
+  registeredOffice: string;
+  registrationJurisdiction: string;
   country: string;
 };
 
+const legalIdentity: LegalIdentity = {
+  operator: "THINK SLOWLY LTD",
+  companyNumber: "17224795",
+  companiesHouseUrl:
+    "https://find-and-update.company-information.service.gov.uk/company/17224795",
+  registeredOffice:
+    "Flat 71 Legacy Tower, 88 Great Eastern Road, London, England, E15 1DE",
+  registrationJurisdiction: "England and Wales",
+  country: "United Kingdom",
+};
+
 export function getLegalIdentity(): LegalIdentity {
-  const operator = process.env.AEX_LEGAL_OPERATOR?.trim() ?? "";
-  const address = process.env.AEX_SERVICE_ADDRESS?.trim() ?? "";
-  const country = process.env.AEX_OPERATOR_COUNTRY?.trim() ?? "";
-  return {
-    configured: Boolean(operator && address && country),
-    operator,
-    address,
-    country,
-  };
+  return legalIdentity;
 }
