@@ -10,6 +10,9 @@ export function SiteFooter() {
         <p>Your agent keeps its place.</p>
         <div>
           <Link href="/#pricing">Pricing</Link>
+          <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">
+            Docs
+          </a>
           <Link href="/dashboard">Dashboard</Link>
           <a href="https://github.com/aexhq" rel="noreferrer" target="_blank">
             GitHub <span aria-hidden="true">↗</span>

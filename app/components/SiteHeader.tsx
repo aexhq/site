@@ -10,6 +10,9 @@ export function SiteHeader({ dark = false }: { dark?: boolean }) {
         <nav aria-label="Main navigation">
           <Link href="/#product">Product</Link>
           <Link href="/#pricing">Pricing</Link>
+          <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">
+            Docs
+          </a>
           <Link href="/#beta">Beta</Link>
         </nav>
         <Link className="header-dashboard" href="/dashboard">

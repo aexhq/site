@@ -1,12 +1,16 @@
 # aex site
 
-The public benchmark record and minimal read-only account dashboard for aex.
+The Founding Beta product site and account dashboard for AEX.
 
-- The home page explains the session architecture and renders the measurements published in
-  https://github.com/aexhq/brain/blob/main/BENCHMARKS.md.
-- The dashboard reads account, balance, usage, and API-key data from the existing control API.
-  The account token stays in component memory and passes through a fixed, read-only same-origin
-  proxy; it is never written to browser storage.
+- The home page explains the durable-session product, launch envelope, pricing, and waitlist.
+- The dashboard handles invitation-only signup, prepaid checkout, API-key management, usage,
+  and balance through the control API.
+- The account token is held in an `HttpOnly`, same-site cookie. It is never available to browser
+  JavaScript or written to local/session storage.
+- The same-origin control proxy accepts only an explicit method/path allowlist; the control API
+  remains the source of truth for waitlist, account, billing, and usage state.
+- The canonical API quickstart and OpenAPI contracts live in the `aexhq/aex` repository rather
+  than being duplicated here.
 
 The default control plane is https://api.aex.dev. Operators may set AEX_API_BASE_URL
 to another HTTPS control-plane origin at runtime.
