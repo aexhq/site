@@ -97,6 +97,7 @@ async function forward(
   route: Route,
   body: ArrayBuffer | undefined,
   accountToken?: string,
+  upstreamMethod = request.method,
 ) {
   const origin = controlOrigin();
   if (!origin) {
@@ -105,7 +106,7 @@ async function forward(
   const upstream = new URL(route.upstreamPath, origin);
   try {
     const response = await fetch(upstream, {
-      method: request.method,
+      method: upstreamMethod,
       headers: {
         accept: "application/json",
         ...(body ? { "content-type": "application/json" } : {}),
@@ -148,6 +149,7 @@ async function connectAccount(request: NextRequest, body: ArrayBuffer | undefine
     { upstreamPath: "/v1/account", needsAccount: true },
     undefined,
     accountToken,
+    "GET",
   );
   if (response.ok) {
     response.headers.append("set-cookie", cookieHeader(request, accountToken));
