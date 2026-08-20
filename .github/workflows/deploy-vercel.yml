@@ -64,6 +64,10 @@ jobs:
           grep -Fq "session.send" homepage.html
           grep -Fq "output:" homepage.html
           ! grep -Fq "session.output" homepage.html
+          grep -Fq "anthropic/claude-sonnet-5" homepage.html
+          grep -Fq "AI_GATEWAY_API_KEY" homepage.html
+          grep -Fq "ai-gateway.vercel.sh" homepage.html
+          ! grep -Fq "sk-ant-" homepage.html
           grep -Fq "Join the alpha" homepage.html
           ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
       - name: Promote the staged build to aex.dev
@@ -80,6 +84,10 @@ jobs:
               && grep -Fq "session.send" homepage.html \
               && grep -Fq "output:" homepage.html \
               && ! grep -Fq "session.output" homepage.html \
+              && grep -Fq "anthropic/claude-sonnet-5" homepage.html \
+              && grep -Fq "AI_GATEWAY_API_KEY" homepage.html \
+              && grep -Fq "ai-gateway.vercel.sh" homepage.html \
+              && ! grep -Fq "sk-ant-" homepage.html \
               && grep -Fq "Join the alpha" homepage.html \
               && ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"

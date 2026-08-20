@@ -28,12 +28,13 @@ const product = [
 const example = `import { Aex } from "@aexhq/sdk";
 import { z } from "zod";
 
-const aex = new Aex({ apiKey: "aex_sk_..." });
+const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 const session = await aex.sessions.create({
   model: {
     provider: "anthropic",
-    name: "claude-sonnet-5",
-    apiKey: "sk-ant-...",
+    name: "anthropic/claude-sonnet-5",
+    apiKey: process.env.AI_GATEWAY_API_KEY!,
+    baseUrl: "https://ai-gateway.vercel.sh",
   },
 });
 
