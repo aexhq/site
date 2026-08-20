@@ -60,7 +60,8 @@ jobs:
             fi
             sleep 5
           done
-          grep -Fq "The session backend for AI apps" homepage.html
+          grep -Fq "Agent backend for AI apps" homepage.html
+          grep -Fq "defineTool" homepage.html
           grep -Fq "session.send" homepage.html
           grep -Fq "output:" homepage.html
           ! grep -Fq "session.output" homepage.html
@@ -68,8 +69,11 @@ jobs:
           grep -Fq "AI_GATEWAY_API_KEY" homepage.html
           grep -Fq "ai-gateway.vercel.sh" homepage.html
           ! grep -Fq "sk-ant-" homepage.html
+          grep -Fq "2,002" homepage.html
+          grep -Fq "The brain remembers. The hands do the work." homepage.html
+          grep -Fq "first six months after launch" homepage.html
           grep -Fq "Join the alpha" homepage.html
-          ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+          ! grep -Eiq "The session backend|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
       - name: Promote the staged build to aex.dev
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         env:
@@ -81,6 +85,8 @@ jobs:
         run: |
           for attempt in {1..12}; do
             if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
+              && grep -Fq "Agent backend for AI apps" homepage.html \
+              && grep -Fq "defineTool" homepage.html \
               && grep -Fq "session.send" homepage.html \
               && grep -Fq "output:" homepage.html \
               && ! grep -Fq "session.output" homepage.html \
@@ -88,8 +94,11 @@ jobs:
               && grep -Fq "AI_GATEWAY_API_KEY" homepage.html \
               && grep -Fq "ai-gateway.vercel.sh" homepage.html \
               && ! grep -Fq "sk-ant-" homepage.html \
+              && grep -Fq "2,002" homepage.html \
+              && grep -Fq "The brain remembers. The hands do the work." homepage.html \
+              && grep -Fq "first six months after launch" homepage.html \
               && grep -Fq "Join the alpha" homepage.html \
-              && ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
+              && ! grep -Eiq "The session backend|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi

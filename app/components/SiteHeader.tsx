@@ -7,8 +7,9 @@ export function SiteHeader() {
         <Link className="wordmark" href="/" aria-label="Aex home">Aex</Link>
         <nav aria-label="Main navigation">
           <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">Docs</a>
+          <Link href="/#benchmarks">Benchmarks</Link>
+          <Link href="/#architecture">Architecture</Link>
           <Link href="/#pricing">Pricing</Link>
-          <Link href="/status">Status</Link>
           <Link href="/dashboard">Dashboard</Link>
         </nav>
       </div>
