@@ -31,8 +31,8 @@ import { z } from "zod";
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 const session = await aex.sessions.create({
   model: {
-    provider: "anthropic",
-    name: "anthropic/claude-sonnet-5",
+    provider: "openai",
+    name: "openai/gpt-5.4",
     apiKey: process.env.AI_GATEWAY_API_KEY!,
     baseUrl: "https://ai-gateway.vercel.sh",
   },
