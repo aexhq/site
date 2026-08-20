@@ -13,7 +13,7 @@ const legalIdentity: LegalIdentity = {
   companiesHouseUrl:
     "https://find-and-update.company-information.service.gov.uk/company/17224795",
   registeredOffice:
-    "Flat 71 Legacy Tower, 88 Great Eastern Road, London, England, E15 1DE",
+    "71-75 Shelton Street, Covent Garden, London, England, WC2H 9JQ",
   registrationJurisdiction: "England and Wales",
   country: "United Kingdom",
 };

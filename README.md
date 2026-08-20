@@ -1,25 +1,30 @@
 # Aex site
 
-The Alpha product site and account dashboard for Aex.
+The public website and account dashboard for [Aex](https://aex.dev). It contains the product
+pages, invitation flow, prepaid billing UI, API-key management, usage, legal pages, and service
+status.
 
-- The home page explains the durable-session product, launch envelope, pricing, and waitlist.
-- The dashboard handles invitation-only signup, prepaid checkout, API-key management, usage,
-  and balance through the control API.
-- The account token is held in an `HttpOnly`, same-site cookie. It is never available to browser
-  JavaScript or written to local/session storage.
-- The same-origin control proxy accepts only an explicit method/path allowlist; the control API
-  remains the source of truth for waitlist, account, billing, and usage state.
-- The canonical API quickstart and OpenAPI contracts live in the `aexhq/aex` repository rather
-  than being duplicated here.
+## Develop
 
-The default control plane is https://api.aex.dev. Operators may set AEX_API_BASE_URL
-to another HTTPS control-plane origin at runtime.
+Requires Node.js 22 or later.
 
-The site is a native Next.js deployment on Vercel. Generated deployment URLs remain
-protected. A pinned GitHub Actions workflow stages each `main` build without assigning
-custom domains; an explicit promotion assigns the reviewed build to `aex.dev`.
+```sh
+npm ci
+npm run dev
+```
 
-    npm install
-    npm run dev
-    npm run build
-    npm test
+The site uses `https://api.aex.dev` by default. Set `AEX_API_BASE_URL` to another HTTPS control
+plane when testing a different environment. Account credentials stay in an `HttpOnly`, same-site
+cookie, and the same-origin proxy accepts only its explicit method and path allowlist.
+
+## Verify
+
+```sh
+npm run lint
+npm run build
+npm test
+```
+
+The canonical SDK quickstart and API contracts live in
+[`aexhq/aex`](https://github.com/aexhq/aex). Production deployments use the protected Vercel
+workflow in `.github/workflows/deploy-vercel.yml`.

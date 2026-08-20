@@ -76,7 +76,7 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.doesNotMatch(html, /Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine/i);
   assert.doesNotMatch(html, /\bAEX\b|\bBeta\b/);
   assert.match(html, /THINK SLOWLY LTD[\s\S]*17224795/i);
-  assert.match(html, /Registered office:[\s\S]*E15 1DE/i);
+  assert.match(html, /Registered office:[\s\S]*71-75 Shelton Street[\s\S]*WC2H 9JQ/i);
   assert.doesNotMatch(html, /Platform-added TTFT|2,002|leakage-gate|Brain \/ Process/i);
 });
 
@@ -101,7 +101,7 @@ test("public status and company legal pages render", async () => {
   const termsHtml = await terms.text();
   assert.match(termsHtml, /Alpha terms/);
   assert.match(termsHtml, /THINK SLOWLY LTD[\s\S]*company number[\s\S]*17224795/i);
-  assert.match(termsHtml, /registered office[\s\S]*E15 1DE/i);
+  assert.match(termsHtml, /registered office[\s\S]*71-75 Shelton Street[\s\S]*WC2H 9JQ/i);
   assert.match(termsHtml, /personal, educational,[\s\S]*commercial projects/i);
   assert.doesNotMatch(termsHtml, /beta is for people using AEX wholly or mainly for a/i);
   assert.doesNotMatch(termsHtml, /\bAEX\b|\bBeta\b/);
