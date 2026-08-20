@@ -91,8 +91,16 @@ function when(value?: string) {
   }).format(new Date(value));
 }
 
-export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "waitlist" | "invite" }) {
-  const [status, setStatus] = useState<"signed_out" | "signed_in">("signed_out");
+export function DashboardClient({
+  hasDashboardSession = false,
+  initialMode = "waitlist",
+}: {
+  hasDashboardSession?: boolean;
+  initialMode?: "waitlist" | "invite";
+}) {
+  const [status, setStatus] = useState<"checking" | "signed_out" | "signed_in">(
+    hasDashboardSession ? "checking" : "signed_out",
+  );
   const [mode, setMode] = useState<"waitlist" | "invite" | "reconnect">(initialMode);
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -126,13 +134,15 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
         return;
       }
       setError(reason instanceof Error ? reason.message : "Could not load this account.");
+      setStatus((current) => current === "checking" ? "signed_out" : current);
     }
   }, []);
 
   useEffect(() => {
+    if (!hasDashboardSession) return;
     const timer = window.setTimeout(() => void load(), 0);
     return () => window.clearTimeout(timer);
-  }, [load]);
+  }, [hasDashboardSession, load]);
 
   const sessions = useMemo(
     () => [...(data?.usage.sessions ?? [])].sort((a, b) => b.total_microusd - a.total_microusd),
@@ -247,6 +257,24 @@ export function DashboardClient({ initialMode = "waitlist" }: { initialMode?: "w
     if (!oneTimeSecret) return;
     await navigator.clipboard.writeText(oneTimeSecret.value);
     setCopied(true);
+  }
+
+  if (status === "checking") {
+    return (
+      <section
+        aria-busy="true"
+        aria-labelledby="dashboard-loading-title"
+        className="dashboard-loading shell"
+        role="status"
+      >
+        <span className="dashboard-spinner" aria-hidden="true" />
+        <div>
+          <p className="section-index">Account · Alpha</p>
+          <h1 id="dashboard-loading-title">Opening your dashboard.</h1>
+          <p>Checking your secure dashboard session…</p>
+        </div>
+      </section>
+    );
   }
 
   if (status === "signed_out" || !data) {
@@ -473,9 +501,8 @@ const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 const session = await aex.sessions.create({
   model: {
     provider: "openai",
-    name: "openai/gpt-5.4",
-    apiKey: process.env.AI_GATEWAY_API_KEY!,
-    baseUrl: "https://ai-gateway.vercel.sh",
+    name: "gpt-5.4",
+    apiKey: process.env.OPENAI_API_KEY!,
   },
 });
 const result = await session.send("Do the work.", {

@@ -1,6 +1,6 @@
-export const siteHeadline = "The agent backend for AI workloads";
+export const siteHeadline = "The backend for AI workloads";
 
 export const siteDescription =
-  "A simple, intuitive, session-oriented SDK for running AI workloads with tools and structured output.";
+  "High-performance, reliable, and simple infrastructure for running AI workloads with models, tools, and structured output.";
 
 export const siteSocialTitle = `Aex: ${siteHeadline}`;

@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --background: #f7f6f2;
   --surface: #fbfaf7;
   --surface-muted: #efede7;
@@ -443,6 +444,21 @@ label {
   border-radius: 4px 4px 0 0;
   display: flex;
   overflow-x: auto;
+  scrollbar-color: var(--line-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.demo-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.demo-tabs::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+}
+
+.demo-tabs::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .demo-tabs button {
@@ -483,6 +499,33 @@ label {
   min-width: 0;
 }
 
+.syntax-comment {
+  color: #71806d;
+  font-style: italic;
+}
+
+.syntax-function {
+  color: #2d6073;
+}
+
+.syntax-keyword {
+  color: #7a3e79;
+  font-weight: 550;
+}
+
+.syntax-literal {
+  color: #93621f;
+}
+
+.syntax-string {
+  color: #9a482d;
+}
+
+.syntax-type {
+  color: #315f70;
+  font-weight: 550;
+}
+
 .table-scroll {
   overflow-x: auto;
 }
@@ -516,17 +559,144 @@ label {
   color: var(--muted);
 }
 
-.markdown-block h3 {
-  font-size: 16px;
-  font-weight: 600;
+.architecture-diagram {
+  margin: 30px 0 0;
+  overflow-x: auto;
+  padding: 2px 0 10px;
+}
+
+.architecture-grid {
+  display: grid;
+  gap: 0;
+  grid-template-areas:
+    ". . database . . . storage"
+    ". . database-link . . . storage-link"
+    "app app-link brain brain-link hands hands-link sandbox";
+  grid-template-columns:
+    minmax(7.5rem, 1fr) 2.25rem minmax(8.5rem, 1.15fr) 2.25rem
+    minmax(8.5rem, 1.1fr) 2.25rem minmax(8.5rem, 1.15fr);
+  grid-template-rows: auto 2.5rem auto;
+  min-width: 40rem;
+}
+
+.architecture-card {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  min-height: 9.5rem;
+  padding: 18px;
+}
+
+.architecture-card h3 {
+  font-size: 15px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.architecture-card p {
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.55;
   margin: 24px 0 0;
 }
 
-.markdown-block p {
+.architecture-database,
+.architecture-storage {
+  min-height: 7.5rem;
+}
+
+.architecture-database {
+  grid-area: database;
+}
+
+.architecture-storage {
+  grid-area: storage;
+}
+
+.architecture-app {
+  grid-area: app;
+}
+
+.architecture-brain {
+  grid-area: brain;
+}
+
+.architecture-hands {
+  grid-area: hands;
+}
+
+.architecture-sandbox {
+  grid-area: sandbox;
+}
+
+.architecture-arrow {
+  align-items: center;
+  color: #817b71;
+  display: flex;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 19px;
+  justify-content: center;
+  line-height: 1;
+}
+
+.architecture-database-link {
+  grid-area: database-link;
+}
+
+.architecture-storage-link {
+  grid-area: storage-link;
+}
+
+.architecture-app-link {
+  grid-area: app-link;
+}
+
+.architecture-brain-link {
+  grid-area: brain-link;
+}
+
+.architecture-hands-link {
+  grid-area: hands-link;
+}
+
+.feature-groups {
+  border-top: 1px solid var(--line);
+  margin-top: 28px;
+}
+
+.feature-group {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 30px;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  padding-block: 26px;
+}
+
+.feature-group h3 {
+  font-size: 16px;
+  font-weight: 620;
+  margin: 0;
+}
+
+.feature-group ul {
   color: var(--muted);
-  font-size: 15px;
-  line-height: 1.7;
-  margin: 8px 0 0;
+  display: grid;
+  font-size: 14px;
+  gap: 9px;
+  line-height: 1.65;
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.feature-group li::marker {
+  color: var(--accent);
+}
+
+.feature-group li span {
+  color: var(--accent);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .pricing-table td:nth-child(2) {
@@ -610,6 +780,45 @@ label {
   background: var(--background);
   color: var(--text);
   min-height: 100vh;
+}
+
+.dashboard-loading {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  min-height: 70vh;
+  padding-block: 64px 96px;
+  width: var(--prose);
+}
+
+.dashboard-loading h1 {
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 590;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  margin: 10px 0 0;
+}
+
+.dashboard-loading > div > p:last-child {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 10px 0 0;
+}
+
+.dashboard-spinner {
+  animation: dashboard-spin 0.8s linear infinite;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  border-top-color: var(--accent);
+  flex: 0 0 auto;
+  height: 28px;
+  width: 28px;
+}
+
+@keyframes dashboard-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .onboarding {
@@ -1087,6 +1296,7 @@ td code {
   .site-overview,
   .legal-page,
   .onboarding,
+  .dashboard-loading,
   .dashboard,
   .topup-return {
     padding-block: 48px 72px;
@@ -1094,6 +1304,11 @@ td code {
 
   .site-feature {
     gap: 8px;
+    grid-template-columns: 1fr;
+  }
+
+  .feature-group {
+    gap: 12px;
     grid-template-columns: 1fr;
   }
 
@@ -1144,6 +1359,41 @@ td code {
     position: absolute;
     right: 8px;
     top: 8px;
+  }
+}
+
+@media (max-width: 680px) {
+  .architecture-diagram {
+    overflow: visible;
+  }
+
+  .architecture-grid {
+    grid-template-areas:
+      ". . database"
+      ". . database-link"
+      "app app-link brain"
+      ". . brain-link"
+      ". . hands"
+      ". . hands-link"
+      ". . sandbox"
+      ". . storage-link"
+      ". . storage";
+    grid-template-columns: minmax(6.5rem, 0.85fr) 2.25rem minmax(8.5rem, 1fr);
+    grid-template-rows: auto 2.25rem auto 2.25rem auto 2.25rem auto 2.25rem auto;
+    min-width: 0;
+  }
+
+  .architecture-brain-link,
+  .architecture-hands-link,
+  .architecture-storage-link {
+    font-size: 0;
+  }
+
+  .architecture-brain-link::before,
+  .architecture-hands-link::before,
+  .architecture-storage-link::before {
+    content: "↕";
+    font-size: 19px;
   }
 }
 
@@ -1232,8 +1482,106 @@ td code {
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: #171715;
+    --surface: #1d1c1a;
+    --surface-muted: #24221f;
+    --text: #ece9e2;
+    --text-soft: #cbc5ba;
+    --muted: #aaa399;
+    --line: #393630;
+    --line-strong: #57524a;
+    --accent: #e18a63;
+    --accent-soft: #35251f;
+    --success: #81ba8e;
+    --danger: #eb8b82;
+    --warning: #d2ad62;
+  }
+
+  ::selection {
+    background: #68402f;
+    color: #fff8ef;
+  }
+
+  .site-header {
+    background: rgba(23, 23, 21, 0.94);
+  }
+
+  .button-primary,
+  .button-dark {
+    background: #e4dfd5;
+    border-color: #e4dfd5;
+    color: #211f1b;
+  }
+
+  .button-primary:hover:not(:disabled),
+  .button-dark:hover:not(:disabled) {
+    background: #f7f3eb;
+    border-color: #f7f3eb;
+  }
+
+  input::placeholder {
+    color: #79736a;
+  }
+
+  .site-links a,
+  .site-overview a,
+  .legal-page a,
+  .dashboard a {
+    text-decoration-color: #777066;
+  }
+
+  .waitlist-success {
+    background: #1d2a20;
+    border-color: #354a39;
+  }
+
+  .waitlist-success small {
+    color: #9bb6a0;
+  }
+
+  .syntax-comment {
+    color: #91a78c;
+  }
+
+  .syntax-function {
+    color: #7fc0d6;
+  }
+
+  .syntax-keyword {
+    color: #d99bd2;
+  }
+
+  .syntax-literal {
+    color: #dfb56d;
+  }
+
+  .syntax-string {
+    color: #ed9d80;
+  }
+
+  .syntax-type {
+    color: #8ac8d9;
+  }
+
+  .architecture-arrow {
+    color: #9d968b;
+  }
+
+  .one-time-secret {
+    border-color: #654536;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .dashboard-spinner {
+    animation: none;
+    border-right-color: var(--accent);
   }
 }

@@ -17,7 +17,8 @@ export function SiteFooter() {
           <Link href="/terms">Terms</Link>
           <Link href="/status">Status</Link>
           <a href="mailto:support@aex.dev">Support</a>
-          <a href="https://github.com/aexhq">GitHub</a>
+          <a href="https://github.com/aexhq/aex">GitHub</a>
+          <a href="https://discord.gg/Qk2YnHMHVb">Discord</a>
         </nav>
       </div>
     </footer>
