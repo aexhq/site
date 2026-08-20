@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <main>
       <SiteHeader />
       <article className="legal-page prose-shell">
-        <p className="site-kicker">Last updated 19 August 2026</p>
+        <p className="site-kicker">Last updated 20 August 2026</p>
         <h1>Privacy</h1>
 
         <p>
