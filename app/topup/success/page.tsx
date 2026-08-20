@@ -5,6 +5,20 @@ import { TopupStatusClient } from "../TopupStatusClient";
 
 export const metadata: Metadata = { title: "Checkout return", robots: { index: false, follow: false } };
 
-export default function TopupSuccessPage() {
-  return <main><SiteHeader /><TopupStatusClient /><SiteFooter /></main>;
+type PageProps = {
+  searchParams: Promise<{ session_id?: string | string[] }>;
+};
+
+export default async function TopupSuccessPage({ searchParams }: PageProps) {
+  const query = await searchParams;
+  const checkoutSessionId = Array.isArray(query.session_id)
+    ? query.session_id[0]
+    : query.session_id;
+  return (
+    <main>
+      <SiteHeader />
+      <TopupStatusClient checkoutSessionId={checkoutSessionId} />
+      <SiteFooter />
+    </main>
+  );
 }

@@ -146,6 +146,16 @@ test("checkout return routes render", async () => {
   const success = await render("/topup/success");
   assert.equal(success.status, 200);
   assert.match(await success.text(), /Checking the ledger/);
+  const successPage = await readFile(new URL("../app/topup/success/page.tsx", import.meta.url), "utf8");
+  const statusClient = await readFile(new URL("../app/topup/TopupStatusClient.tsx", import.meta.url), "utf8");
+  const proxy = await readFile(new URL("../app/api/control/[...path]/route.ts", import.meta.url), "utf8");
+  assert.match(successPage, /session_id/);
+  assert.match(statusClient, /api\/control\/checkout/);
+  assert.match(statusClient, /response\.status === 200/);
+  assert.match(statusClient, /response\.status === 202/);
+  assert.match(statusClient, /response\.status === 410/);
+  assert.match(proxy, /topups\/checkout/);
+  assert.match(proxy, /checkoutReturn[\s\S]*needsAccount: false/);
   const cancelled = await render("/topup/cancelled");
   assert.equal(cancelled.status, 200);
   assert.match(await cancelled.text(), /No charge was made/);

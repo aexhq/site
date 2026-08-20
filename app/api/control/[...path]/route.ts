@@ -29,6 +29,13 @@ function routeFor(method: string, parts: string[]): Route | null {
   if (method === "GET" && path === "rates") {
     return { upstreamPath: "/v1/rates", needsAccount: false };
   }
+  const checkoutReturn = /^checkout\/(cs_[A-Za-z0-9_]+)$/.exec(path);
+  if (method === "GET" && checkoutReturn && checkoutReturn[1].length <= 128) {
+    return {
+      upstreamPath: "/v1/topups/checkout/" + checkoutReturn[1],
+      needsAccount: false,
+    };
+  }
   if (
     method === "GET" &&
     ["account", "balance", "usage", "keys", "topups"].includes(path)
