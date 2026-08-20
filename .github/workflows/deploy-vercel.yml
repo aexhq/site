@@ -60,7 +60,8 @@ jobs:
             fi
             sleep 5
           done
-          grep -Fq "Agent backend for AI apps" homepage.html
+          grep -Fq "The agent backend for AI workloads" homepage.html
+          grep -Fq "simple, intuitive, session-oriented SDK" homepage.html
           grep -Fq "defineTool" homepage.html
           grep -Fq "session.send" homepage.html
           grep -Fq "output:" homepage.html
@@ -69,10 +70,14 @@ jobs:
           grep -Fq "AI_GATEWAY_API_KEY" homepage.html
           grep -Fq "ai-gateway.vercel.sh" homepage.html
           ! grep -Fq "sk-ant-" homepage.html
-          grep -Fq "The brain remembers. The hands do the work." homepage.html
+          grep -Fq "brain and hands pattern" homepage.html
+          grep -Fq "Active computer" homepage.html
+          grep -Fq "0.5 vCPU + 1 GB memory" homepage.html
+          grep -Fq "Storage" homepage.html
           grep -Fq "first six months after launch" homepage.html
+          grep -Fq "confirm the discount before billing starts" homepage.html
           grep -Fq "Join the alpha" homepage.html
-          ! grep -Eiq "The session backend|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+          ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
       - name: Promote the staged build to aex.dev
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         env:
@@ -84,7 +89,8 @@ jobs:
         run: |
           for attempt in {1..12}; do
             if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
-              && grep -Fq "Agent backend for AI apps" homepage.html \
+              && grep -Fq "The agent backend for AI workloads" homepage.html \
+              && grep -Fq "simple, intuitive, session-oriented SDK" homepage.html \
               && grep -Fq "defineTool" homepage.html \
               && grep -Fq "session.send" homepage.html \
               && grep -Fq "output:" homepage.html \
@@ -93,10 +99,14 @@ jobs:
               && grep -Fq "AI_GATEWAY_API_KEY" homepage.html \
               && grep -Fq "ai-gateway.vercel.sh" homepage.html \
               && ! grep -Fq "sk-ant-" homepage.html \
-              && grep -Fq "The brain remembers. The hands do the work." homepage.html \
+              && grep -Fq "brain and hands pattern" homepage.html \
+              && grep -Fq "Active computer" homepage.html \
+              && grep -Fq "0.5 vCPU + 1 GB memory" homepage.html \
+              && grep -Fq "Storage" homepage.html \
               && grep -Fq "first six months after launch" homepage.html \
+              && grep -Fq "confirm the discount before billing starts" homepage.html \
               && grep -Fq "Join the alpha" homepage.html \
-              && ! grep -Eiq "The session backend|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
+              && ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
