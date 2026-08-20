@@ -61,7 +61,9 @@ test("server-renders the prose-first AI app backend page", async () => {
   const html = await response.text();
   assert.match(html, /<title>The session backend for AI apps<\/title>/i);
   assert.match(html, /The session backend for AI apps\./);
-  assert.match(html, /session\.output/);
+  assert.match(html, /session\.send/);
+  assert.match(html, /output:/);
+  assert.doesNotMatch(html, /session\.output/);
   assert.match(html, /validated data/i);
   assert.match(html, /Every session starts with a computer/i);
   assert.match(html, /\$0\.12/);

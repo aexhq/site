@@ -21,7 +21,7 @@ const product = [
   },
   {
     title: "Output",
-    body: "Use send() for text or output() for data validated against your Zod schema. Schema handling and one bounded repair stay outside the session conversation.",
+    body: "Use send() for both text and structured data. Pass a Zod schema in the turn's output option for validated data; schema handling and one bounded repair stay outside the session conversation.",
   },
 ];
 
@@ -37,9 +37,14 @@ const session = await aex.sessions.create({
   },
 });
 
-const result = await session.output(
-  z.object({ summary: z.string(), nextSteps: z.array(z.string()) }),
+const result = await session.send(
   "Review this repository.",
+  {
+    output: z.object({
+      summary: z.string(),
+      nextSteps: z.array(z.string()),
+    }),
+  },
 );`;
 
 export default function Home() {
