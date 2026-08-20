@@ -64,7 +64,7 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.match(html, /session\.send/);
   assert.match(html, /output:/);
   assert.doesNotMatch(html, /session\.output/);
-  assert.match(html, /anthropic\/claude-sonnet-5/);
+  assert.match(html, /openai\/gpt-5\.4/);
   assert.match(html, /AI_GATEWAY_API_KEY/);
   assert.match(html, /ai-gateway\.vercel\.sh/);
   assert.doesNotMatch(html, /sk-ant-/);
