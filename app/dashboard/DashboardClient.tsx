@@ -473,10 +473,9 @@ const aex = new Aex({ apiKey: "aex_sk_..." });
 const session = await aex.sessions.create({
   model: { provider: "anthropic", name: "claude-sonnet-5", apiKey: "sk-ant-..." },
 });
-const result = await session.output(
-  z.object({ answer: z.string() }),
-  "Do the work.",
-);`}</code></pre>
+const result = await session.send("Do the work.", {
+  output: z.object({ answer: z.string() }),
+});`}</code></pre>
       </article>
 
       <div className="dashboard-grid">

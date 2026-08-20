@@ -61,7 +61,9 @@ jobs:
             sleep 5
           done
           grep -Fq "The session backend for AI apps" homepage.html
-          grep -Fq "session.output" homepage.html
+          grep -Fq "session.send" homepage.html
+          grep -Fq "output:" homepage.html
+          ! grep -Fq "session.output" homepage.html
           grep -Fq "Join the alpha" homepage.html
           ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
       - name: Promote the staged build to aex.dev
@@ -75,7 +77,9 @@ jobs:
         run: |
           for attempt in {1..12}; do
             if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
-              && grep -Fq "session.output" homepage.html \
+              && grep -Fq "session.send" homepage.html \
+              && grep -Fq "output:" homepage.html \
+              && ! grep -Fq "session.output" homepage.html \
               && grep -Fq "Join the alpha" homepage.html \
               && ! grep -Eiq "Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
