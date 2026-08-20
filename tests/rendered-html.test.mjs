@@ -60,6 +60,7 @@ test("server-renders the agent backend landing page", async () => {
   assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
   const html = await response.text();
   assert.match(html, /<title>Agent backend for AI apps<\/title>/i);
+  assert.match(html, /rel="icon"[^>]+href="\/icon\.svg/i);
   assert.match(html, /Agent backend for AI apps/);
   assert.match(html, /simple, elegant, session-oriented SDK/i);
   assert.match(html, /Read the docs[\s\S]*Dashboard[\s\S]*GitHub/);
@@ -78,10 +79,6 @@ test("server-renders the agent backend landing page", async () => {
   assert.match(html, /Long-lived by design/);
   assert.match(html, /A real computer/);
   assert.match(html, /Structured by default/);
-  assert.match(html, /1\.4 ms/);
-  assert.match(html, /2,002/);
-  assert.match(html, /21–31 KiB/);
-  assert.match(html, /Claude Managed Agents[\s\S]*LangSmith Deployment[\s\S]*E2B[\s\S]*Daytona/);
   assert.match(html, /The brain remembers\. The hands do the work\./);
   assert.match(html, /anthropic\.com\/engineering\/managed-agents/);
   assert.match(html, /\$0\.12/);
@@ -91,6 +88,8 @@ test("server-renders the agent backend landing page", async () => {
   assert.match(html, /Bring your own key/);
   assert.match(html, /Join the alpha/);
   assert.match(html, /first six months after launch/i);
+  assert.doesNotMatch(html, /A light engine leaves the model room to work|How the closest products draw the boundary|Claude Managed Agents|2,002/i);
+  assert.doesNotMatch(html, /demo-copy|demo-flow/);
   assert.doesNotMatch(html, /Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine/i);
   assert.doesNotMatch(html, /The session backend for AI apps|<dt>Sessions<\/dt>|<dt>Tools<\/dt>|<dt>Output<\/dt>/i);
   assert.doesNotMatch(html, /\bAEX\b|\bBeta\b/);

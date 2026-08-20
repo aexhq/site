@@ -5,14 +5,12 @@ import { KeyboardEvent, useId, useState } from "react";
 const demos = [
   {
     label: "Start",
-    title: "Give one session exactly what it needs.",
-    body: "Choose a model, mix your tool with Aex tools, and keep the same session for the rest of the job.",
-    signal: "One durable session",
     code: `import { Aex } from "@aexhq/sdk";
 import { bash, read, subagents, webSearch } from "@aexhq/tools";
 import lookupOrder from "./tools/lookup-order.js";
 
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
+
 const session = await aex.sessions.create({
   model: {
     provider: "openai",
@@ -25,9 +23,6 @@ const session = await aex.sessions.create({
   },
   {
     label: "Custom tool",
-    title: "Turn a function into a real agent capability.",
-    body: "Define input and output once. Aex bundles the module, seals it into the session, and runs it in the Hand.",
-    signal: "Typed and deployable",
     code: `import { defineTool } from "@aexhq/sdk";
 import { z } from "zod";
 
@@ -56,9 +51,6 @@ export default lookupOrder;`,
   },
   {
     label: "Typed result",
-    title: "Ask for data, not a blob of prose.",
-    body: "Pass a Zod schema to send(). Aex validates the final answer and performs one bounded repair when needed.",
-    signal: "Validated before return",
     code: `import { z } from "zod";
 
 const review = await session.send(
@@ -76,9 +68,6 @@ review.nextAction; // fully typed`,
   },
   {
     label: "Continue",
-    title: "Keep working without rebuilding context.",
-    body: "Send another turn to the same session. Conversation, tool history, and working files stay together.",
-    signal: "Context carries forward",
     code: `await session.send(
   "Save the evidence to /workspace/order-review.md.",
 );
@@ -114,7 +103,6 @@ export function CapabilityDemo() {
         <p className="section-index">01 / SDK</p>
         <div>
           <h2 id="demo-title">From one tool to a finished result.</h2>
-          <p>Explore the same job across the SDK&apos;s core capabilities.</p>
         </div>
       </div>
 
@@ -148,30 +136,11 @@ export function CapabilityDemo() {
             role="tabpanel"
             tabIndex={0}
           >
-            <div className="demo-copy">
-              <p className="demo-step">Capability {String(index + 1).padStart(2, "0")}</p>
-              <h3>{demo.title}</h3>
-              <p>{demo.body}</p>
-              <div className="demo-signal">
-                <span aria-hidden="true" />
-                {demo.signal}
-              </div>
-            </div>
             <pre aria-label={`${demo.label} code example`}>
               <code>{demo.code}</code>
             </pre>
           </div>
         ))}
-
-        <div className="demo-flow" aria-label="Aex request flow">
-          <span>Your app</span>
-          <i aria-hidden="true">→</i>
-          <span>Session</span>
-          <i aria-hidden="true">→</i>
-          <span>Tools</span>
-          <i aria-hidden="true">→</i>
-          <strong>Typed result</strong>
-        </div>
       </div>
     </section>
   );
