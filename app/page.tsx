@@ -44,51 +44,6 @@ const capabilities = [
   },
 ] as const;
 
-const benchmarks = [
-  { value: "1.4 ms", label: "p50 first visible byte" },
-  { value: "2,002", label: "turns/s at 64 sessions" },
-  { value: "21–31 KiB", label: "private memory per session" },
-  { value: "≈3,430/s", label: "tool calls in the loop" },
-] as const;
-
-const comparisons = [
-  {
-    name: "Aex",
-    href: "https://github.com/aexhq/aex",
-    unit: "Session",
-    state: "Conversation, context, and turn journal",
-    computer: "Versioned managed Hand",
-  },
-  {
-    name: "Claude Managed Agents",
-    href: "https://www.anthropic.com/engineering/managed-agents",
-    unit: "Session",
-    state: "Durable session log",
-    computer: "Decoupled hands and sandboxes",
-  },
-  {
-    name: "LangSmith Deployment",
-    href: "https://docs.langchain.com/langsmith/deployment",
-    unit: "Thread + run",
-    state: "Checkpoints, thread state, and store",
-    computer: "Separate sandbox API",
-  },
-  {
-    name: "E2B",
-    href: "https://e2b.dev/docs/sandbox",
-    unit: "Sandbox",
-    state: "Sandbox filesystem and memory",
-    computer: "Core product boundary",
-  },
-  {
-    name: "Daytona",
-    href: "https://www.daytona.io/docs/en/persistence/",
-    unit: "Sandbox",
-    state: "Sandbox filesystem and memory",
-    computer: "Core product boundary",
-  },
-] as const;
-
 const prices = [
   {
     meter: "Active 1 GB computer",
@@ -165,67 +120,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="landing-section" id="benchmarks" aria-labelledby="benchmarks-title">
-          <div className="section-heading">
-            <p className="section-index">03 / Benchmarks</p>
-            <div>
-              <h2 id="benchmarks-title">A light engine leaves the model room to work.</h2>
-              <p>Measured engine overhead, published with a reproducible harness instead of blended into model latency.</p>
-            </div>
-          </div>
-          <div className="benchmark-grid">
-            {benchmarks.map((benchmark) => (
-              <article key={benchmark.label}>
-                <strong>{benchmark.value}</strong>
-                <span>{benchmark.label}</span>
-              </article>
-            ))}
-          </div>
-          <p className="benchmark-note">
-            Release build on a 4-vCPU Graviton3 c7g.xlarge, 18 August 2026,
-            using an instant scripted provider and in-process echo Hand. These
-            numbers measure Aex Brain—not a model or remote sandbox.{" "}
-            <a href="https://github.com/aexhq/brain/blob/main/BENCHMARKS.md">Methodology and reproduction steps</a>.
-          </p>
-
-          <div className="comparison-block">
-            <div>
-              <h3>How the closest products draw the boundary</h3>
-              <p>
-                Vendor latency tests measure different work. This comparison
-                uses each product&apos;s primary public abstraction instead of
-                presenting a false speed league table.
-              </p>
-            </div>
-            <div className="table-scroll">
-              <table className="comparison-table">
-                <thead>
-                  <tr>
-                    <th>Platform</th>
-                    <th>Primary unit</th>
-                    <th>Durable state</th>
-                    <th>Computer boundary</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisons.map((comparison) => (
-                    <tr key={comparison.name}>
-                      <th scope="row"><a href={comparison.href}>{comparison.name}</a></th>
-                      <td>{comparison.unit}</td>
-                      <td>{comparison.state}</td>
-                      <td>{comparison.computer}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="site-small">Product boundaries checked against vendor documentation on 20 August 2026.</p>
-          </div>
-        </section>
-
         <section className="landing-section" id="architecture" aria-labelledby="architecture-title">
           <div className="section-heading">
-            <p className="section-index">04 / Architecture</p>
+            <p className="section-index">03 / Architecture</p>
             <div>
               <h2 id="architecture-title">The brain remembers. The hands do the work.</h2>
               <p>
@@ -270,7 +167,7 @@ export default function Home() {
 
         <section className="landing-section" id="pricing" aria-labelledby="pricing-title">
           <div className="section-heading">
-            <p className="section-index">05 / Pricing</p>
+            <p className="section-index">04 / Pricing</p>
             <div>
               <h2 id="pricing-title">Pay for the work, not another seat.</h2>
               <p>No subscription and no model markup. Alpha credit is prepaid, metered, and unused credit is refundable.</p>
@@ -306,7 +203,7 @@ export default function Home() {
 
         <section className="alpha-panel" id="alpha" aria-labelledby="alpha-title">
           <div>
-            <p className="section-index">06 / Early access</p>
+            <p className="section-index">05 / Early access</p>
             <h2 id="alpha-title">Join the alpha</h2>
             <p>
               Help shape Aex before launch. Alpha members receive discounted

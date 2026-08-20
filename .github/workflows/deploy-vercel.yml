@@ -69,11 +69,10 @@ jobs:
           grep -Fq "AI_GATEWAY_API_KEY" homepage.html
           grep -Fq "ai-gateway.vercel.sh" homepage.html
           ! grep -Fq "sk-ant-" homepage.html
-          grep -Fq "2,002" homepage.html
           grep -Fq "The brain remembers. The hands do the work." homepage.html
           grep -Fq "first six months after launch" homepage.html
           grep -Fq "Join the alpha" homepage.html
-          ! grep -Eiq "The session backend|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+          ! grep -Eiq "The session backend|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
       - name: Promote the staged build to aex.dev
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         env:
@@ -94,11 +93,10 @@ jobs:
               && grep -Fq "AI_GATEWAY_API_KEY" homepage.html \
               && grep -Fq "ai-gateway.vercel.sh" homepage.html \
               && ! grep -Fq "sk-ant-" homepage.html \
-              && grep -Fq "2,002" homepage.html \
               && grep -Fq "The brain remembers. The hands do the work." homepage.html \
               && grep -Fq "first six months after launch" homepage.html \
               && grep -Fq "Join the alpha" homepage.html \
-              && ! grep -Eiq "The session backend|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
+              && ! grep -Eiq "The session backend|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi

@@ -544,15 +544,10 @@ label {
   padding: 10px 20px;
 }
 
-.demo-tabs button span,
-.demo-step,
-.demo-flow {
-  font-family: var(--font-geist-mono), monospace;
-}
-
 .demo-tabs button span {
   color: #777168;
   font-size: 10px;
+  font-family: var(--font-geist-mono), monospace;
 }
 
 .demo-tabs button[aria-selected="true"] {
@@ -567,59 +562,11 @@ label {
 }
 
 .demo-panel {
-  display: grid;
-  grid-template-columns: minmax(15rem, 0.62fr) minmax(0, 1.38fr);
-  min-height: 430px;
+  min-height: 440px;
 }
 
 .demo-panel[hidden] {
   display: none;
-}
-
-.demo-copy {
-  border-right: 1px solid #464139;
-  display: flex;
-  flex-direction: column;
-  padding: 34px 30px;
-}
-
-.demo-step {
-  color: #d18261;
-  font-size: 11px;
-  margin: 0;
-}
-
-.demo-copy h3 {
-  font-size: 22px;
-  font-weight: 560;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
-  margin: 22px 0 0;
-}
-
-.demo-copy > p:not(.demo-step) {
-  color: #bdb6aa;
-  font-size: 14px;
-  line-height: 1.75;
-  margin: 14px 0 0;
-}
-
-.demo-signal {
-  align-items: center;
-  color: #d8d2c8;
-  display: flex;
-  font-size: 12px;
-  gap: 9px;
-  margin-top: auto;
-  padding-top: 32px;
-}
-
-.demo-signal span {
-  background: #77a482;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(119, 164, 130, 0.13);
-  height: 7px;
-  width: 7px;
 }
 
 .demo-panel pre {
@@ -628,32 +575,11 @@ label {
   font-size: 12.5px;
   line-height: 1.72;
   margin: 0;
+  min-height: 440px;
   min-width: 0;
   overflow: auto;
-  padding: 32px;
+  padding: 38px 42px;
   tab-size: 2;
-}
-
-.demo-flow {
-  align-items: center;
-  border-top: 1px solid #464139;
-  color: #9f988c;
-  display: flex;
-  font-size: 11px;
-  gap: 12px;
-  justify-content: flex-end;
-  min-height: 48px;
-  padding: 8px 20px;
-}
-
-.demo-flow i {
-  color: #625d55;
-  font-style: normal;
-}
-
-.demo-flow strong {
-  color: #f0b096;
-  font-weight: 500;
 }
 
 .landing-section {
@@ -697,97 +623,14 @@ label {
   margin: 11px 0 0;
 }
 
-.benchmark-grid {
-  border-bottom: 1px solid var(--line);
-  border-top: 1px solid var(--line);
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-top: 44px;
-}
-
-.benchmark-grid article {
-  border-right: 1px solid var(--line);
-  padding: 24px;
-}
-
-.benchmark-grid article:first-child {
-  padding-left: 0;
-}
-
-.benchmark-grid article:last-child {
-  border-right: 0;
-  padding-right: 0;
-}
-
-.benchmark-grid strong,
-.benchmark-grid span {
-  display: block;
-}
-
-.benchmark-grid strong {
-  font-size: clamp(25px, 3vw, 38px);
-  font-weight: 560;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-
-.benchmark-grid span {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  margin-top: 10px;
-}
-
-.benchmark-note {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.7;
-  margin: 18px 0 0;
-  max-width: 60rem;
-}
-
-.comparison-block {
-  background: var(--surface-muted);
-  margin-top: 52px;
-  padding: 30px;
-}
-
-.comparison-block > div:first-child {
-  display: grid;
-  gap: 36px;
-  grid-template-columns: minmax(14rem, 0.65fr) minmax(0, 1.35fr);
-}
-
-.comparison-block h3 {
-  font-size: 21px;
-  font-weight: 570;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
-  margin: 0;
-}
-
-.comparison-block > div:first-child p {
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
-  margin: 0;
-}
-
 .table-scroll {
   overflow-x: auto;
 }
 
-.comparison-block .table-scroll {
-  margin-top: 28px;
-}
-
-.comparison-table,
 .pricing-table {
   min-width: 760px;
 }
 
-.comparison-table th,
-.comparison-table td,
 .pricing-table th,
 .pricing-table td {
   line-height: 1.5;
@@ -796,27 +639,19 @@ label {
   white-space: normal;
 }
 
-.comparison-table th:first-child,
-.comparison-table td:first-child,
 .pricing-table th:first-child,
 .pricing-table td:first-child {
   padding-left: 0;
 }
 
-.comparison-table th[scope="row"],
 .pricing-table th[scope="row"] {
   color: var(--text);
   font-size: 13px;
   font-weight: 590;
 }
 
-.comparison-table td,
 .pricing-table td {
   color: var(--muted);
-}
-
-.comparison-block > .site-small {
-  margin: 14px 0 0;
 }
 
 .architecture-map {
@@ -1568,22 +1403,8 @@ td code {
     grid-template-columns: 1fr;
   }
 
-  .demo-panel {
-    grid-template-columns: 1fr;
-  }
-
-  .demo-copy {
-    border-bottom: 1px solid #464139;
-    border-right: 0;
-    min-height: 250px;
-  }
-
   .demo-panel pre {
     min-height: 390px;
-  }
-
-  .demo-signal {
-    margin-top: 24px;
   }
 
   .landing-section,
@@ -1593,35 +1414,6 @@ td code {
 
   .capability-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .benchmark-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .benchmark-grid article,
-  .benchmark-grid article:first-child,
-  .benchmark-grid article:last-child {
-    border-bottom: 1px solid var(--line);
-    padding: 22px;
-  }
-
-  .benchmark-grid article:nth-child(odd) {
-    padding-left: 0;
-  }
-
-  .benchmark-grid article:nth-child(even) {
-    border-right: 0;
-    padding-right: 0;
-  }
-
-  .benchmark-grid article:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
-
-  .comparison-block > div:first-child {
-    gap: 14px;
-    grid-template-columns: 1fr;
   }
 
   .architecture-map {
@@ -1721,8 +1513,7 @@ td code {
   }
 
   .site-header nav a:nth-child(1),
-  .site-header nav a:nth-child(2),
-  .site-header nav a:nth-child(3) {
+  .site-header nav a:nth-child(2) {
     display: none;
   }
 
@@ -1751,48 +1542,18 @@ td code {
     padding-inline: 16px;
   }
 
-  .demo-copy {
-    padding: 26px 22px;
-  }
-
   .demo-panel pre {
     font-size: 11.5px;
     min-height: 350px;
     padding: 22px;
   }
 
-  .demo-flow {
-    justify-content: flex-start;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  .capability-grid,
-  .benchmark-grid {
+  .capability-grid {
     grid-template-columns: 1fr;
   }
 
   .capability-grid article {
     min-height: 190px;
-  }
-
-  .benchmark-grid article,
-  .benchmark-grid article:first-child,
-  .benchmark-grid article:last-child,
-  .benchmark-grid article:nth-child(odd),
-  .benchmark-grid article:nth-child(even) {
-    border-bottom: 1px solid var(--line);
-    border-right: 0;
-    padding: 18px 0;
-  }
-
-  .benchmark-grid article:last-child {
-    border-bottom: 0;
-  }
-
-  .comparison-block {
-    margin-inline: -16px;
-    padding: 24px 16px;
   }
 
   .alpha-panel {
