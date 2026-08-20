@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
+import { siteDescription, siteSocialTitle } from "./site-copy";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,35 +30,23 @@ export async function generateMetadata(): Promise<Metadata> {
     // Keep the canonical fallback when a malformed Host header reaches a preview.
   }
 
-  const description =
-    "A simple, elegant, session-oriented SDK for running agent workloads with tools and structured output.";
-  const socialImage = new URL("/og.png", metadataBase);
   return {
     metadataBase,
     title: {
-      default: "Aex — agent backend for AI apps",
+      default: siteSocialTitle,
       template: "%s · Aex",
     },
-    description,
+    description: siteDescription,
     openGraph: {
-      title: "Aex — agent backend for AI apps",
-      description,
-      images: [
-        {
-          url: socialImage,
-          width: 1733,
-          height: 908,
-          alt: "Aex — agent backend for AI apps.",
-        },
-      ],
+      title: siteSocialTitle,
+      description: siteDescription,
       type: "website",
       url: metadataBase,
     },
     twitter: {
-      card: "summary_large_image",
-      title: "Aex — agent backend for AI apps",
-      description,
-      images: [socialImage],
+      card: "summary",
+      title: siteSocialTitle,
+      description: siteDescription,
     },
   };
 }

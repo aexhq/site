@@ -50,7 +50,7 @@ const lookupOrder = defineTool({
 export default lookupOrder;`,
   },
   {
-    label: "Typed result",
+    label: "Structured output",
     code: `import { z } from "zod";
 
 const review = await session.send(
@@ -98,50 +98,40 @@ export function CapabilityDemo() {
   }
 
   return (
-    <section className="capability-demo" aria-labelledby="demo-title">
-      <div className="demo-heading">
-        <p className="section-index">01 / SDK</p>
-        <div>
-          <h2 id="demo-title">From one tool to a finished result.</h2>
-        </div>
-      </div>
-
-      <div className="demo-window">
-        <div className="demo-tabs" role="tablist" aria-label="SDK capabilities">
-          {demos.map((demo, index) => (
-            <button
-              aria-controls={`${instanceId}-panel-${index}`}
-              aria-selected={activeIndex === index}
-              id={`${instanceId}-tab-${index}`}
-              key={demo.label}
-              onClick={() => setActiveIndex(index)}
-              onKeyDown={(event) => moveTab(event, index)}
-              role="tab"
-              tabIndex={activeIndex === index ? 0 : -1}
-              type="button"
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              {demo.label}
-            </button>
-          ))}
-        </div>
-
+    <section className="code-demo" aria-label="SDK example">
+      <div className="demo-tabs" role="tablist" aria-label="SDK capabilities">
         {demos.map((demo, index) => (
-          <div
-            aria-labelledby={`${instanceId}-tab-${index}`}
-            className="demo-panel"
-            hidden={activeIndex !== index}
-            id={`${instanceId}-panel-${index}`}
+          <button
+            aria-controls={`${instanceId}-panel-${index}`}
+            aria-selected={activeIndex === index}
+            id={`${instanceId}-tab-${index}`}
             key={demo.label}
-            role="tabpanel"
-            tabIndex={0}
+            onClick={() => setActiveIndex(index)}
+            onKeyDown={(event) => moveTab(event, index)}
+            role="tab"
+            tabIndex={activeIndex === index ? 0 : -1}
+            type="button"
           >
-            <pre aria-label={`${demo.label} code example`}>
-              <code>{demo.code}</code>
-            </pre>
-          </div>
+            {demo.label}
+          </button>
         ))}
       </div>
+
+      {demos.map((demo, index) => (
+        <div
+          aria-labelledby={`${instanceId}-tab-${index}`}
+          className="demo-panel"
+          hidden={activeIndex !== index}
+          id={`${instanceId}-panel-${index}`}
+          key={demo.label}
+          role="tabpanel"
+          tabIndex={0}
+        >
+          <pre className="site-code" aria-label={`${demo.label} code example`}>
+            <code>{demo.code}</code>
+          </pre>
+        </div>
+      ))}
     </section>
   );
 }
