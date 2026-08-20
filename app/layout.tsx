@@ -30,24 +30,24 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const description =
-    "Start a durable AI session, give it work, and get back text or validated data.";
+    "A simple, elegant, session-oriented SDK for running agent workloads with tools and structured output.";
   const socialImage = new URL("/og.png", metadataBase);
   return {
     metadataBase,
     title: {
-      default: "Aex — the session backend for AI apps",
+      default: "Aex — agent backend for AI apps",
       template: "%s · Aex",
     },
     description,
     openGraph: {
-      title: "Aex — the session backend for AI apps",
+      title: "Aex — agent backend for AI apps",
       description,
       images: [
         {
           url: socialImage,
           width: 1733,
           height: 908,
-          alt: "Aex — the session backend for AI apps.",
+          alt: "Aex — agent backend for AI apps.",
         },
       ],
       type: "website",
@@ -55,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Aex — the session backend for AI apps",
+      title: "Aex — agent backend for AI apps",
       description,
       images: [socialImage],
     },

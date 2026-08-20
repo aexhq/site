@@ -50,7 +50,7 @@ async function render(path = "/") {
   return fetch(origin + path, { headers: { accept: "text/html" } });
 }
 
-test("server-renders the prose-first AI app backend page", async () => {
+test("server-renders the agent backend landing page", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
@@ -59,8 +59,15 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
   assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
   const html = await response.text();
-  assert.match(html, /<title>The session backend for AI apps<\/title>/i);
-  assert.match(html, /The session backend for AI apps\./);
+  assert.match(html, /<title>Agent backend for AI apps<\/title>/i);
+  assert.match(html, /Agent backend for AI apps/);
+  assert.match(html, /simple, elegant, session-oriented SDK/i);
+  assert.match(html, /Read the docs[\s\S]*Dashboard[\s\S]*GitHub/);
+  assert.match(html, /role="tablist"/);
+  assert.match(html, /Start[\s\S]*Custom tool[\s\S]*Typed result[\s\S]*Continue/);
+  assert.match(html, /defineTool/);
+  assert.match(html, /lookup_order/);
+  assert.match(html, /bash\(\)[\s\S]*webSearch\(\)[\s\S]*subagents\(\)/);
   assert.match(html, /session\.send/);
   assert.match(html, /output:/);
   assert.doesNotMatch(html, /session\.output/);
@@ -68,16 +75,28 @@ test("server-renders the prose-first AI app backend page", async () => {
   assert.match(html, /AI_GATEWAY_API_KEY/);
   assert.match(html, /ai-gateway\.vercel\.sh/);
   assert.doesNotMatch(html, /sk-ant-/);
-  assert.match(html, /validated data/i);
-  assert.match(html, /Every session starts with a computer/i);
+  assert.match(html, /Long-lived by design/);
+  assert.match(html, /A real computer/);
+  assert.match(html, /Structured by default/);
+  assert.match(html, /1\.4 ms/);
+  assert.match(html, /2,002/);
+  assert.match(html, /21–31 KiB/);
+  assert.match(html, /Claude Managed Agents[\s\S]*LangSmith Deployment[\s\S]*E2B[\s\S]*Daytona/);
+  assert.match(html, /The brain remembers\. The hands do the work\./);
+  assert.match(html, /anthropic\.com\/engineering\/managed-agents/);
   assert.match(html, /\$0\.12/);
+  assert.match(html, /\$0\.10/);
+  assert.match(html, /\$0\.03/);
   assert.match(html, /\$0\.003/);
+  assert.match(html, /Bring your own key/);
   assert.match(html, /Join the alpha/);
+  assert.match(html, /first six months after launch/i);
   assert.doesNotMatch(html, /Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine/i);
+  assert.doesNotMatch(html, /The session backend for AI apps|<dt>Sessions<\/dt>|<dt>Tools<\/dt>|<dt>Output<\/dt>/i);
   assert.doesNotMatch(html, /\bAEX\b|\bBeta\b/);
   assert.match(html, /THINK SLOWLY LTD[\s\S]*17224795/i);
   assert.match(html, /Registered office:[\s\S]*71-75 Shelton Street[\s\S]*WC2H 9JQ/i);
-  assert.doesNotMatch(html, /Platform-added TTFT|2,002|leakage-gate|Brain \/ Process/i);
+  assert.doesNotMatch(html, /Platform-added TTFT|leakage-gate|Brain \/ Process/i);
 });
 
 test("public status and company legal pages render", async () => {
