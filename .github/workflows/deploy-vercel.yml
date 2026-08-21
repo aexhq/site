@@ -101,7 +101,7 @@ jobs:
           grep -Fq "brain and hands pattern" homepage.txt
           grep -Fq "Subagents" homepage.txt
           grep -Fq "Active computer" homepage.txt
-          grep -Fq "0.5 vCPU + 1 GB memory" homepage.txt
+          grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt
           grep -Fq "Storage" homepage.txt
           grep -Fq "first six months after launch" homepage.txt
           grep -Fq "confirm the discount before billing starts" homepage.txt
@@ -155,7 +155,7 @@ jobs:
               && grep -Fq "brain and hands pattern" homepage.txt \
               && grep -Fq "Subagents" homepage.txt \
               && grep -Fq "Active computer" homepage.txt \
-              && grep -Fq "0.5 vCPU + 1 GB memory" homepage.txt \
+              && grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt \
               && grep -Fq "Storage" homepage.txt \
               && grep -Fq "first six months after launch" homepage.txt \
               && grep -Fq "confirm the discount before billing starts" homepage.txt \

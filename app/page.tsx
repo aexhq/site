@@ -15,7 +15,7 @@ const prices = [
   {
     item: "Active computer",
     price: "$0.12 / hour",
-    details: "0.5 vCPU + 1 GB memory. Billed per second.",
+    details: "0.5 vCPU + 1 GiB memory. Billed per second.",
   },
   {
     item: "Storage",
