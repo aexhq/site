@@ -111,7 +111,7 @@ test("server-renders the backend landing page", async () => {
   assert.match(html, /Durable receipts make retries and recovery explicit/);
   assert.doesNotMatch(html, /versioned (?:tool )?operations|10,000 concurrent sessions/);
   assert.match(html, /<h2 id="pricing-title">Pricing<\/h2>/);
-  assert.match(html, /Active computer[\s\S]*From \$0\.12 \/ hour/);
+  assert.match(html, /Active computer[\s\S]*\$0\.12 \/ hour/);
   assert.match(html, /0\.5 vCPU \+ 1 GB memory[\s\S]*Billed per second/);
   assert.match(html, />Storage<[\s\S]*\$0\.03 \/ GB-month/);
   assert.match(html, /Web search[\s\S]*\$0\.003 \/ query/);
