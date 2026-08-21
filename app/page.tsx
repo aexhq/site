@@ -20,7 +20,7 @@ const prices = [
   {
     item: "Storage",
     price: "$0.03 / GB-month",
-    details: "Explicitly saved session objects and artifacts.",
+    details: "Explicitly saved session objects.",
   },
   {
     item: "Web search",
@@ -87,7 +87,7 @@ export default function Home() {
 
               <article className="architecture-card architecture-storage">
                 <h3>Storage</h3>
-                <p>Keeps explicitly saved files and artifacts.</p>
+                <p>Keeps explicitly saved session objects.</p>
               </article>
               <div className="architecture-arrow architecture-storage-link" aria-hidden="true">
                 ↑
