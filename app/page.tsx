@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 const prices = [
   {
     item: "Active computer",
-    price: "From $0.12 / hour",
-    details: "Starts at 0.5 vCPU + 1 GB memory. Billed per second.",
+    price: "$0.12 / hour",
+    details: "0.5 vCPU + 1 GB memory. Billed per second.",
   },
   {
     item: "Storage",
