@@ -96,6 +96,22 @@ test("fails closed instead of taking over an unowned rule", async () => {
   assert.deepEqual(actions, []);
 });
 
+test("initializes an absent firewall before adding the managed denies", async () => {
+  const actions = [];
+  const active = await syncManagedSandboxFirewall({
+    token: "token",
+    teamId: "team",
+    projectId: "project",
+    cidrs: DESIRED,
+    fetchImpl: fakeVercel(null, actions),
+    verifyDelayMs: 0,
+  });
+
+  assert.deepEqual(actions[0], { method: "PUT", body: { firewallEnabled: true } });
+  assert.equal(active.firewallEnabled, true);
+  assert.deepEqual(active.ips.map((entry) => entry.ip).sort(), DESIRED);
+});
+
 function rule(id, ip, additions = {}) {
   return {
     id,
@@ -109,26 +125,40 @@ function rule(id, ip, additions = {}) {
 
 function fakeVercel(state, actions) {
   let nextId = 1;
+  let active = state;
   return async (url, init) => {
     assert.equal(url.origin, "https://api.vercel.com");
     assert.equal(url.pathname, "/v1/security/firewall/config");
     assert.equal(url.searchParams.get("projectId"), "project");
     assert.equal(url.searchParams.get("teamId"), "team");
     assert.equal(init.headers.authorization, "Bearer token");
-    if ((init.method ?? "GET") === "GET") return Response.json(state);
+    const method = init.method ?? "GET";
+    if (method === "GET") {
+      return Response.json({ active, draft: null, versions: [] });
+    }
 
     const operation = JSON.parse(init.body);
+    if (method === "PUT") {
+      actions.push({ method, body: operation });
+      active = {
+        firewallEnabled: operation.firewallEnabled,
+        rules: operation.rules ?? [],
+        ips: operation.ips ?? [],
+        changes: [],
+      };
+      return Response.json({ active });
+    }
     actions.push(operation);
-    if (operation.action === "firewallEnabled") state.firewallEnabled = operation.value;
+    if (operation.action === "firewallEnabled") active.firewallEnabled = operation.value;
     if (operation.action === "ip.insert") {
-      state.ips.push({ id: `new-${nextId++}`, ...operation.value });
+      active.ips.push({ id: `new-${nextId++}`, ...operation.value });
     }
     if (operation.action === "ip.update") {
-      const index = state.ips.findIndex((entry) => entry.id === operation.id);
-      state.ips[index] = { id: operation.id, ...operation.value };
+      const index = active.ips.findIndex((entry) => entry.id === operation.id);
+      active.ips[index] = { id: operation.id, ...operation.value };
     }
     if (operation.action === "ip.remove") {
-      state.ips = state.ips.filter((entry) => entry.id !== operation.id);
+      active.ips = active.ips.filter((entry) => entry.id !== operation.id);
     }
     return Response.json({});
   };

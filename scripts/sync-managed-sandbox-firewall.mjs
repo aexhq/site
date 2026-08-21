@@ -75,10 +75,33 @@ export async function syncManagedSandboxFirewall({
     method: "PATCH",
     body: JSON.stringify(body),
   });
-  const read = () => request("/v1/security/firewall/config");
+  const read = async () => {
+    const listing = await request("/v1/security/firewall/config");
+    if (
+      listing === null
+      || typeof listing !== "object"
+      || !("active" in listing)
+      || (listing.active !== null && typeof listing.active !== "object")
+      || !Array.isArray(listing.versions)
+    ) {
+      throw new TypeError("Vercel returned an invalid firewall configuration listing");
+    }
+    if (listing.active !== null) assertConfigShape(listing.active);
+    return listing.active;
+  };
 
-  const initial = await read();
-  assertConfigShape(initial);
+  let initial = await read();
+  if (initial === null) {
+    const created = await request("/v1/security/firewall/config", {
+      method: "PUT",
+      body: JSON.stringify({ firewallEnabled: true }),
+    });
+    if (created === null || typeof created !== "object" || !("active" in created)) {
+      throw new TypeError("Vercel returned an invalid initialized firewall configuration");
+    }
+    assertConfigShape(created.active);
+    initial = created.active;
+  }
 
   const owned = initial.ips.filter((entry) => entry.notes?.startsWith(NOTE_PREFIX));
   const collision = initial.ips.find((entry) => (
@@ -128,7 +151,9 @@ export async function syncManagedSandboxFirewall({
 
   for (let attempt = 0; attempt < verifyAttempts; attempt += 1) {
     const active = await read();
-    assertConfigShape(active);
+    if (active === null) {
+      throw new Error("Vercel firewall configuration disappeared during reconciliation");
+    }
     if (matchesExpected(active, cidrs)) return active;
     if (attempt + 1 < verifyAttempts) await delay(verifyDelayMs);
   }
