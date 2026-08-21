@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  site:
-    runs-on: ubuntu-latest
+  lint:
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -24,5 +24,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+
+  build-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - run: npm run build
+      # Rendered-route tests intentionally start the production server from this build.
       - run: npm test

@@ -13,6 +13,7 @@ export function SiteFooter() {
           {" "}Registered office: {identity.registeredOffice}, {identity.country}.
         </p>
         <nav aria-label="Footer navigation">
+          <Link href="/docs">Docs</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
           <Link href="/status">Status</Link>

@@ -766,6 +766,177 @@ label {
   white-space: nowrap;
 }
 
+/* Documentation */
+
+.docs-layout {
+  display: grid;
+  gap: clamp(48px, 7vw, 88px);
+  grid-template-columns: 10rem minmax(0, 46rem);
+  justify-content: center;
+  padding-block: 72px 104px;
+}
+
+.docs-nav {
+  align-self: start;
+  position: sticky;
+  top: 28px;
+}
+
+.docs-nav > p {
+  color: var(--muted);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  margin: 0 0 13px;
+}
+
+.docs-nav nav {
+  border-left: 1px solid var(--line);
+  display: grid;
+  gap: 2px;
+}
+
+.docs-nav a {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  margin-left: -1px;
+  padding: 6px 0 6px 15px;
+  text-decoration: none;
+}
+
+.docs-nav a:hover {
+  border-left: 1px solid var(--accent);
+  color: var(--text);
+}
+
+.docs-content {
+  min-width: 0;
+}
+
+.docs-intro h1 {
+  font-size: clamp(34px, 5vw, 43px);
+  font-weight: 590;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  margin: 18px 0 0;
+}
+
+.docs-intro > p:last-child {
+  color: var(--text-soft);
+  font-size: 17px;
+  line-height: 1.7;
+  margin: 22px 0 0;
+}
+
+.docs-section {
+  border-top: 1px solid var(--line);
+  margin-top: 56px;
+  padding-top: 28px;
+  scroll-margin-top: 24px;
+}
+
+.docs-section h2 {
+  font-size: 24px;
+  font-weight: 590;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.docs-section > p {
+  color: var(--text-soft);
+  font-size: 15px;
+  line-height: 1.75;
+  margin: 15px 0 0;
+}
+
+.docs-section > p code,
+.docs-note code,
+.docs-definitions code {
+  background: var(--surface-muted);
+  border-radius: 3px;
+  font-size: 0.88em;
+  padding: 0.1em 0.3em;
+}
+
+.docs-section .site-code {
+  font-size: 12px;
+  margin-top: 22px;
+  padding: 20px 22px;
+}
+
+.docs-note {
+  background: var(--accent-soft);
+  border-left: 2px solid var(--accent);
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.65;
+  margin-top: 22px;
+  padding: 13px 16px;
+}
+
+.docs-definitions {
+  border-top: 1px solid var(--line);
+  margin: 24px 0 0;
+}
+
+.docs-definitions > div {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(9rem, 0.7fr) 1.6fr;
+  padding-block: 16px;
+}
+
+.docs-definitions dt {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 590;
+}
+
+.docs-definitions dd {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.docs-table {
+  margin-top: 22px;
+  min-width: 30rem;
+}
+
+.docs-table th[scope="row"] {
+  color: var(--text);
+  font-weight: 550;
+}
+
+.docs-table td {
+  color: var(--muted);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+}
+
+.docs-more {
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 58px;
+  padding-top: 24px;
+}
+
+.docs-more a {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 0.2em;
+}
+
+.docs-more a:hover {
+  color: var(--accent);
+}
+
 /* Legal, status, and checkout */
 
 .legal-page {
@@ -1354,12 +1525,38 @@ td code {
   }
 
   .site-overview,
+  .docs-layout,
   .legal-page,
   .onboarding,
   .dashboard-loading,
   .dashboard,
   .topup-return {
     padding-block: 48px 72px;
+  }
+
+  .docs-layout {
+    gap: 34px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .docs-nav {
+    position: static;
+  }
+
+  .docs-nav nav {
+    border-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 14px;
+  }
+
+  .docs-nav a {
+    margin: 0;
+    padding: 0;
+  }
+
+  .docs-nav a:hover {
+    border-left: 0;
   }
 
   .site-feature {
@@ -1369,6 +1566,11 @@ td code {
 
   .feature-group {
     gap: 12px;
+    grid-template-columns: 1fr;
+  }
+
+  .docs-definitions > div {
+    gap: 7px;
     grid-template-columns: 1fr;
   }
 

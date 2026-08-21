@@ -14,13 +14,13 @@ export const metadata: Metadata = {
 const prices = [
   {
     item: "Active computer",
-    price: "From $0.12 / hour",
-    details: "Starts at 0.5 vCPU + 1 GB memory. Billed per second.",
+    price: "$0.12 / hour",
+    details: "0.5 vCPU + 1 GiB memory. Billed per second.",
   },
   {
     item: "Storage",
     price: "$0.03 / GB-month",
-    details: "Working files and saved artifacts.",
+    details: "Explicitly saved session objects.",
   },
   {
     item: "Web search",
@@ -50,7 +50,7 @@ export default function Home() {
         </header>
 
         <nav className="site-links" aria-label="Get started">
-          <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">Docs</a>
+          <Link href="/docs">Docs</Link>
           <Link href="/dashboard">Dashboard</Link>
           <a href="https://github.com/aexhq/aex">GitHub</a>
           <a href="https://discord.gg/Qk2YnHMHVb">Discord</a>
@@ -87,7 +87,7 @@ export default function Home() {
 
               <article className="architecture-card architecture-storage">
                 <h3>Storage</h3>
-                <p>Keeps explicitly saved files and artifacts.</p>
+                <p>Keeps explicitly saved session objects.</p>
               </article>
               <div className="architecture-arrow architecture-storage-link" aria-hidden="true">
                 ↑
@@ -142,7 +142,7 @@ export default function Home() {
                 <li>Automatic context management and compaction.</li>
                 <li>Durable child sessions for delegated work.</li>
                 <li>Cache-stable prompts for lower latency.</li>
-                <li>1.4 ms p50 platform-added TTFT.</li>
+                <li>Append-only recovery across process restarts.</li>
               </ul>
             </section>
 
@@ -151,7 +151,7 @@ export default function Home() {
               <ul>
                 <li>Runs typed tools, commands, and files.</li>
                 <li>Streams progress and cancellation.</li>
-                <li>Replaces failed workers without losing state.</li>
+                <li>Durable receipts make retries and recovery explicit.</li>
                 <li>Supports managed and customer-hosted tools.</li>
               </ul>
             </section>

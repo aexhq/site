@@ -3,6 +3,10 @@ name: Deploy Aex site to Vercel
 on:
   workflow_dispatch:
     inputs:
+      expected_commit:
+        description: "Exact 40-character Site commit selected by release/sha-<commit>"
+        required: true
+        type: string
       promote:
         description: Assign this exact build to aex.dev after its staging smoke test
         required: true
@@ -35,6 +39,20 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Require immutable manual source
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+          SELECTED_REF: ${{ github.ref }}
+        shell: bash
+        run: |
+          [[ "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          test "$SELECTED_REF" = "refs/tags/release/sha-$EXPECTED_COMMIT"
+          test "$(git cat-file -t "$SELECTED_REF")" = tag
+          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          git merge-base --is-ancestor "$EXPECTED_COMMIT" origin/main
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -83,7 +101,7 @@ jobs:
           grep -Fq "brain and hands pattern" homepage.txt
           grep -Fq "Subagents" homepage.txt
           grep -Fq "Active computer" homepage.txt
-          grep -Fq "0.5 vCPU + 1 GB memory" homepage.txt
+          grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt
           grep -Fq "Storage" homepage.txt
           grep -Fq "first six months after launch" homepage.txt
           grep -Fq "confirm the discount before billing starts" homepage.txt
@@ -92,6 +110,16 @@ jobs:
           npx --yes vercel@59.1.4 curl /aex-mark-white.webp --deployment "$DEPLOYMENT_URL" > aex-mark-white.webp
           test -s aex-mark-black.webp
           test -s aex-mark-white.webp
+          npx --yes vercel@59.1.4 curl /docs --deployment "$DEPLOYMENT_URL" > docs.html
+          sed -E 's/<[^>]+>//g' docs.html > docs.txt
+          grep -Fq "Build with Aex" docs.txt
+          grep -Fq "lookupStock" docs.txt
+          grep -Fq ".client()" docs.txt
+          grep -Fq "sandboxGeneration" docs.txt
+          grep -Fq "cleanup job is retryable" docs.txt
+          for route in /dashboard /status /privacy /terms; do
+            npx --yes vercel@59.1.4 curl "$route" --deployment "$DEPLOYMENT_URL" >/dev/null
+          done
           ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt
       - name: Reconcile managed-sandbox source denies
         if: github.event_name == 'workflow_dispatch' && (inputs.promote || inputs.managed_sandbox_nat_cidrs != '')
@@ -127,7 +155,7 @@ jobs:
               && grep -Fq "brain and hands pattern" homepage.txt \
               && grep -Fq "Subagents" homepage.txt \
               && grep -Fq "Active computer" homepage.txt \
-              && grep -Fq "0.5 vCPU + 1 GB memory" homepage.txt \
+              && grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt \
               && grep -Fq "Storage" homepage.txt \
               && grep -Fq "first six months after launch" homepage.txt \
               && grep -Fq "confirm the discount before billing starts" homepage.txt \
@@ -136,6 +164,17 @@ jobs:
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-white.webp > aex-mark-white.webp \
               && test -s aex-mark-black.webp \
               && test -s aex-mark-white.webp \
+              && curl --fail --silent --show-error --max-time 20 https://aex.dev/docs > docs.html \
+              && sed -E 's/<[^>]+>//g' docs.html > docs.txt \
+              && grep -Fq "Build with Aex" docs.txt \
+              && grep -Fq "lookupStock" docs.txt \
+              && grep -Fq ".client()" docs.txt \
+              && grep -Fq "sandboxGeneration" docs.txt \
+              && grep -Fq "cleanup job is retryable" docs.txt \
+              && curl --fail --silent --show-error --max-time 20 https://aex.dev/dashboard >/dev/null \
+              && curl --fail --silent --show-error --max-time 20 https://aex.dev/status >/dev/null \
+              && curl --fail --silent --show-error --max-time 20 https://aex.dev/privacy >/dev/null \
+              && curl --fail --silent --show-error --max-time 20 https://aex.dev/terms >/dev/null \
               && ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0

@@ -87,7 +87,7 @@ test("server-renders the backend landing page", async () => {
   assert.match(text, /\.client\(\)/);
   assert.doesNotMatch(text, /lookupOrder|lookup_order|lookupCustomer/);
   assert.match(text, /session\.send/);
-  assert.match(text, /console\.log\(reply\)/);
+  assert.match(text, /console\.log\(await session\.send/);
   assert.match(text, /output:/);
   assert.doesNotMatch(text, /session\.output/);
   assert.match(text, /gpt-5\.4/);
@@ -106,11 +106,13 @@ test("server-renders the backend landing page", async () => {
   assert.match(html, /anthropic\.com\/engineering\/managed-agents/);
   assert.match(html, /<h2 id="features-title">Features<\/h2>/);
   assert.match(html, /brain-features-title[\s\S]*hands-features-title[\s\S]*sandbox-features-title/);
-  assert.match(html, /1\.4 ms p50 platform-added TTFT/);
+  assert.match(text, /lookupStock[\s\S]*\.client\(\)[\s\S]*client:[\s\S]*store-api/);
+  assert.match(html, /Append-only recovery across process restarts/);
+  assert.match(html, /Durable receipts make retries and recovery explicit/);
   assert.doesNotMatch(html, /versioned (?:tool )?operations|10,000 concurrent sessions/);
   assert.match(html, /<h2 id="pricing-title">Pricing<\/h2>/);
-  assert.match(html, /Active computer[\s\S]*From \$0\.12 \/ hour/);
-  assert.match(html, /0\.5 vCPU \+ 1 GB memory[\s\S]*Billed per second/);
+  assert.match(html, /Active computer[\s\S]*\$0\.12 \/ hour/);
+  assert.match(html, /0\.5 vCPU \+ 1 GiB memory[\s\S]*Billed per second/);
   assert.match(html, />Storage<[\s\S]*\$0\.03 \/ GB-month/);
   assert.match(html, /Web search[\s\S]*\$0\.003 \/ query/);
   assert.match(html, /Bring your own key/);
@@ -154,6 +156,25 @@ test("public status and company legal pages render", async () => {
   assert.match(termsHtml, /personal, educational,[\s\S]*commercial projects/i);
   assert.doesNotMatch(termsHtml, /beta is for people using AEX wholly or mainly for a/i);
   assert.doesNotMatch(termsHtml, /\bAEX\b|\bBeta\b/);
+});
+
+test("server-renders the concise product documentation", async () => {
+  const response = await render("/docs");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const text = html.replace(/<[^>]*>/g, "");
+  assert.match(html, /<title>Documentation · Aex<\/title>/i);
+  assert.match(html, /aria-label="Documentation sections"/);
+  assert.match(html, /href="#start"[\s\S]*href="#tools"[\s\S]*href="#files"[\s\S]*href="#lifecycle"/);
+  assert.match(text, /Build with Aex/);
+  assert.match(text, /lookupStock[\s\S]*\.client\(\)[\s\S]*store-api/);
+  assert.match(text, /\.server\(import\.meta\.url/);
+  assert.match(text, /sandboxGeneration/);
+  assert.match(text, /mode-0600/);
+  assert.match(text, /ordinary durable session/);
+  assert.match(text, /24 MiB[\s\S]*192 KiB[\s\S]*92 KiB[\s\S]*512 MiB[\s\S]*10 GiB/);
+  assert.match(html, /href="https:\/\/github\.com\/aexhq\/aex\/blob\/main\/docs\/quickstart\.md"/);
+  assert.doesNotMatch(text, /remote MCP|automatic workspace sync|restores an old filesystem/i);
 });
 
 test("server-renders dashboard-first waitlist and invited onboarding", async () => {
