@@ -75,7 +75,7 @@ export async function syncManagedSandboxFirewall({
     method: "PATCH",
     body: JSON.stringify(body),
   });
-  const read = () => request("/v1/security/firewall/config/active");
+  const read = () => request("/v1/security/firewall/config");
 
   const initial = await read();
   assertConfigShape(initial);
