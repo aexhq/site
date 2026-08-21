@@ -43,16 +43,17 @@ export default function Home() {
         <header className="site-intro">
           <h1>{siteHeadline}</h1>
           <p>
-            A simple, intuitive, session-oriented SDK for running AI workloads.
-            Start a session with your model and tools, give it work, and get
-            structured data.
+            High-performance, reliable, and simple infrastructure for running AI
+            workloads. Start a session with your models and tools, give it work,
+            and get back structured data.
           </p>
         </header>
 
         <nav className="site-links" aria-label="Get started">
           <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">Docs</a>
           <Link href="/dashboard">Dashboard</Link>
-          <a href="https://github.com/aexhq">GitHub</a>
+          <a href="https://github.com/aexhq/aex">GitHub</a>
+          <a href="https://discord.gg/Qk2YnHMHVb">Discord</a>
         </nav>
 
         <CapabilityDemo />
@@ -60,23 +61,110 @@ export default function Home() {
         <section className="site-section" id="architecture" aria-labelledby="architecture-title">
           <h2 id="architecture-title">Architecture</h2>
           <p>
-            Aex keeps session state separate from the computer that runs tools.
-            The design follows Anthropic&apos;s{" "}
+            Aex keeps durable session state separate from the computers that run
+            tools, so each layer can scale and recover independently. The design
+            is inspired by Anthropic&apos;s{" "}
             <a href="https://www.anthropic.com/engineering/managed-agents">
               brain and hands pattern
             </a>.
           </p>
-          <div className="markdown-block">
-            <h3>Brain</h3>
-            <p>
-              The Brain keeps the model loop and session state, including
-              context, recovery, permissions, and child sessions.
-            </p>
-            <h3>Hands</h3>
-            <p>
-              Hands run tools, processes, and files in isolated workspaces.
-              You can replace a Hand without losing the session.
-            </p>
+
+          <figure className="architecture-diagram">
+            <figcaption className="sr-only">
+              Your app sends work to the Brain. The Brain persists its journal
+              in a database and exchanges tool operations with Hands. Hands run
+              those operations in a sandbox, which can copy files to durable
+              storage explicitly.
+            </figcaption>
+            <div className="architecture-grid">
+              <article className="architecture-card architecture-database">
+                <h3>Database</h3>
+                <p>Persists durable session journals.</p>
+              </article>
+              <div className="architecture-arrow architecture-database-link" aria-hidden="true">
+                ↑
+              </div>
+
+              <article className="architecture-card architecture-storage">
+                <h3>Storage</h3>
+                <p>Keeps explicitly saved files and artifacts.</p>
+              </article>
+              <div className="architecture-arrow architecture-storage-link" aria-hidden="true">
+                ↑
+              </div>
+
+              <article className="architecture-card architecture-app">
+                <h3>Your app</h3>
+                <p>Starts sessions and consumes typed results.</p>
+              </article>
+              <div className="architecture-arrow architecture-app-link" aria-hidden="true">
+                →
+              </div>
+
+              <article className="architecture-card architecture-brain">
+                <h3>Brain</h3>
+                <p>Owns the model loop, context, and recovery.</p>
+              </article>
+              <div className="architecture-arrow architecture-brain-link" aria-hidden="true">
+                ↔
+              </div>
+
+              <article className="architecture-card architecture-hands">
+                <h3>Hands</h3>
+                <p>Runs typed tool operations for the Brain.</p>
+              </article>
+              <div className="architecture-arrow architecture-hands-link" aria-hidden="true">
+                ↔
+              </div>
+
+              <article className="architecture-card architecture-sandbox">
+                <h3>Sandbox</h3>
+                <p>Isolates processes, files, secrets, and network.</p>
+              </article>
+            </div>
+          </figure>
+        </section>
+
+        <section className="site-section" id="features" aria-labelledby="features-title">
+          <h2 id="features-title">Features</h2>
+          <p>
+            Durable orchestration, replaceable execution, and isolated compute
+            are separate pieces of the same session.
+          </p>
+
+          <div className="feature-groups">
+            <section className="feature-group" aria-labelledby="brain-features-title">
+              <h3 id="brain-features-title">Brain</h3>
+              <ul>
+                <li>
+                  Models from OpenAI, Anthropic, OpenRouter, and more.
+                </li>
+                <li>Automatic context management and compaction.</li>
+                <li>Durable child sessions for delegated work.</li>
+                <li>Cache-stable prompts for lower latency.</li>
+                <li>1.4 ms p50 platform-added TTFT.</li>
+              </ul>
+            </section>
+
+            <section className="feature-group" aria-labelledby="hands-features-title">
+              <h3 id="hands-features-title">Hands</h3>
+              <ul>
+                <li>Runs typed tools, commands, and files.</li>
+                <li>Streams progress and cancellation.</li>
+                <li>Replaces failed workers without losing state.</li>
+                <li>Supports managed and customer-hosted tools.</li>
+              </ul>
+            </section>
+
+            <section className="feature-group" aria-labelledby="sandbox-features-title">
+              <h3 id="sandbox-features-title">Sandbox</h3>
+              <ul>
+                <li>A lazy workspace plus isolated extras.</li>
+                <li>Session-scoped secrets and network policy.</li>
+                <li>Explicit copies to durable storage.</li>
+                <li>Per-second compute.</li>
+              </ul>
+            </section>
           </div>
         </section>
 

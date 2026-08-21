@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { SiteFooter } from "../components/SiteFooter";
 import { SiteHeader } from "../components/SiteHeader";
 import { DashboardClient } from "./DashboardClient";
@@ -14,10 +15,14 @@ export default async function DashboardPage({
   searchParams: Promise<{ mode?: string }>;
 }) {
   const { mode } = await searchParams;
+  const cookieStore = await cookies();
   return (
     <main className="dashboard-page">
       <SiteHeader />
-      <DashboardClient initialMode={mode === "invite" ? "invite" : "waitlist"} />
+      <DashboardClient
+        hasDashboardSession={cookieStore.has("aex_account")}
+        initialMode={mode === "invite" ? "invite" : "waitlist"}
+      />
       <SiteFooter />
     </main>
   );

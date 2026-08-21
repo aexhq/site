@@ -1,88 +1,156 @@
 "use client";
 
-import { KeyboardEvent, useId, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useId, useState } from "react";
 
 const demos = [
   {
     label: "Start",
     code: `import { Aex } from "@aexhq/sdk";
-import { bash, read, subagents, webSearch } from "@aexhq/tools";
-import lookupOrder from "./tools/lookup-order.js";
 
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 
 const session = await aex.sessions.create({
   model: {
     provider: "openai",
-    name: "openai/gpt-5.4",
-    apiKey: process.env.AI_GATEWAY_API_KEY!,
-    baseUrl: "https://ai-gateway.vercel.sh",
+    name: "gpt-5.4",
+    apiKey: process.env.OPENAI_API_KEY!,
   },
-  tools: [lookupOrder, bash(), read(), webSearch(), subagents()],
+});
+
+const reply = await session.send("Plan my day.");
+console.log(reply);`,
+  },
+  {
+    label: "Tools",
+    code: `import { tool } from "@aexhq/sdk";
+import { z } from "zod";
+import { weather } from "../weather.js";
+
+const getWeather = tool(
+  z.object({ city: z.string() }),
+  async function getWeather({ city }) {
+    return weather.current(city);
+  },
+)
+  .describe("Get the current weather for a city.")
+  .client();
+
+export default getWeather;`,
+  },
+  {
+    label: "Structured Outputs",
+    code: `import { z } from "zod";
+
+const plan = await session.send(
+  "Plan a focused afternoon.",
+  {
+    output: z.object({
+      summary: z.string(),
+      tasks: z.array(z.string()),
+    }),
+  },
+);
+
+console.log(plan.tasks); // fully typed`,
+  },
+  {
+    label: "Files",
+    code: `const state = await session.sandbox.create();
+if (!state.generation) throw new Error("Sandbox is not ready");
+
+await session.sandbox.files.upload(
+  "/workspace/brief.txt",
+  "Turn these notes into a launch plan.",
+  { generation: state.generation },
+);
+
+const files = await session.sandbox.files.list("/workspace", {
+  generation: state.generation,
 });`,
   },
   {
-    label: "Custom tool",
-    code: `import { defineTool } from "@aexhq/sdk";
-import { z } from "zod";
-
-const order = z.object({
-  id: z.string(),
-  status: z.enum(["paid", "held", "refunded"]),
-});
-
-const lookupOrder = defineTool({
-  module: import.meta.url,
-  name: "lookup_order",
-  description: "Look up the current state of an order.",
-  input: z.object({ id: z.string() }),
-  output: order,
-  requiredEnv: ["SHOP_API_TOKEN"],
-  async execute({ id }) {
-    const response = await fetch(\`https://shop.example/orders/\${id}\`, {
-      headers: { authorization: \`Bearer \${process.env.SHOP_API_TOKEN}\` },
-    });
-    if (!response.ok) throw new Error("Order lookup failed");
-    return order.parse(await response.json());
-  },
-});
-
-export default lookupOrder;`,
-  },
-  {
-    label: "Structured output",
-    code: `import { z } from "zod";
-
-const review = await session.send(
-  "Investigate order ord_1842 and recommend the next action.",
-  {
-    output: z.object({
-      status: z.enum(["clear", "needs_review"]),
-      evidence: z.array(z.string()),
-      nextAction: z.string(),
-    }),
-  },
-);
-
-review.nextAction; // fully typed`,
-  },
-  {
-    label: "Continue",
+    label: "Sandboxes",
     code: `await session.send(
-  "Save the evidence to /workspace/order-review.md.",
-);
-
-const followUp = await session.send(
-  "Now draft a concise reply for the customer.",
-  {
-    output: z.object({
-      subject: z.string(),
-      reply: z.string(),
-    }),
-  },
+  [
+    "Create two isolated sandboxes.",
+    "Run the parser tests in the first.",
+    "Benchmark 100 lookups in the second.",
+    "Compare the results, then terminate both.",
+  ].join("\\n"),
 );`,
   },
+  {
+    label: "Storage",
+    code: `const state = await session.sandbox.status();
+if (!state.generation) throw new Error("Sandbox is not ready");
+
+await session.storage.copyFromSandbox({
+  path: "/workspace/customer-review.md",
+  key: "reviews/customer.md",
+  sandboxGeneration: state.generation,
+});
+
+const saved = await session.storage.list({
+  prefix: "reviews/",
+});`,
+  },
+  {
+    label: "Subagents",
+    code: `const researcher = await session.children.create({
+  name: "research",
+  prompt: "Compare the three strongest options.",
+  forkTurns: "3",
+});
+
+const result = await researcher.wait();
+console.log(result.state);`,
+  },
 ] as const;
+
+const syntaxPattern = /(`(?:\\[\s\S]|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|\b(?:as|async|await|const|default|export|from|if|import|new|return|throw)\b|\b(?:false|null|true|undefined)\b|\b\d+(?:\.\d+)?\b|\b[A-Z][A-Za-z0-9_]*\b|\b[A-Za-z_$][\w$]*(?=\s*\())/g;
+const syntaxKeywords = new Set([
+  "as",
+  "async",
+  "await",
+  "const",
+  "default",
+  "export",
+  "from",
+  "if",
+  "import",
+  "new",
+  "return",
+  "throw",
+]);
+
+function highlightCode(source: string): ReactNode[] {
+  const highlighted: ReactNode[] = [];
+  let cursor = 0;
+
+  for (const match of source.matchAll(syntaxPattern)) {
+    const index = match.index ?? 0;
+    if (index > cursor) highlighted.push(source.slice(cursor, index));
+
+    const token = match[0];
+    let className = "syntax-function";
+    if (token.startsWith("//") || token.startsWith("/*")) className = "syntax-comment";
+    else if (token.startsWith('"') || token.startsWith("'") || token.startsWith("`")) {
+      className = "syntax-string";
+    } else if (syntaxKeywords.has(token)) className = "syntax-keyword";
+    else if (/^(?:false|null|true|undefined|\d)/.test(token)) className = "syntax-literal";
+    else if (/^[A-Z]/.test(token)) className = "syntax-type";
+
+    highlighted.push(
+      <span className={className} key={`${index}-${token}`}>
+        {token}
+      </span>,
+    );
+    cursor = index + token.length;
+  }
+
+  if (cursor < source.length) highlighted.push(source.slice(cursor));
+  return highlighted;
+}
 
 export function CapabilityDemo() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -128,7 +196,7 @@ export function CapabilityDemo() {
           tabIndex={0}
         >
           <pre className="site-code" aria-label={`${demo.label} code example`}>
-            <code>{demo.code}</code>
+            <code>{highlightCode(demo.code)}</code>
           </pre>
         </div>
       ))}

@@ -60,24 +60,34 @@ jobs:
             fi
             sleep 5
           done
-          grep -Fq "The agent backend for AI workloads" homepage.html
-          grep -Fq "simple, intuitive, session-oriented SDK" homepage.html
-          grep -Fq "defineTool" homepage.html
-          grep -Fq "session.send" homepage.html
-          grep -Fq "output:" homepage.html
-          ! grep -Fq "session.output" homepage.html
-          grep -Fq "openai/gpt-5.4" homepage.html
-          grep -Fq "AI_GATEWAY_API_KEY" homepage.html
-          grep -Fq "ai-gateway.vercel.sh" homepage.html
-          ! grep -Fq "sk-ant-" homepage.html
-          grep -Fq "brain and hands pattern" homepage.html
-          grep -Fq "Active computer" homepage.html
-          grep -Fq "0.5 vCPU + 1 GB memory" homepage.html
-          grep -Fq "Storage" homepage.html
-          grep -Fq "first six months after launch" homepage.html
-          grep -Fq "confirm the discount before billing starts" homepage.html
-          grep -Fq "Join the alpha" homepage.html
-          ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html
+          sed -E 's/<[^>]+>//g' homepage.html > homepage.txt
+          grep -Fq "The backend for AI workloads" homepage.txt
+          grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt
+          grep -Fq "Start a session with your models and tools" homepage.txt
+          grep -Fq "@aexhq/sdk" homepage.txt
+          grep -Fq "getWeather" homepage.txt
+          grep -Fq "session.send" homepage.txt
+          grep -Fq "output:" homepage.txt
+          ! grep -Fq "session.output" homepage.txt
+          grep -Fq "gpt-5.4" homepage.txt
+          grep -Fq "OPENAI_API_KEY" homepage.txt
+          ! grep -Fq "AI_GATEWAY_API_KEY" homepage.txt
+          ! grep -Fq "ai-gateway.vercel.sh" homepage.txt
+          ! grep -Fq "sk-ant-" homepage.txt
+          grep -Fq "wordmark-mark" homepage.html
+          grep -Fq "brain and hands pattern" homepage.txt
+          grep -Fq "Subagents" homepage.txt
+          grep -Fq "Active computer" homepage.txt
+          grep -Fq "0.5 vCPU + 1 GB memory" homepage.txt
+          grep -Fq "Storage" homepage.txt
+          grep -Fq "first six months after launch" homepage.txt
+          grep -Fq "confirm the discount before billing starts" homepage.txt
+          grep -Fq "Join the alpha" homepage.txt
+          npx --yes vercel@59.1.4 curl /aex-mark-black.webp --deployment "$DEPLOYMENT_URL" > aex-mark-black.webp
+          npx --yes vercel@59.1.4 curl /aex-mark-white.webp --deployment "$DEPLOYMENT_URL" > aex-mark-white.webp
+          test -s aex-mark-black.webp
+          test -s aex-mark-white.webp
+          ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt
       - name: Promote the staged build to aex.dev
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         env:
@@ -89,24 +99,34 @@ jobs:
         run: |
           for attempt in {1..12}; do
             if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
-              && grep -Fq "The agent backend for AI workloads" homepage.html \
-              && grep -Fq "simple, intuitive, session-oriented SDK" homepage.html \
-              && grep -Fq "defineTool" homepage.html \
-              && grep -Fq "session.send" homepage.html \
-              && grep -Fq "output:" homepage.html \
-              && ! grep -Fq "session.output" homepage.html \
-              && grep -Fq "openai/gpt-5.4" homepage.html \
-              && grep -Fq "AI_GATEWAY_API_KEY" homepage.html \
-              && grep -Fq "ai-gateway.vercel.sh" homepage.html \
-              && ! grep -Fq "sk-ant-" homepage.html \
-              && grep -Fq "brain and hands pattern" homepage.html \
-              && grep -Fq "Active computer" homepage.html \
-              && grep -Fq "0.5 vCPU + 1 GB memory" homepage.html \
-              && grep -Fq "Storage" homepage.html \
-              && grep -Fq "first six months after launch" homepage.html \
-              && grep -Fq "confirm the discount before billing starts" homepage.html \
-              && grep -Fq "Join the alpha" homepage.html \
-              && ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.html; then
+              && sed -E 's/<[^>]+>//g' homepage.html > homepage.txt \
+              && grep -Fq "The backend for AI workloads" homepage.txt \
+              && grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt \
+              && grep -Fq "Start a session with your models and tools" homepage.txt \
+              && grep -Fq "@aexhq/sdk" homepage.txt \
+              && grep -Fq "getWeather" homepage.txt \
+              && grep -Fq "session.send" homepage.txt \
+              && grep -Fq "output:" homepage.txt \
+              && ! grep -Fq "session.output" homepage.txt \
+              && grep -Fq "gpt-5.4" homepage.txt \
+              && grep -Fq "OPENAI_API_KEY" homepage.txt \
+              && ! grep -Fq "AI_GATEWAY_API_KEY" homepage.txt \
+              && ! grep -Fq "ai-gateway.vercel.sh" homepage.txt \
+              && ! grep -Fq "sk-ant-" homepage.txt \
+              && grep -Fq "wordmark-mark" homepage.html \
+              && grep -Fq "brain and hands pattern" homepage.txt \
+              && grep -Fq "Subagents" homepage.txt \
+              && grep -Fq "Active computer" homepage.txt \
+              && grep -Fq "0.5 vCPU + 1 GB memory" homepage.txt \
+              && grep -Fq "Storage" homepage.txt \
+              && grep -Fq "first six months after launch" homepage.txt \
+              && grep -Fq "confirm the discount before billing starts" homepage.txt \
+              && grep -Fq "Join the alpha" homepage.txt \
+              && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-black.webp > aex-mark-black.webp \
+              && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-white.webp > aex-mark-white.webp \
+              && test -s aex-mark-black.webp \
+              && test -s aex-mark-white.webp \
+              && ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
