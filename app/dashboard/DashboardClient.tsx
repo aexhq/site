@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { WaitlistForm } from "../components/WaitlistForm";
+import { compareMicroUsdDescending, formatDurationMs, formatMicroUsd } from "./exact-format.js";
 
 type Account = {
   id: string;
@@ -11,7 +12,7 @@ type Account = {
   limits: { max_concurrent_sessions: number; session_creates_per_hour: number };
 };
 
-type Balance = { microusd: number; usd: string; metered_to: string };
+type Balance = { microusd: string; usd: string; metered_to: string };
 type ApiKey = {
   id: string;
   name: string;
@@ -31,11 +32,11 @@ type Topup = {
 type UsageLine = {
   session_id: string;
   state: string;
-  running_ms: number;
-  total_microusd: number;
+  running_ms: string;
+  total_microusd: string;
 };
 type Usage = {
-  total_microusd: number;
+  total_microusd: string;
   sessions: UsageLine[];
   metered_to: string;
 };
@@ -64,21 +65,6 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
     throw error;
   }
   return body as T;
-}
-
-function money(microusd: number, digits = 4) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: digits,
-  }).format(microusd / 1_000_000);
-}
-
-function duration(ms: number) {
-  if (ms < 1_000) return ms + " ms";
-  if (ms < 60_000) return (ms / 1_000).toFixed(1) + " s";
-  return Math.floor(ms / 60_000) + "m " + Math.floor((ms % 60_000) / 1_000) + "s";
 }
 
 function when(value?: string) {
@@ -146,7 +132,8 @@ export function DashboardClient({
   }, [hasDashboardSession, load]);
 
   const sessions = useMemo(
-    () => [...(data?.usage.sessions ?? [])].sort((a, b) => b.total_microusd - a.total_microusd),
+    () => [...(data?.usage.sessions ?? [])].sort((a, b) =>
+      compareMicroUsdDescending(a.total_microusd, b.total_microusd)),
     [data],
   );
   const liveKeys = data?.keys.filter((key) => !key.revoked_at) ?? [];
@@ -425,7 +412,7 @@ export function DashboardClient({
         </article>
         <article>
           <span>Rated usage</span>
-          <strong>{money(data.usage.total_microusd)}</strong>
+          <strong>{formatMicroUsd(data.usage.total_microusd)}</strong>
           <small>Across {sessions.length} sessions</small>
         </article>
         <article>
@@ -525,8 +512,8 @@ const result = await session.send("Do the work.", {
                     <tr key={session.session_id}>
                       <td><code>{session.session_id}</code></td>
                       <td><span className={"state state-" + session.state}>{session.state}</span></td>
-                      <td>{duration(session.running_ms)}</td>
-                      <td><strong>{money(session.total_microusd, 6)}</strong></td>
+                      <td>{formatDurationMs(session.running_ms)}</td>
+                      <td><strong>{formatMicroUsd(session.total_microusd, 6)}</strong></td>
                     </tr>
                   ))}
                 </tbody>
