@@ -68,22 +68,21 @@ test("server-renders the backend landing page", async () => {
   assert.match(html, /High-performance, reliable, and simple infrastructure/i);
   assert.match(html, /Start a session with your models and tools[\s\S]*structured data/i);
   assert.match(html, /Docs[\s\S]*Dashboard[\s\S]*GitHub[\s\S]*Discord/);
+  assert.match(html, /class="wordmark-mark"/);
+  assert.match(html, /class="theme-toggle"/);
+  assert.match(html, /aria-label="Switch to dark mode"/);
   assert.match(html, /href="https:\/\/github\.com\/aexhq\/aex"[^>]*>GitHub/);
   assert.match(html, /href="https:\/\/discord\.gg\/Qk2YnHMHVb"[^>]*>Discord/);
   assert.match(html, /role="tablist"/);
-  assert.match(html, /Start[\s\S]*Managed tool[\s\S]*Structured Outputs[\s\S]*Files[\s\S]*Sandboxes[\s\S]*Storage/);
+  assert.match(html, /Start[\s\S]*Tools[\s\S]*Structured Outputs[\s\S]*Files[\s\S]*Sandboxes[\s\S]*Storage[\s\S]*Subagents/);
   assert.doesNotMatch(html, />Continue<\/button>/);
   assert.match(html, /<pre class="site-code"/);
   assert.match(text, /tool/);
-  assert.match(text, /lookupStock/);
+  assert.match(text, /getWeather/);
   assert.match(text, /\.client\(\)/);
   assert.doesNotMatch(text, /lookupOrder|lookup_order|lookupCustomer/);
   assert.match(text, /session\.send/);
-  assert.match(text, /Can we fulfill 3 units of sku_123/);
-  assert.match(text, /client: \{ id: &quot;store-api&quot; \}/);
-  assert.match(text, /aex\.close\(\)/);
-  assert.match(text, /\.server\(import\.meta\.url/);
-  assert.match(text, /PROCESSOR_TOKEN/);
+  assert.match(text, /console\.log\(reply\)/);
   assert.match(text, /output:/);
   assert.doesNotMatch(text, /session\.output/);
   assert.match(text, /gpt-5\.4/);
@@ -92,6 +91,7 @@ test("server-renders the backend landing page", async () => {
   assert.match(text, /session\.sandbox\.files\.upload/);
   assert.match(text, /Create two isolated sandboxes/);
   assert.match(text, /session\.storage\.copyFromSandbox/);
+  assert.match(text, /session\.children\.create/);
   assert.match(html, /class="syntax-keyword"/);
   assert.match(html, /class="syntax-string"/);
   assert.doesNotMatch(html, /sk-ant-/);
@@ -101,7 +101,7 @@ test("server-renders the backend landing page", async () => {
   assert.match(html, /anthropic\.com\/engineering\/managed-agents/);
   assert.match(html, /<h2 id="features-title">Features<\/h2>/);
   assert.match(html, /brain-features-title[\s\S]*hands-features-title[\s\S]*sandbox-features-title/);
-  assert.match(html, /Reference benchmark: 1\.4 ms p50 platform-added TTFT across[\s\S]*HTTP, SSE, journaling, and dispatch/);
+  assert.match(html, /1\.4 ms p50 platform-added TTFT/);
   assert.doesNotMatch(html, /versioned (?:tool )?operations|10,000 concurrent sessions/);
   assert.match(html, /<h2 id="pricing-title">Pricing<\/h2>/);
   assert.match(html, /Active computer[\s\S]*From \$0\.12 \/ hour/);
@@ -185,6 +185,7 @@ test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", a
   const dashboard = await readFile(new URL("../app/dashboard/DashboardClient.tsx", import.meta.url), "utf8");
   const dashboardPage = await readFile(new URL("../app/dashboard/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const themeToggle = await readFile(new URL("../app/components/ThemeToggle.tsx", import.meta.url), "utf8");
   assert.match(proxy, /function routeFor/);
   assert.match(proxy, /https:\/\/api\.aex\.dev/);
   assert.match(proxy, /HttpOnly/);
@@ -200,7 +201,13 @@ test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", a
   assert.match(dashboard, /OPENAI_API_KEY/);
   assert.doesNotMatch(dashboard, /AI_GATEWAY_API_KEY|ai-gateway\.vercel\.sh/);
   assert.match(styles, /@media \(prefers-color-scheme: dark\)/);
+  assert.match(styles, /:root\[data-theme="dark"\]/);
   assert.match(styles, /color-scheme: dark/);
+  assert.match(styles, /--wordmark-icon: url\("\/aex-mark-black\.webp"\)/);
+  assert.match(styles, /--wordmark-icon: url\("\/aex-mark-white\.webp"\)/);
+  assert.match(themeToggle, /localStorage\.setItem\(storageKey, nextTheme\)/);
+  await access(new URL("public/aex-mark-black.webp", templateRoot));
+  await access(new URL("public/aex-mark-white.webp", templateRoot));
   await assert.rejects(access(new URL("../app/_sites-preview", templateRoot)));
 });
 

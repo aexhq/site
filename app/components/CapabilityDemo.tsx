@@ -5,21 +5,9 @@ import { type KeyboardEvent, type ReactNode, useId, useState } from "react";
 const demos = [
   {
     label: "Start",
-    code: `import { Aex, tool } from "@aexhq/sdk";
-import { z } from "zod";
+    code: `import { Aex } from "@aexhq/sdk";
 
-const catalog = new Map([["sku_123", { inStock: 7 }]]);
-const lookupStock = tool(
-  z.object({ sku: z.string() }),
-  async function lookupStock({ sku }) {
-    return catalog.get(sku) ?? { inStock: 0 };
-  },
-).client();
-
-const aex = new Aex({
-  apiKey: process.env.AEX_API_KEY!,
-  client: { id: "store-api" },
-});
+const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 
 const session = await aex.sessions.create({
   model: {
@@ -27,29 +15,27 @@ const session = await aex.sessions.create({
     name: "gpt-5.4",
     apiKey: process.env.OPENAI_API_KEY!,
   },
-  tools: [lookupStock],
 });
 
-console.log(await session.send(
-  "Can we fulfill 3 units of sku_123?",
-));
-aex.close();`,
+const reply = await session.send("Plan my day.");
+console.log(reply);`,
   },
   {
-    label: "Managed tool",
+    label: "Tools",
     code: `import { tool } from "@aexhq/sdk";
 import { z } from "zod";
+import { weather } from "../weather.js";
 
-const processFile = tool(
-  z.object({ path: z.string() }),
-  async function processFile({ path }, context) {
-    return context.workspace.process(path);
+const getWeather = tool(
+  z.object({ city: z.string() }),
+  async function getWeather({ city }) {
+    return weather.current(city);
   },
 )
-  .describe("Process a file in managed compute.")
-  .server(import.meta.url, { env: ["PROCESSOR_TOKEN"] });
+  .describe("Get the current weather for a city.")
+  .client();
 
-export default processFile;`,
+export default getWeather;`,
   },
   {
     label: "Structured Outputs",
@@ -107,6 +93,17 @@ await session.storage.copyFromSandbox({
 const saved = await session.storage.list({
   prefix: "reviews/",
 });`,
+  },
+  {
+    label: "Subagents",
+    code: `const researcher = await session.children.create({
+  name: "research",
+  prompt: "Compare the three strongest options.",
+  forkTurns: "3",
+});
+
+const result = await researcher.wait();
+console.log(result.state);`,
   },
 ] as const;
 

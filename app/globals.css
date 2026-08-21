@@ -13,6 +13,26 @@
   --success: #356b44;
   --danger: #a34037;
   --warning: #8a6923;
+  --selection-background: #e6d3c8;
+  --selection-text: #292722;
+  --header-background: rgba(247, 246, 242, 0.94);
+  --primary-background: #3d3a34;
+  --primary-hover: #292722;
+  --primary-text: #fff;
+  --placeholder: #938e84;
+  --link-underline: #9c968b;
+  --success-background: #edf3ed;
+  --success-border: #cbdaca;
+  --success-note: #52705a;
+  --syntax-comment: #71806d;
+  --syntax-function: #2d6073;
+  --syntax-keyword: #7a3e79;
+  --syntax-literal: #93621f;
+  --syntax-string: #9a482d;
+  --syntax-type: #315f70;
+  --architecture-arrow: #817b71;
+  --secret-border: #ddc5b8;
+  --wordmark-icon: url("/aex-mark-black.webp");
   --shell: min(64rem, calc(100vw - 40px));
   --prose: min(46rem, calc(100vw - 40px));
 }
@@ -52,7 +72,8 @@ pre {
 }
 
 ::selection {
-  background: #e6d3c8;
+  background: var(--selection-background);
+  color: var(--selection-text);
 }
 
 .shell {
@@ -85,7 +106,7 @@ input:focus-visible {
 /* Shared navigation */
 
 .site-header {
-  background: rgba(247, 246, 242, 0.94);
+  background: var(--header-background);
   border-bottom: 1px solid var(--line);
   position: relative;
   z-index: 10;
@@ -99,11 +120,21 @@ input:focus-visible {
 }
 
 .wordmark {
+  align-items: center;
+  display: inline-flex;
   font-size: 18px;
   font-weight: 650;
+  gap: 9px;
   letter-spacing: -0.03em;
   line-height: 1;
   text-decoration: none;
+}
+
+.wordmark-mark {
+  background: center / contain no-repeat var(--wordmark-icon);
+  display: block;
+  height: 24px;
+  width: 24px;
 }
 
 .site-header nav,
@@ -124,6 +155,35 @@ input:focus-visible {
 .site-header nav a:hover,
 .footer-inner nav a:hover {
   color: var(--text);
+}
+
+.theme-toggle {
+  align-items: center;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 550;
+  gap: 7px;
+  justify-content: center;
+  line-height: 1;
+  min-height: 32px;
+  min-width: 62px;
+  padding: 5px 10px;
+}
+
+.theme-toggle:hover {
+  background: var(--surface);
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.theme-toggle-icon {
+  font-size: 14px;
+  line-height: 1;
 }
 
 /* Type and controls */
@@ -169,15 +229,15 @@ input:focus-visible {
 
 .button-primary,
 .button-dark {
-  background: #3d3a34;
-  border-color: #3d3a34;
-  color: #fff;
+  background: var(--primary-background);
+  border-color: var(--primary-background);
+  color: var(--primary-text);
 }
 
 .button-primary:hover:not(:disabled),
 .button-dark:hover:not(:disabled) {
-  background: #292722;
-  border-color: #292722;
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .button-quiet,
@@ -197,7 +257,7 @@ input {
 }
 
 input::placeholder {
-  color: #938e84;
+  color: var(--placeholder);
 }
 
 label {
@@ -255,7 +315,7 @@ label {
 .site-overview a,
 .legal-page a,
 .dashboard a {
-  text-decoration-color: #9c968b;
+  text-decoration-color: var(--link-underline);
   text-underline-offset: 0.2em;
 }
 
@@ -402,8 +462,8 @@ label {
 
 .waitlist-success {
   align-items: flex-start;
-  background: #edf3ed;
-  border: 1px solid #cbdaca;
+  background: var(--success-background);
+  border: 1px solid var(--success-border);
   border-radius: 4px;
   color: var(--success);
   display: flex;
@@ -425,7 +485,7 @@ label {
 }
 
 .waitlist-success small {
-  color: #52705a;
+  color: var(--success-note);
   font-size: 12px;
   font-weight: 400;
   margin-top: 2px;
@@ -500,29 +560,29 @@ label {
 }
 
 .syntax-comment {
-  color: #71806d;
+  color: var(--syntax-comment);
   font-style: italic;
 }
 
 .syntax-function {
-  color: #2d6073;
+  color: var(--syntax-function);
 }
 
 .syntax-keyword {
-  color: #7a3e79;
+  color: var(--syntax-keyword);
   font-weight: 550;
 }
 
 .syntax-literal {
-  color: #93621f;
+  color: var(--syntax-literal);
 }
 
 .syntax-string {
-  color: #9a482d;
+  color: var(--syntax-string);
 }
 
 .syntax-type {
-  color: #315f70;
+  color: var(--syntax-type);
   font-weight: 550;
 }
 
@@ -632,7 +692,7 @@ label {
 
 .architecture-arrow {
   align-items: center;
-  color: #817b71;
+  color: var(--architecture-arrow);
   display: flex;
   font-family: var(--font-geist-mono), monospace;
   font-size: 19px;
@@ -961,7 +1021,7 @@ label {
 .one-time-secret {
   align-items: start;
   background: var(--accent-soft);
-  border: 1px solid #ddc5b8;
+  border: 1px solid var(--secret-border);
   border-radius: 4px;
   display: grid;
   gap: 16px;
@@ -1482,8 +1542,45 @@ td code {
   }
 }
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #171715;
+  --surface: #1d1c1a;
+  --surface-muted: #24221f;
+  --text: #ece9e2;
+  --text-soft: #cbc5ba;
+  --muted: #aaa399;
+  --line: #393630;
+  --line-strong: #57524a;
+  --accent: #e18a63;
+  --accent-soft: #35251f;
+  --success: #81ba8e;
+  --danger: #eb8b82;
+  --warning: #d2ad62;
+  --selection-background: #68402f;
+  --selection-text: #fff8ef;
+  --header-background: rgba(23, 23, 21, 0.94);
+  --primary-background: #e4dfd5;
+  --primary-hover: #f7f3eb;
+  --primary-text: #211f1b;
+  --placeholder: #79736a;
+  --link-underline: #777066;
+  --success-background: #1d2a20;
+  --success-border: #354a39;
+  --success-note: #9bb6a0;
+  --syntax-comment: #91a78c;
+  --syntax-function: #7fc0d6;
+  --syntax-keyword: #d99bd2;
+  --syntax-literal: #dfb56d;
+  --syntax-string: #ed9d80;
+  --syntax-type: #8ac8d9;
+  --architecture-arrow: #9d968b;
+  --secret-border: #654536;
+  --wordmark-icon: url("/aex-mark-white.webp");
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     color-scheme: dark;
     --background: #171715;
     --surface: #1d1c1a;
@@ -1498,80 +1595,26 @@ td code {
     --success: #81ba8e;
     --danger: #eb8b82;
     --warning: #d2ad62;
-  }
-
-  ::selection {
-    background: #68402f;
-    color: #fff8ef;
-  }
-
-  .site-header {
-    background: rgba(23, 23, 21, 0.94);
-  }
-
-  .button-primary,
-  .button-dark {
-    background: #e4dfd5;
-    border-color: #e4dfd5;
-    color: #211f1b;
-  }
-
-  .button-primary:hover:not(:disabled),
-  .button-dark:hover:not(:disabled) {
-    background: #f7f3eb;
-    border-color: #f7f3eb;
-  }
-
-  input::placeholder {
-    color: #79736a;
-  }
-
-  .site-links a,
-  .site-overview a,
-  .legal-page a,
-  .dashboard a {
-    text-decoration-color: #777066;
-  }
-
-  .waitlist-success {
-    background: #1d2a20;
-    border-color: #354a39;
-  }
-
-  .waitlist-success small {
-    color: #9bb6a0;
-  }
-
-  .syntax-comment {
-    color: #91a78c;
-  }
-
-  .syntax-function {
-    color: #7fc0d6;
-  }
-
-  .syntax-keyword {
-    color: #d99bd2;
-  }
-
-  .syntax-literal {
-    color: #dfb56d;
-  }
-
-  .syntax-string {
-    color: #ed9d80;
-  }
-
-  .syntax-type {
-    color: #8ac8d9;
-  }
-
-  .architecture-arrow {
-    color: #9d968b;
-  }
-
-  .one-time-secret {
-    border-color: #654536;
+    --selection-background: #68402f;
+    --selection-text: #fff8ef;
+    --header-background: rgba(23, 23, 21, 0.94);
+    --primary-background: #e4dfd5;
+    --primary-hover: #f7f3eb;
+    --primary-text: #211f1b;
+    --placeholder: #79736a;
+    --link-underline: #777066;
+    --success-background: #1d2a20;
+    --success-border: #354a39;
+    --success-note: #9bb6a0;
+    --syntax-comment: #91a78c;
+    --syntax-function: #7fc0d6;
+    --syntax-keyword: #d99bd2;
+    --syntax-literal: #dfb56d;
+    --syntax-string: #ed9d80;
+    --syntax-type: #8ac8d9;
+    --architecture-arrow: #9d968b;
+    --secret-border: #654536;
+    --wordmark-icon: url("/aex-mark-white.webp");
   }
 }
 

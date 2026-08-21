@@ -142,10 +142,7 @@ export default function Home() {
                 <li>Automatic context management and compaction.</li>
                 <li>Durable child sessions for delegated work.</li>
                 <li>Cache-stable prompts for lower latency.</li>
-                <li>
-                  Reference benchmark: 1.4 ms p50 platform-added TTFT across
-                  HTTP, SSE, journaling, and dispatch.
-                </li>
+                <li>1.4 ms p50 platform-added TTFT.</li>
               </ul>
             </section>
 
