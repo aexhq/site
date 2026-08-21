@@ -111,6 +111,7 @@ function fakeVercel(state, actions) {
   let nextId = 1;
   return async (url, init) => {
     assert.equal(url.origin, "https://api.vercel.com");
+    assert.equal(url.pathname, "/v1/security/firewall/config");
     assert.equal(url.searchParams.get("projectId"), "project");
     assert.equal(url.searchParams.get("teamId"), "team");
     assert.equal(init.headers.authorization, "Bearer token");
