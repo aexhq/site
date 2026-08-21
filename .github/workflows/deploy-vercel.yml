@@ -3,6 +3,10 @@ name: Deploy Aex site to Vercel
 on:
   workflow_dispatch:
     inputs:
+      expected_commit:
+        description: "Exact 40-character Site commit selected by release/sha-<commit>"
+        required: true
+        type: string
       promote:
         description: Assign this exact build to aex.dev after its staging smoke test
         required: true
@@ -35,6 +39,16 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v7
+      - name: Require immutable manual source
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+          SELECTED_REF: ${{ github.ref }}
+        shell: bash
+        run: |
+          [[ "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          test "$SELECTED_REF" = "refs/tags/release/sha-$EXPECTED_COMMIT"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
       - uses: actions/setup-node@v7
         with:
           node-version: 24
