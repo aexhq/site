@@ -56,11 +56,20 @@ export async function generateMetadata(): Promise<Metadata> {
       description: siteDescription,
       type: "website",
       url: metadataBase,
+      images: [
+        {
+          url: "/og.png",
+          width: 1200,
+          height: 630,
+          alt: "Aex alpha product preview.",
+        },
+      ],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: siteSocialTitle,
       description: siteDescription,
+      images: ["/og.png"],
     },
   };
 }

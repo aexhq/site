@@ -64,6 +64,11 @@ test("server-renders the backend landing page", async () => {
   const text = html.replace(/<[^>]*>/g, "");
   assert.match(html, /<title>The backend for AI workloads<\/title>/i);
   assert.match(html, /rel="icon"[^>]+href="\/icon\.svg/i);
+  assert.match(html, /property="og:image"[^>]+content="http:\/\/127\.0\.0\.1:\d+\/og\.png"/i);
+  assert.match(html, /property="og:image:width"[^>]+content="1200"/i);
+  assert.match(html, /property="og:image:height"[^>]+content="630"/i);
+  assert.match(html, /name="twitter:card"[^>]+content="summary_large_image"/i);
+  assert.match(html, /name="twitter:image"[^>]+content="http:\/\/127\.0\.0\.1:\d+\/og\.png"/i);
   assert.match(html, /The backend for AI workloads/);
   assert.match(html, /High-performance, reliable, and simple infrastructure/i);
   assert.match(html, /Start a session with your models and tools[\s\S]*structured data/i);
@@ -117,7 +122,7 @@ test("server-renders the backend landing page", async () => {
   assert.doesNotMatch(html, /Suspended computer|State kept without active compute|\$0\.10/i);
   assert.doesNotMatch(html, /Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine/i);
   assert.doesNotMatch(html, /Agent backend for AI apps|The session backend for AI apps|simple, elegant|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers/i);
-  assert.doesNotMatch(html, /\/og\.png/i);
+  await access(new URL("public/og.png", templateRoot));
   assert.doesNotMatch(html, /\bAEX\b|\bBeta\b/);
   assert.match(html, /THINK SLOWLY LTD[\s\S]*17224795/i);
   assert.match(html, /Registered office:[\s\S]*71-75 Shelton Street[\s\S]*WC2H 9JQ/i);
