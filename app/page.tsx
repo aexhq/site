@@ -50,7 +50,7 @@ export default function Home() {
         </header>
 
         <nav className="site-links" aria-label="Get started">
-          <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">Docs</a>
+          <Link href="/docs">Docs</Link>
           <Link href="/dashboard">Dashboard</Link>
           <a href="https://github.com/aexhq/aex">GitHub</a>
           <a href="https://discord.gg/Qk2YnHMHVb">Discord</a>

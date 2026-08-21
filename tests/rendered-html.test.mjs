@@ -158,6 +158,25 @@ test("public status and company legal pages render", async () => {
   assert.doesNotMatch(termsHtml, /\bAEX\b|\bBeta\b/);
 });
 
+test("server-renders the concise product documentation", async () => {
+  const response = await render("/docs");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const text = html.replace(/<[^>]*>/g, "");
+  assert.match(html, /<title>Documentation · Aex<\/title>/i);
+  assert.match(html, /aria-label="Documentation sections"/);
+  assert.match(html, /href="#start"[\s\S]*href="#tools"[\s\S]*href="#files"[\s\S]*href="#lifecycle"/);
+  assert.match(text, /Build with Aex/);
+  assert.match(text, /lookupStock[\s\S]*\.client\(\)[\s\S]*store-api/);
+  assert.match(text, /\.server\(import\.meta\.url/);
+  assert.match(text, /sandboxGeneration/);
+  assert.match(text, /mode-0600/);
+  assert.match(text, /ordinary durable session/);
+  assert.match(text, /24 MiB[\s\S]*192 KiB[\s\S]*92 KiB[\s\S]*512 MiB[\s\S]*10 GiB/);
+  assert.match(html, /href="https:\/\/github\.com\/aexhq\/aex\/blob\/main\/docs\/quickstart\.md"/);
+  assert.doesNotMatch(text, /remote MCP|automatic workspace sync|restores an old filesystem/i);
+});
+
 test("server-renders dashboard-first waitlist and invited onboarding", async () => {
   const waitlist = await render("/dashboard");
   assert.equal(waitlist.status, 200);

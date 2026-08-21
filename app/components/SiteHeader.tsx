@@ -10,7 +10,7 @@ export function SiteHeader() {
           <span>Aex</span>
         </Link>
         <nav aria-label="Main navigation">
-          <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md">Docs</a>
+          <Link href="/docs">Docs</Link>
           <Link href="/#architecture">Architecture</Link>
           <Link href="/#pricing">Pricing</Link>
           <Link href="/dashboard">Dashboard</Link>

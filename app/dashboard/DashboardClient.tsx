@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { WaitlistForm } from "../components/WaitlistForm";
 
@@ -488,9 +489,9 @@ export function DashboardClient({
       <article className="dashboard-card dashboard-quickstart">
         <header>
           <div><span>Get started</span><h2>Use your key.</h2></div>
-          <a href="https://github.com/aexhq/aex/blob/main/docs/quickstart.md" rel="noreferrer" target="_blank">
-            Full quickstart
-          </a>
+          <Link href="/docs">
+            Documentation
+          </Link>
         </header>
         <pre><code>{`npm install @aexhq/sdk zod
 
