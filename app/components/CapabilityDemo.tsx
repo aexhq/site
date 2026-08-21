@@ -5,9 +5,21 @@ import { type KeyboardEvent, type ReactNode, useId, useState } from "react";
 const demos = [
   {
     label: "Start",
-    code: `import { Aex } from "@aexhq/sdk";
+    code: `import { Aex, tool } from "@aexhq/sdk";
+import { z } from "zod";
 
-const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
+const catalog = new Map([["sku_123", { inStock: 7 }]]);
+const lookupStock = tool(
+  z.object({ sku: z.string() }),
+  async function lookupStock({ sku }) {
+    return catalog.get(sku) ?? { inStock: 0 };
+  },
+).client();
+
+const aex = new Aex({
+  apiKey: process.env.AEX_API_KEY!,
+  client: { id: "store-api" },
+});
 
 const session = await aex.sessions.create({
   model: {
@@ -15,10 +27,11 @@ const session = await aex.sessions.create({
     name: "gpt-5.4",
     apiKey: process.env.OPENAI_API_KEY!,
   },
+  tools: [lookupStock],
 });
 
-const reply = await session.send("Plan my day.");
-console.log(reply);`,
+console.log(await session.send("Can we fulfill 3 units of sku_123?"));
+aex.close();`,
   },
   {
     label: "Tools",

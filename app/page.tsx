@@ -20,7 +20,7 @@ const prices = [
   {
     item: "Storage",
     price: "$0.03 / GB-month",
-    details: "Working files and saved artifacts.",
+    details: "Explicitly saved session objects and artifacts.",
   },
   {
     item: "Web search",
@@ -142,7 +142,7 @@ export default function Home() {
                 <li>Automatic context management and compaction.</li>
                 <li>Durable child sessions for delegated work.</li>
                 <li>Cache-stable prompts for lower latency.</li>
-                <li>1.4 ms p50 platform-added TTFT.</li>
+                <li>Append-only recovery across process restarts.</li>
               </ul>
             </section>
 
@@ -151,7 +151,7 @@ export default function Home() {
               <ul>
                 <li>Runs typed tools, commands, and files.</li>
                 <li>Streams progress and cancellation.</li>
-                <li>Replaces failed workers without losing state.</li>
+                <li>Durable receipts make retries and recovery explicit.</li>
                 <li>Supports managed and customer-hosted tools.</li>
               </ul>
             </section>

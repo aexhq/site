@@ -87,7 +87,7 @@ test("server-renders the backend landing page", async () => {
   assert.match(text, /\.client\(\)/);
   assert.doesNotMatch(text, /lookupOrder|lookup_order|lookupCustomer/);
   assert.match(text, /session\.send/);
-  assert.match(text, /console\.log\(reply\)/);
+  assert.match(text, /console\.log\(await session\.send/);
   assert.match(text, /output:/);
   assert.doesNotMatch(text, /session\.output/);
   assert.match(text, /gpt-5\.4/);
@@ -106,7 +106,9 @@ test("server-renders the backend landing page", async () => {
   assert.match(html, /anthropic\.com\/engineering\/managed-agents/);
   assert.match(html, /<h2 id="features-title">Features<\/h2>/);
   assert.match(html, /brain-features-title[\s\S]*hands-features-title[\s\S]*sandbox-features-title/);
-  assert.match(html, /1\.4 ms p50 platform-added TTFT/);
+  assert.match(text, /lookupStock[\s\S]*\.client\(\)[\s\S]*client:[\s\S]*store-api/);
+  assert.match(html, /Append-only recovery across process restarts/);
+  assert.match(html, /Durable receipts make retries and recovery explicit/);
   assert.doesNotMatch(html, /versioned (?:tool )?operations|10,000 concurrent sessions/);
   assert.match(html, /<h2 id="pricing-title">Pricing<\/h2>/);
   assert.match(html, /Active computer[\s\S]*From \$0\.12 \/ hour/);
