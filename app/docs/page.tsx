@@ -210,7 +210,7 @@ export default function Docs() {
             </pre>
             <p>
               End recursively fences new work but retains the session record and
-              stored objects. Delete is destructive and recoverable; it does not
+              stored objects. Delete is destructive and its cleanup job is retryable; it does not
               hold one HTTP request open while compute and object versions are removed.
             </p>
           </section>
