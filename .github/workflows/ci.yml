@@ -13,14 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  site:
-    name: site (${{ matrix.task }})
+  lint:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        task: [lint, build, test]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -28,4 +23,18 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run ${{ matrix.task }}
+      - run: npm run lint
+
+  build-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Rendered-route tests intentionally start the production server from this build.
+      - run: npm test
