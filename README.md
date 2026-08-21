@@ -27,4 +27,6 @@ npm test
 
 The canonical SDK quickstart and API contracts live in
 [`aexhq/aex`](https://github.com/aexhq/aex). Production deployments use the protected Vercel
-workflow in `.github/workflows/deploy-vercel.yml`.
+workflow in `.github/workflows/deploy-vercel.yml`. Promotion also requires the exact three-entry
+`managed_sandbox_blocked_source_ipv4_cidrs` JSON output from Platform. The workflow reconciles
+those source denies across every Vercel project hostname before assigning `aex.dev`.

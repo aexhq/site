@@ -8,6 +8,11 @@ on:
         required: true
         default: false
         type: boolean
+      managed_sandbox_nat_cidrs:
+        description: 'Exact Platform JSON output, e.g. ["203.0.113.1/32","203.0.113.2/32","203.0.113.3/32"]'
+        required: false
+        default: ""
+        type: string
   push:
     branches: [main]
 
@@ -88,6 +93,11 @@ jobs:
           test -s aex-mark-black.webp
           test -s aex-mark-white.webp
           ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt
+      - name: Reconcile managed-sandbox source denies
+        if: github.event_name == 'workflow_dispatch' && (inputs.promote || inputs.managed_sandbox_nat_cidrs != '')
+        env:
+          AEX_MANAGED_SANDBOX_NAT_CIDRS: ${{ inputs.managed_sandbox_nat_cidrs }}
+        run: node scripts/sync-managed-sandbox-firewall.mjs
       - name: Promote the staged build to aex.dev
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         env:
