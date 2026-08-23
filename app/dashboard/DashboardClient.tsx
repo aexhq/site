@@ -232,6 +232,9 @@ export function DashboardClient({
       const topup = await api<Topup>("topups", {
         method: "POST",
         body: JSON.stringify({ amount_cents: dollars * 100 }),
+        // Required by the control plane: a retried create replays the same topup and
+        // checkout link instead of minting a second live payment.
+        headers: { "idempotency-key": crypto.randomUUID() },
       });
       if (!topup.checkout_url) throw new Error("Checkout did not return a payment URL.");
       window.location.assign(topup.checkout_url);

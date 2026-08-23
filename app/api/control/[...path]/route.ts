@@ -106,6 +106,11 @@ async function forward(
   accountToken?: string,
   upstreamMethod = request.method,
 ) {
+  const idempotencyKey = /^[A-Za-z0-9._:-]{8,128}$/.test(
+    request.headers.get("idempotency-key") ?? "",
+  )
+    ? (request.headers.get("idempotency-key") as string)
+    : undefined;
   const origin = controlOrigin();
   if (!origin) {
     return jsonError(500, "The dashboard control-plane origin is invalid.", "configuration_error");
@@ -118,6 +123,9 @@ async function forward(
         accept: "application/json",
         ...(body ? { "content-type": "application/json" } : {}),
         ...(accountToken ? { authorization: "Bearer " + accountToken } : {}),
+        // Money creation is idempotent end to end: the control plane requires this header
+        // on POST /v1/topups, and the dashboard client mints one per attempt.
+        ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
       },
       body,
       cache: "no-store",
