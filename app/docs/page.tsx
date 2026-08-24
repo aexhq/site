@@ -6,10 +6,14 @@ import { SiteHeader } from "../components/SiteHeader";
 export const metadata: Metadata = {
   title: "Documentation",
   description:
-    "Start an Aex session, place typed tools, work with temporary sandbox files, and save durable objects.",
+    "Start an Aex session, compose loop, tool, and environment extensions, and save durable objects.",
 };
 
-const startExample = `import { Aex, tool } from "@aexhq/sdk";
+const startExample = `import { app } from "@aexhq/env-app";
+import { awsMicrovm } from "@aexhq/env-aws-microvm";
+import { pi } from "@aexhq/loop-pi";
+import { Aex, tool } from "@aexhq/sdk";
+import { bash, read, write } from "@aexhq/tools";
 import { z } from "zod";
 
 const catalog = new Map([["sku_123", { inStock: 7 }]]);
@@ -18,12 +22,11 @@ const lookupStock = tool(
   async function lookupStock({ sku }) {
     return catalog.get(sku) ?? { inStock: 0 };
   },
-).client();
+);
 
-const aex = new Aex({
-  apiKey: process.env.AEX_API_KEY!,
-  client: { id: "store-api" },
-});
+const application = app({ id: "store-api" });
+const workspace = awsMicrovm();
+const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 
 const session = await aex.sessions.create({
   model: {
@@ -31,41 +34,42 @@ const session = await aex.sessions.create({
     name: "gpt-5.4",
     apiKey: process.env.OPENAI_API_KEY!,
   },
-  tools: [lookupStock],
+  loop: pi(),
+  environments: { application, workspace },
+  tools: [lookupStock, bash(), read(), write()],
 });
 
 console.log(await session.send("Can we fulfill 3 units of sku_123?"));
 aex.close();`;
 
-const serverToolExample = `export default tool(
+const preparedToolExample = `export default tool(
   z.object({ path: z.string() }),
-  async function processDocument({ path }, context) {
-    return { path, workspace: context.workspace };
+  async function processDocument({ path }) {
+    return process(path);
   },
 )
-  .describe("Process one document in managed compute.")
-  .server(import.meta.url, { env: ["PROCESSOR_TOKEN"] });`;
+  .describe("Process one document.")
+  .setup(async function prepareProcessor() {
+    await prepareModel();
+  });`;
 
-const storageExample = `const state = await session.sandbox.create();
-if (!state.generation) throw new Error("sandbox is not live");
+const storageExample = `const runtime = session.environment(workspace);
+const state = await runtime.status();
+if (!state.generation) throw new Error("environment is not live");
 
 const generation = state.generation;
-await session.sandbox.files.upload(
-  "/workspace/input.txt",
-  "hello",
-  { generation },
-);
+await runtime.files.upload("input.txt", "hello");
 
-await session.storage.copyFromSandbox({
+await session.storage.copyFromEnvironment(workspace, {
   path: "/workspace/input.txt",
   key: "outputs/input.txt",
-  sandboxGeneration: generation,
+  generation,
 });
 
-await session.storage.copyToSandbox({
+await session.storage.copyToEnvironment(workspace, {
   key: "outputs/input.txt",
   path: "/workspace/restored.txt",
-  sandboxGeneration: generation,
+  generation,
 });`;
 
 const lifecycleExample = `await session.end();
@@ -106,9 +110,9 @@ export default function Docs() {
 
           <section id="start" className="docs-section" aria-labelledby="docs-start-title">
             <h2 id="docs-start-title">Start</h2>
-            <p>Create an API key in the dashboard, then install the Node 22 SDK and Zod.</p>
+            <p>Create an API key in the dashboard, then install the SDK and the extensions this session uses.</p>
             <pre className="site-code" aria-label="Install the Aex SDK">
-              <code>npm install @aexhq/sdk @aexhq/tools zod</code>
+              <code>npm install @aexhq/sdk @aexhq/env-app @aexhq/env-aws-microvm @aexhq/loop-pi @aexhq/tools zod</code>
             </pre>
             <pre className="site-code" aria-label="Create and use an Aex session">
               <code>{startExample}</code>
@@ -129,63 +133,65 @@ export default function Docs() {
           <section id="tools" className="docs-section" aria-labelledby="docs-tools-title">
             <h2 id="docs-tools-title">Place tools deliberately</h2>
             <p>
-              Tool names, schemas, placement, and network policy are sealed when
-              the session is created. Model output cannot add or widen them.
+              A session has no default loop or environment. Tool names, schemas,
+              bindings, and network policy are sealed when it is created. Model
+              output cannot add or widen them.
             </p>
             <dl className="docs-definitions">
               <div>
-                <dt><code>.client()</code></dt>
-                <dd>Runs in your connected Node application. Closures and application credentials stay there.</dd>
+                <dt><code>loop: pi()</code></dt>
+                <dd>Selects an explicit brain extension that implements the agent loop.</dd>
               </div>
               <div>
-                <dt><code>.server(import.meta.url)</code></dt>
-                <dd>Runs the exported function in the root tree&apos;s lazy managed computer.</dd>
+                <dt><code>environments</code></dt>
+                <dd>Names opaque references such as <code>app()</code> and <code>awsMicrovm()</code>.</dd>
               </div>
               <div>
                 <dt><code>@aexhq/tools</code></dt>
-                <dd>Adds explicit engine capabilities such as shell, files, storage, web, and isolated extra sandboxes.</dd>
+                <dd>Adds prepared tools such as shell, files, and subagents. Each tool binds to one compatible environment.</dd>
               </div>
             </dl>
-            <pre className="site-code" aria-label="Define a server tool">
-              <code>{serverToolExample}</code>
+            <pre className="site-code" aria-label="Define a prepared tool">
+              <code>{preparedToolExample}</code>
             </pre>
             <p>
-              A server tool receives only its declared environment names. Each
-              binding runs as a separate unprivileged user in hosted compute;
-              local mode is intentionally unsandboxed.
+              The SDK auto-binds only when exactly one environment is compatible.
+              Use <code>tool.bind(environmentRef)</code> when more than one matches.
+              A prepared tool carries its runtime and immutable dependencies, so
+              the environment does not need Node or Python preinstalled.
             </p>
           </section>
 
           <section id="network" className="docs-section" aria-labelledby="docs-network-title">
             <h2 id="docs-network-title">Seal outbound network</h2>
             <p>
-              Managed compute starts with no outbound network. Choose{" "}
+              The AWS MicroVM environment starts with no outbound network. Choose{" "}
               <code>{`{ outbound: "public" }`}</code> for supported public
               destinations or an allowlist for narrower hosts, CIDRs, and ports.
               Private, metadata, and Aex infrastructure stay blocked. This policy
-              does not govern code placed with <code>.client()</code>.
+              does not govern code bound to an <code>app()</code> callback environment.
             </p>
           </section>
 
           <section id="files" className="docs-section" aria-labelledby="docs-files-title">
             <h2 id="docs-files-title">Temporary files, durable objects</h2>
             <p>
-              The default sandbox is shared by a root and its children, but its
-              filesystem can disappear. Every live file operation and both copy
-              directions require the current generation. Reads never restore an
-              old filesystem.
+              Each declared computer environment is shared by a root and its
+              children, but its filesystem can disappear. Every live file
+              operation and both copy directions require that environment&apos;s
+              current generation. Reads never restore an old filesystem.
             </p>
-            <pre className="site-code" aria-label="Copy between sandbox files and durable storage">
+            <pre className="site-code" aria-label="Copy between environment files and durable storage">
               <code>{storageExample}</code>
             </pre>
             <p>
-              Use <code>session.storage</code> for data that must survive sandbox
+              Use <code>session.storage</code> for data that must survive environment
               loss. There is no automatic checkpoint or sync. Stream helpers avoid
               buffering large objects; an object may be at most 512 MiB, and hosted
               visible plus reserved storage is capped at 10 GiB per session and per account.
             </p>
             <div className="docs-note">
-              A never-materialized sandbox returns 409. A stale, released, or
+              A never-materialized environment returns 409. A stale, released, or
               expired generation returns 410. File APIs honor Unix permissions
               and do not bypass a tool&apos;s deliberate mode-0600 file.
             </div>
@@ -196,7 +202,9 @@ export default function Docs() {
             <p>
               A child is an ordinary durable session with its own journal and
               lifecycle. It inherits the root&apos;s immutable model, tool, secret,
-              network, and resource ceilings, and shares the default sandbox.
+              network, environment declarations and bindings, and resource
+              ceilings. The same opaque environment references address the
+              root&apos;s logical environments.
               Forks point to a fixed parent-history boundary instead of copying a
               mutable transcript. Parents can message, follow up, wait, interrupt,
               or end a child explicitly.
@@ -225,7 +233,7 @@ export default function Docs() {
                 <tbody>
                   <tr><th scope="row">Create request</th><td>24 MiB</td></tr>
                   <tr><th scope="row">Message request</th><td>192 KiB</td></tr>
-                  <tr><th scope="row">Managed tool terminal value</th><td>92 KiB canonical JSON</td></tr>
+                  <tr><th scope="row">Environment tool terminal value</th><td>92 KiB canonical JSON</td></tr>
                   <tr><th scope="row">Storage object</th><td>512 MiB</td></tr>
                   <tr><th scope="row">Session and account storage</th><td>10 GiB each</td></tr>
                 </tbody>

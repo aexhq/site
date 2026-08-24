@@ -12,7 +12,7 @@ on:
         required: true
         default: false
         type: boolean
-      managed_sandbox_nat_cidrs:
+      managed_environment_nat_cidrs:
         description: 'Exact Platform JSON output, e.g. ["203.0.113.1/32","203.0.113.2/32","203.0.113.3/32"]'
         required: false
         default: ""
@@ -88,8 +88,10 @@ jobs:
           grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt
           grep -Fq "Start a session with your models and tools" homepage.txt
           grep -Fq "@aexhq/sdk" homepage.txt
-          grep -Fq "getWeather" homepage.txt
+          grep -Fq "inspectFile" homepage.txt
           grep -Fq "session.send" homepage.txt
+          grep -Fq "loop: pi()" homepage.txt
+          grep -Fq "environments: { application }" homepage.txt
           grep -Fq "output:" homepage.txt
           ! grep -Fq "session.output" homepage.txt
           grep -Fq "gpt-5.4" homepage.txt
@@ -98,7 +100,9 @@ jobs:
           ! grep -Fq "ai-gateway.vercel.sh" homepage.txt
           ! grep -Fq "sk-ant-" homepage.txt
           grep -Fq "wordmark-mark" homepage.html
-          grep -Fq "brain and hands pattern" homepage.txt
+          grep -Fq "Brain extensions" homepage.txt
+          grep -Fq "Tool extensions" homepage.txt
+          grep -Fq "Environment extensions" homepage.txt
           grep -Fq "Subagents" homepage.txt
           grep -Fq "Active computer" homepage.txt
           grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt
@@ -114,18 +118,19 @@ jobs:
           sed -E 's/<[^>]+>//g' docs.html > docs.txt
           grep -Fq "Build with Aex" docs.txt
           grep -Fq "lookupStock" docs.txt
-          grep -Fq ".client()" docs.txt
-          grep -Fq "sandboxGeneration" docs.txt
+          grep -Fq ".setup" docs.txt
+          grep -Fq "copyFromEnvironment" docs.txt
+          grep -Fq "tool.bind(environmentRef)" docs.txt
           grep -Fq "cleanup job is retryable" docs.txt
           for route in /dashboard /status /privacy /terms; do
             npx --yes vercel@59.1.4 curl "$route" --deployment "$DEPLOYMENT_URL" >/dev/null
           done
           ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt
-      - name: Reconcile managed-sandbox source denies
-        if: github.event_name == 'workflow_dispatch' && (inputs.promote || inputs.managed_sandbox_nat_cidrs != '')
+      - name: Reconcile managed-environment source denies
+        if: github.event_name == 'workflow_dispatch' && (inputs.promote || inputs.managed_environment_nat_cidrs != '')
         env:
-          AEX_MANAGED_SANDBOX_NAT_CIDRS: ${{ inputs.managed_sandbox_nat_cidrs }}
-        run: node scripts/sync-managed-sandbox-firewall.mjs
+          AEX_MANAGED_ENVIRONMENT_NAT_CIDRS: ${{ inputs.managed_environment_nat_cidrs }}
+        run: node scripts/sync-managed-environment-firewall.mjs
       - name: Promote the staged build to aex.dev
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         env:
@@ -142,8 +147,10 @@ jobs:
               && grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt \
               && grep -Fq "Start a session with your models and tools" homepage.txt \
               && grep -Fq "@aexhq/sdk" homepage.txt \
-              && grep -Fq "getWeather" homepage.txt \
+              && grep -Fq "inspectFile" homepage.txt \
               && grep -Fq "session.send" homepage.txt \
+              && grep -Fq "loop: pi()" homepage.txt \
+              && grep -Fq "environments: { application }" homepage.txt \
               && grep -Fq "output:" homepage.txt \
               && ! grep -Fq "session.output" homepage.txt \
               && grep -Fq "gpt-5.4" homepage.txt \
@@ -152,7 +159,9 @@ jobs:
               && ! grep -Fq "ai-gateway.vercel.sh" homepage.txt \
               && ! grep -Fq "sk-ant-" homepage.txt \
               && grep -Fq "wordmark-mark" homepage.html \
-              && grep -Fq "brain and hands pattern" homepage.txt \
+              && grep -Fq "Brain extensions" homepage.txt \
+              && grep -Fq "Tool extensions" homepage.txt \
+              && grep -Fq "Environment extensions" homepage.txt \
               && grep -Fq "Subagents" homepage.txt \
               && grep -Fq "Active computer" homepage.txt \
               && grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt \
@@ -168,8 +177,9 @@ jobs:
               && sed -E 's/<[^>]+>//g' docs.html > docs.txt \
               && grep -Fq "Build with Aex" docs.txt \
               && grep -Fq "lookupStock" docs.txt \
-              && grep -Fq ".client()" docs.txt \
-              && grep -Fq "sandboxGeneration" docs.txt \
+              && grep -Fq ".setup" docs.txt \
+              && grep -Fq "copyFromEnvironment" docs.txt \
+              && grep -Fq "tool.bind(environmentRef)" docs.txt \
               && grep -Fq "cleanup job is retryable" docs.txt \
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/dashboard >/dev/null \
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/status >/dev/null \

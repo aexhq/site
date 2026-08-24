@@ -61,20 +61,16 @@ export default function Home() {
         <section className="site-section" id="architecture" aria-labelledby="architecture-title">
           <h2 id="architecture-title">Architecture</h2>
           <p>
-            Aex keeps durable session state separate from the computers that run
-            tools, so each layer can scale and recover independently. The design
-            is inspired by Anthropic&apos;s{" "}
-            <a href="https://www.anthropic.com/engineering/managed-agents">
-              brain and hands pattern
-            </a>.
+            Aex keeps a minimal durable session kernel separate from replaceable
+            policy. Brain extensions implement agent loops, tool extensions define
+            model capabilities, and environment extensions run bound tools.
           </p>
 
           <figure className="architecture-diagram">
             <figcaption className="sr-only">
-              Your app sends work to the Brain. The Brain persists its journal
-              in a database and exchanges tool operations with Hands. Hands run
-              those operations in a sandbox, which can copy files to durable
-              storage explicitly.
+              Your app sends work to the Brain kernel, which persists its journal
+              in a database and composes loop and tool extensions. Bound environment
+              extensions execute tools and can copy files to durable storage explicitly.
             </figcaption>
             <div className="architecture-grid">
               <article className="architecture-card architecture-database">
@@ -103,23 +99,23 @@ export default function Home() {
 
               <article className="architecture-card architecture-brain">
                 <h3>Brain</h3>
-                <p>Owns the model loop, context, and recovery.</p>
+                <p>Owns durable sessions, journaled effects, and recovery.</p>
               </article>
               <div className="architecture-arrow architecture-brain-link" aria-hidden="true">
                 ↔
               </div>
 
-              <article className="architecture-card architecture-hands">
-                <h3>Hands</h3>
-                <p>Runs typed tool operations for the Brain.</p>
+              <article className="architecture-card architecture-extensions">
+                <h3>Extensions</h3>
+                <p>Supply agent loops and typed model capabilities.</p>
               </article>
-              <div className="architecture-arrow architecture-hands-link" aria-hidden="true">
+              <div className="architecture-arrow architecture-extensions-link" aria-hidden="true">
                 ↔
               </div>
 
-              <article className="architecture-card architecture-sandbox">
-                <h3>Sandbox</h3>
-                <p>Isolates processes, files, secrets, and network.</p>
+              <article className="architecture-card architecture-environment">
+                <h3>Environment</h3>
+                <p>Owns tool runtime, files, isolation, and lifecycle.</p>
               </article>
             </div>
           </figure>
@@ -133,36 +129,34 @@ export default function Home() {
           </p>
 
           <div className="feature-groups">
-            <section className="feature-group" aria-labelledby="brain-features-title">
-              <h3 id="brain-features-title">Brain</h3>
+            <section className="feature-group" aria-labelledby="brain-extension-features-title">
+              <h3 id="brain-extension-features-title">Brain extensions</h3>
               <ul>
-                <li>
-                  Models from OpenAI, Anthropic, OpenRouter, and more.
-                </li>
+                <li>Explicit agent-loop policy such as Pi or Codex.</li>
+                <li>Models from OpenAI, Anthropic, OpenRouter, and more.</li>
                 <li>Automatic context management and compaction.</li>
                 <li>Durable child sessions for delegated work.</li>
                 <li>Cache-stable prompts for lower latency.</li>
-                <li>Append-only recovery across process restarts.</li>
               </ul>
             </section>
 
-            <section className="feature-group" aria-labelledby="hands-features-title">
-              <h3 id="hands-features-title">Hands</h3>
+            <section className="feature-group" aria-labelledby="tool-extension-features-title">
+              <h3 id="tool-extension-features-title">Tool extensions</h3>
               <ul>
-                <li>Runs typed tools, commands, and files.</li>
-                <li>Streams progress and cancellation.</li>
-                <li>Durable receipts make retries and recovery explicit.</li>
-                <li>Supports managed and customer-hosted tools.</li>
+                <li>Typed inputs and outputs fixed at session creation.</li>
+                <li>Prepared runtimes and one-time setup travel with the tool.</li>
+                <li>Explicit environment prerequisites and network needs.</li>
+                <li>Official and third-party tools use the same contract.</li>
               </ul>
             </section>
 
-            <section className="feature-group" aria-labelledby="sandbox-features-title">
-              <h3 id="sandbox-features-title">Sandbox</h3>
+            <section className="feature-group" aria-labelledby="environment-extension-features-title">
+              <h3 id="environment-extension-features-title">Environment extensions</h3>
               <ul>
-                <li>A lazy workspace plus isolated extras.</li>
+                <li>Application callbacks or isolated AWS MicroVM compute.</li>
                 <li>Session-scoped secrets and network policy.</li>
                 <li>Explicit copies to durable storage.</li>
-                <li>Per-second compute.</li>
+                <li>Typed handles expose provider-specific capabilities.</li>
               </ul>
             </section>
           </div>
