@@ -2,36 +2,37 @@ import { isIP } from "node:net";
 import { pathToFileURL } from "node:url";
 
 const API_ORIGIN = "https://api.vercel.com";
+// Existing Vercel rule ownership notes retain this prefix so reconciliation adopts them in place.
 const NOTE_PREFIX = "aex-managed-sandbox:";
 
-export function parseManagedSandboxCidrs(value) {
+export function parseManagedEnvironmentCidrs(value) {
   let parsed;
   try {
     parsed = JSON.parse(value);
   } catch {
-    throw new TypeError("managed sandbox NAT CIDRs must be a JSON array");
+    throw new TypeError("managed environment NAT CIDRs must be a JSON array");
   }
   if (!Array.isArray(parsed) || parsed.length !== 3) {
-    throw new TypeError("managed sandbox NAT CIDRs must contain exactly three entries");
+    throw new TypeError("managed environment NAT CIDRs must contain exactly three entries");
   }
 
   const cidrs = parsed.map((item) => {
     if (typeof item !== "string" || !item.endsWith("/32")) {
-      throw new TypeError("every managed sandbox NAT CIDR must be an IPv4 /32");
+      throw new TypeError("every managed environment NAT CIDR must be an IPv4 /32");
     }
     const address = item.slice(0, -3);
     if (isIP(address) !== 4) {
-      throw new TypeError("every managed sandbox NAT CIDR must be an IPv4 /32");
+      throw new TypeError("every managed environment NAT CIDR must be an IPv4 /32");
     }
     return `${address}/32`;
   });
   if (new Set(cidrs).size !== cidrs.length) {
-    throw new TypeError("managed sandbox NAT CIDRs must be distinct");
+    throw new TypeError("managed environment NAT CIDRs must be distinct");
   }
   return cidrs.sort();
 }
 
-export async function syncManagedSandboxFirewall({
+export async function syncManagedEnvironmentFirewall({
   token,
   teamId,
   projectId,
@@ -48,7 +49,7 @@ export async function syncManagedSandboxFirewall({
   if (!Array.isArray(cidrs) || cidrs.length !== 3 || new Set(cidrs).size !== 3) {
     throw new TypeError("cidrs must be the validated three-address set");
   }
-  cidrs = parseManagedSandboxCidrs(JSON.stringify(cidrs));
+  cidrs = parseManagedEnvironmentCidrs(JSON.stringify(cidrs));
 
   const request = async (path, init = {}) => {
     const url = new URL(path, API_ORIGIN);
@@ -157,7 +158,7 @@ export async function syncManagedSandboxFirewall({
     if (matchesExpected(active, cidrs)) return active;
     if (attempt + 1 < verifyAttempts) await delay(verifyDelayMs);
   }
-  throw new Error("Vercel firewall did not converge to the exact managed-sandbox deny set");
+  throw new Error("Vercel firewall did not converge to the exact managed-environment deny set");
 }
 
 function assertConfigShape(config) {
@@ -194,14 +195,14 @@ function delay(milliseconds) {
 }
 
 async function main() {
-  const cidrs = parseManagedSandboxCidrs(process.env.AEX_MANAGED_SANDBOX_NAT_CIDRS ?? "");
-  await syncManagedSandboxFirewall({
+  const cidrs = parseManagedEnvironmentCidrs(process.env.AEX_MANAGED_ENVIRONMENT_NAT_CIDRS ?? "");
+  await syncManagedEnvironmentFirewall({
     token: process.env.VERCEL_TOKEN,
     teamId: process.env.VERCEL_ORG_ID,
     projectId: process.env.VERCEL_PROJECT_ID,
     cidrs,
   });
-  console.log(`Verified ${cidrs.length} managed-sandbox source denies on every project hostname.`);
+  console.log(`Verified ${cidrs.length} managed-environment source denies on every project hostname.`);
 }
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {

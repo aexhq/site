@@ -5,7 +5,9 @@ import { type KeyboardEvent, type ReactNode, useId, useState } from "react";
 const demos = [
   {
     label: "Start",
-    code: `import { Aex, tool } from "@aexhq/sdk";
+    code: `import { app } from "@aexhq/env-app";
+import { pi } from "@aexhq/loop-pi";
+import { Aex, tool } from "@aexhq/sdk";
 import { z } from "zod";
 
 const catalog = new Map([["sku_123", { inStock: 7 }]]);
@@ -14,19 +16,18 @@ const lookupStock = tool(
   async function lookupStock({ sku }) {
     return catalog.get(sku) ?? { inStock: 0 };
   },
-).client();
+);
 
-const aex = new Aex({
-  apiKey: process.env.AEX_API_KEY!,
-  client: { id: "store-api" },
-});
-
+const application = app({ id: "store-api" });
+const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 const session = await aex.sessions.create({
   model: {
     provider: "openai",
     name: "gpt-5.4",
     apiKey: process.env.OPENAI_API_KEY!,
   },
+  loop: pi(),
+  environments: { application },
   tools: [lookupStock],
 });
 
@@ -37,18 +38,18 @@ aex.close();`,
     label: "Tools",
     code: `import { tool } from "@aexhq/sdk";
 import { z } from "zod";
-import { weather } from "../weather.js";
+import { inspect, prepareIndex } from "../inspector.js";
 
-const getWeather = tool(
-  z.object({ city: z.string() }),
-  async function getWeather({ city }) {
-    return weather.current(city);
+export default tool(
+  z.object({ path: z.string() }),
+  async function inspectFile({ path }) {
+    return inspect(path);
   },
 )
-  .describe("Get the current weather for a city.")
-  .client();
-
-export default getWeather;`,
+  .describe("Inspect one workspace file.")
+  .setup(async function prepareInspector() {
+    await prepareIndex();
+  });`,
   },
   {
     label: "Structured Outputs",
@@ -68,39 +69,41 @@ console.log(plan.tasks); // fully typed`,
   },
   {
     label: "Files",
-    code: `const state = await session.sandbox.create();
-if (!state.generation) throw new Error("Sandbox is not ready");
+    code: `const runtime = session.environment(workspace);
+const state = await runtime.status();
+if (!state.generation) throw new Error("Environment is not ready");
 
-await session.sandbox.files.upload(
-  "/workspace/brief.txt",
+await runtime.files.upload(
+  "brief.txt",
   "Turn these notes into a launch plan.",
-  { generation: state.generation },
 );
 
-const files = await session.sandbox.files.list("/workspace", {
-  generation: state.generation,
+const files = await runtime.files.list(".");`,
+  },
+  {
+    label: "Binding",
+    code: `const application = app({ id: "orders-api" });
+const workspace = awsMicrovm();
+
+const session = await aex.sessions.create({
+  model,
+  loop: pi(),
+  environments: { application, workspace },
+  tools: [
+    lookupOrder.bind(application),
+    bash().bind(workspace),
+  ],
 });`,
   },
   {
-    label: "Sandboxes",
-    code: `await session.send(
-  [
-    "Create two isolated sandboxes.",
-    "Run the parser tests in the first.",
-    "Benchmark 100 lookups in the second.",
-    "Compare the results, then terminate both.",
-  ].join("\\n"),
-);`,
-  },
-  {
     label: "Storage",
-    code: `const state = await session.sandbox.status();
-if (!state.generation) throw new Error("Sandbox is not ready");
+    code: `const state = await session.environment(workspace).status();
+if (!state.generation) throw new Error("Environment is not ready");
 
-await session.storage.copyFromSandbox({
+await session.storage.copyFromEnvironment(workspace, {
   path: "/workspace/customer-review.md",
   key: "reviews/customer.md",
-  sandboxGeneration: state.generation,
+  generation: state.generation,
 });
 
 const saved = await session.storage.list({

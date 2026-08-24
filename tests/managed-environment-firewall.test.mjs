@@ -2,15 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  parseManagedSandboxCidrs,
-  syncManagedSandboxFirewall,
-} from "../scripts/sync-managed-sandbox-firewall.mjs";
+  parseManagedEnvironmentCidrs,
+  syncManagedEnvironmentFirewall,
+} from "../scripts/sync-managed-environment-firewall.mjs";
 
 const DESIRED = ["198.51.100.1/32", "198.51.100.2/32", "198.51.100.3/32"];
 
 test("validates the exact three distinct IPv4 /32 boundary", () => {
   assert.deepEqual(
-    parseManagedSandboxCidrs('["198.51.100.3/32","198.51.100.1/32","198.51.100.2/32"]'),
+    parseManagedEnvironmentCidrs('["198.51.100.3/32","198.51.100.1/32","198.51.100.2/32"]'),
     DESIRED,
   );
   for (const invalid of [
@@ -21,7 +21,7 @@ test("validates the exact three distinct IPv4 /32 boundary", () => {
     '["198.51.100.1/24","198.51.100.2/32","198.51.100.3/32"]',
     '["999.51.100.1/32","198.51.100.2/32","198.51.100.3/32"]',
   ]) {
-    assert.throws(() => parseManagedSandboxCidrs(invalid));
+    assert.throws(() => parseManagedEnvironmentCidrs(invalid));
   }
 });
 
@@ -38,7 +38,7 @@ test("adds before removing and converges without disturbing unrelated rules", as
   const actions = [];
   const fetchImpl = fakeVercel(state, actions);
 
-  await syncManagedSandboxFirewall({
+  await syncManagedEnvironmentFirewall({
     token: "token",
     teamId: "team",
     projectId: "project",
@@ -60,7 +60,7 @@ test("adds before removing and converges without disturbing unrelated rules", as
 
 test("fails closed on an API error without exposing credentials", async () => {
   await assert.rejects(
-    syncManagedSandboxFirewall({
+    syncManagedEnvironmentFirewall({
       token: "secret-token",
       teamId: "team",
       projectId: "project",
@@ -83,7 +83,7 @@ test("fails closed instead of taking over an unowned rule", async () => {
   };
   const actions = [];
   await assert.rejects(
-    syncManagedSandboxFirewall({
+    syncManagedEnvironmentFirewall({
       token: "token",
       teamId: "team",
       projectId: "project",
@@ -98,7 +98,7 @@ test("fails closed instead of taking over an unowned rule", async () => {
 
 test("initializes an absent firewall before adding the managed denies", async () => {
   const actions = [];
-  const active = await syncManagedSandboxFirewall({
+  const active = await syncManagedEnvironmentFirewall({
     token: "token",
     teamId: "team",
     projectId: "project",
