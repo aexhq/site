@@ -50,12 +50,14 @@ const generation = state.generation;
 await session.sandbox.files.upload("/workspace/input.txt", "hello", { generation });
 
 await session.storage.copyFromSandbox({
+  environment: "workspace",
   path: "/workspace/input.txt",
   key: "outputs/input.txt",
   sandboxGeneration: generation,
 });
 
 await session.storage.copyToSandbox({
+  environment: "workspace",
   key: "outputs/input.txt",
   path: "/workspace/restored.txt",
   sandboxGeneration: generation,

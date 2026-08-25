@@ -105,6 +105,7 @@ const session = await aex.sessions.create({
 if (!state.generation) throw new Error("Sandbox is not ready");
 
 await session.storage.copyFromSandbox({
+  environment: "workspace",
   path: "/workspace/customer-review.md",
   key: "reviews/customer.md",
   sandboxGeneration: state.generation,

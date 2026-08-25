@@ -96,6 +96,7 @@ test("server-renders the backend landing page", async () => {
   assert.match(text, /session\.sandbox\.files\.upload/);
   assert.match(text, /tools: \[bash\(\), read\(\), write\(\)\]/);
   assert.match(text, /session\.storage\.copyFromSandbox/);
+  assert.match(text, /copyFromSandbox\([\s\S]*environment: &quot;workspace&quot;/);
   assert.match(text, /session\.children\.create/);
   assert.match(html, /class="syntax-keyword"/);
   assert.match(html, /class="syntax-string"/);
