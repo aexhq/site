@@ -62,8 +62,8 @@ export default function Home() {
           <h2 id="architecture-title">Architecture</h2>
           <p>
             Aex keeps a minimal durable session kernel separate from replaceable
-            policy. Brain extensions implement agent loops, tool extensions define
-            model capabilities, and environment extensions run bound tools.
+            policy. Agentloop, Model, Tool, and Environment extensions are
+            imported explicitly and use the same public component contracts.
           </p>
 
           <figure className="architecture-diagram">
@@ -107,7 +107,7 @@ export default function Home() {
 
               <article className="architecture-card architecture-extensions">
                 <h3>Extensions</h3>
-                <p>Supply agent loops and typed model capabilities.</p>
+                <p>Supply imported Agentloop, Model, and Tool behavior.</p>
               </article>
               <div className="architecture-arrow architecture-extensions-link" aria-hidden="true">
                 ↔
@@ -129,14 +129,22 @@ export default function Home() {
           </p>
 
           <div className="feature-groups">
-            <section className="feature-group" aria-labelledby="brain-extension-features-title">
-              <h3 id="brain-extension-features-title">Brain extensions</h3>
+            <section className="feature-group" aria-labelledby="agentloop-extension-features-title">
+              <h3 id="agentloop-extension-features-title">Agentloop extensions</h3>
               <ul>
                 <li>Explicit agent-loop policy such as Pi or Codex.</li>
-                <li>Models from OpenAI, Anthropic, OpenRouter, and more.</li>
                 <li>Automatic context management and compaction.</li>
                 <li>Durable child sessions for delegated work.</li>
                 <li>Cache-stable prompts for lower latency.</li>
+              </ul>
+            </section>
+
+            <section className="feature-group" aria-labelledby="model-extension-features-title">
+              <h3 id="model-extension-features-title">Model extensions</h3>
+              <ul>
+                <li>OpenAI and Anthropic use the same public Model contract.</li>
+                <li>Provider streaming and usage mapping stay outside the kernel.</li>
+                <li>Credentials and model capacity are sealed at session creation.</li>
               </ul>
             </section>
 
@@ -144,7 +152,7 @@ export default function Home() {
               <h3 id="tool-extension-features-title">Tool extensions</h3>
               <ul>
                 <li>Typed inputs and outputs fixed at session creation.</li>
-                <li>Prepared runtimes and one-time setup travel with the tool.</li>
+                <li>Managed tools carry one immutable runtime bundle.</li>
                 <li>Explicit environment prerequisites and network needs.</li>
                 <li>Official and third-party tools use the same contract.</li>
               </ul>

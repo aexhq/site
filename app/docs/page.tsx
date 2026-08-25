@@ -6,70 +6,59 @@ import { SiteHeader } from "../components/SiteHeader";
 export const metadata: Metadata = {
   title: "Documentation",
   description:
-    "Start an Aex session, compose loop, tool, and environment extensions, and save durable objects.",
+    "Start an Aex session, compose Agentloop, Model, Tool, and Environment extensions, and save durable objects.",
 };
 
-const startExample = `import { app } from "@aexhq/env-app";
-import { awsMicrovm } from "@aexhq/env-aws-microvm";
+const startExample = `import { awsMicrovm } from "@aexhq/env-aws-microvm";
 import { pi } from "@aexhq/loop-pi";
-import { Aex, tool } from "@aexhq/sdk";
+import { openai } from "@aexhq/model-openai";
+import { Aex } from "@aexhq/sdk";
 import { bash, read, write } from "@aexhq/tools";
-import { z } from "zod";
 
-const catalog = new Map([["sku_123", { inStock: 7 }]]);
-const lookupStock = tool(
-  z.object({ sku: z.string() }),
-  async function lookupStock({ sku }) {
-    return catalog.get(sku) ?? { inStock: 0 };
-  },
-);
-
-const application = app({ id: "store-api" });
 const workspace = awsMicrovm();
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 
 const session = await aex.sessions.create({
   model: {
+    component: openai(),
     provider: "openai",
     name: "gpt-5.4",
     apiKey: process.env.OPENAI_API_KEY!,
   },
-  loop: pi(),
-  environments: { application, workspace },
-  tools: [lookupStock, bash(), read(), write()],
+  agentloop: pi(),
+  environments: { workspace },
+  tools: [bash(), read(), write()],
+  network: { outbound: "none" },
 });
 
-console.log(await session.send("Can we fulfill 3 units of sku_123?"));
+console.log(await session.send("Review the customer record."));
 aex.close();`;
 
-const preparedToolExample = `export default tool(
+const applicationToolExample = `export const processDocument = tool(
   z.object({ path: z.string() }),
   async function processDocument({ path }) {
     return process(path);
   },
 )
   .describe("Process one document.")
-  .setup(async function prepareProcessor() {
-    await prepareModel();
-  });`;
+  .client({ registration: "document-processor-v1" });`;
 
-const storageExample = `const runtime = session.environment(workspace);
-const state = await runtime.status();
-if (!state.generation) throw new Error("environment is not live");
+const storageExample = `const state = await session.sandbox.create();
+if (!state.generation) throw new Error("sandbox is not live");
 
 const generation = state.generation;
-await runtime.files.upload("input.txt", "hello");
+await session.sandbox.files.upload("/workspace/input.txt", "hello", { generation });
 
-await session.storage.copyFromEnvironment(workspace, {
+await session.storage.copyFromSandbox({
   path: "/workspace/input.txt",
   key: "outputs/input.txt",
-  generation,
+  sandboxGeneration: generation,
 });
 
-await session.storage.copyToEnvironment(workspace, {
+await session.storage.copyToSandbox({
   key: "outputs/input.txt",
   path: "/workspace/restored.txt",
-  generation,
+  sandboxGeneration: generation,
 });`;
 
 const lifecycleExample = `await session.end();
@@ -112,7 +101,7 @@ export default function Docs() {
             <h2 id="docs-start-title">Start</h2>
             <p>Create an API key in the dashboard, then install the SDK and the extensions this session uses.</p>
             <pre className="site-code" aria-label="Install the Aex SDK">
-              <code>npm install @aexhq/sdk @aexhq/env-app @aexhq/env-aws-microvm @aexhq/loop-pi @aexhq/tools zod</code>
+              <code>npm install @aexhq/sdk @aexhq/env-app @aexhq/env-aws-microvm @aexhq/loop-pi @aexhq/model-openai @aexhq/tools zod</code>
             </pre>
             <pre className="site-code" aria-label="Create and use an Aex session">
               <code>{startExample}</code>
@@ -139,8 +128,12 @@ export default function Docs() {
             </p>
             <dl className="docs-definitions">
               <div>
-                <dt><code>loop: pi()</code></dt>
-                <dd>Selects an explicit brain extension that implements the agent loop.</dd>
+                <dt><code>agentloop: pi()</code></dt>
+                <dd>Selects the imported component that owns agent-loop policy.</dd>
+              </div>
+              <div>
+                <dt><code>model.component: openai()</code></dt>
+                <dd>Selects the imported component that implements provider streaming and event mapping.</dd>
               </div>
               <div>
                 <dt><code>environments</code></dt>
@@ -151,14 +144,14 @@ export default function Docs() {
                 <dd>Adds prepared tools such as shell, files, and subagents. Each tool binds to one compatible environment.</dd>
               </div>
             </dl>
-            <pre className="site-code" aria-label="Define a prepared tool">
-              <code>{preparedToolExample}</code>
+            <pre className="site-code" aria-label="Define an application tool">
+              <code>{applicationToolExample}</code>
             </pre>
             <p>
-              The SDK auto-binds only when exactly one environment is compatible.
-              Use <code>tool.bind(environmentRef)</code> when more than one matches.
-              A prepared tool carries its runtime and immutable dependencies, so
-              the environment does not need Node or Python preinstalled.
+              Application Tools stay in your process and route through exactly one
+              declared <code>app()</code> Environment. Official managed Tool components
+              carry one immutable runtime bundle and require exactly one declared
+              execution Environment in the hosted MVP.
             </p>
           </section>
 
@@ -176,10 +169,10 @@ export default function Docs() {
           <section id="files" className="docs-section" aria-labelledby="docs-files-title">
             <h2 id="docs-files-title">Temporary files, durable objects</h2>
             <p>
-              Each declared computer environment is shared by a root and its
-              children, but its filesystem can disappear. Every live file
-              operation and both copy directions require that environment&apos;s
-              current generation. Reads never restore an old filesystem.
+              The managed sandbox is shared by a root and its children, but its
+              filesystem can disappear. Every live file operation and both copy
+              directions require its current generation. Reads never restore an
+              old filesystem.
             </p>
             <pre className="site-code" aria-label="Copy between environment files and durable storage">
               <code>{storageExample}</code>
@@ -191,7 +184,7 @@ export default function Docs() {
               visible plus reserved storage is capped at 10 GiB per session and per account.
             </p>
             <div className="docs-note">
-              A never-materialized environment returns 409. A stale, released, or
+              A never-materialized sandbox returns 409. A stale, released, or
               expired generation returns 410. File APIs honor Unix permissions
               and do not bypass a tool&apos;s deliberate mode-0600 file.
             </div>

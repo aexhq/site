@@ -7,6 +7,7 @@ const demos = [
     label: "Start",
     code: `import { app } from "@aexhq/env-app";
 import { pi } from "@aexhq/loop-pi";
+import { openai } from "@aexhq/model-openai";
 import { Aex, tool } from "@aexhq/sdk";
 import { z } from "zod";
 
@@ -22,11 +23,12 @@ const application = app({ id: "store-api" });
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 const session = await aex.sessions.create({
   model: {
+    component: openai(),
     provider: "openai",
     name: "gpt-5.4",
     apiKey: process.env.OPENAI_API_KEY!,
   },
-  loop: pi(),
+  agentloop: pi(),
   environments: { application },
   tools: [lookupStock],
 });
@@ -38,7 +40,7 @@ aex.close();`,
     label: "Tools",
     code: `import { tool } from "@aexhq/sdk";
 import { z } from "zod";
-import { inspect, prepareIndex } from "../inspector.js";
+import { inspect } from "../inspector.js";
 
 export default tool(
   z.object({ path: z.string() }),
@@ -47,9 +49,7 @@ export default tool(
   },
 )
   .describe("Inspect one workspace file.")
-  .setup(async function prepareInspector() {
-    await prepareIndex();
-  });`,
+  .client({ registration: "workspace-inspector-v1" });`,
   },
   {
     label: "Structured Outputs",
@@ -69,41 +69,45 @@ console.log(plan.tasks); // fully typed`,
   },
   {
     label: "Files",
-    code: `const runtime = session.environment(workspace);
-const state = await runtime.status();
-if (!state.generation) throw new Error("Environment is not ready");
+    code: `const state = await session.sandbox.create();
+if (!state.generation) throw new Error("Sandbox is not ready");
 
-await runtime.files.upload(
-  "brief.txt",
+await session.sandbox.files.upload(
+  "/workspace/brief.txt",
   "Turn these notes into a launch plan.",
+  { generation: state.generation },
 );
 
-const files = await runtime.files.list(".");`,
+const files = await session.sandbox.files.list("/workspace", {
+  generation: state.generation,
+});`,
   },
   {
-    label: "Binding",
-    code: `const application = app({ id: "orders-api" });
+    label: "Components",
+    code: `const model = {
+  component: openai(),
+  provider: "openai",
+  name: "gpt-5.4",
+  apiKey: process.env.OPENAI_API_KEY!,
+};
 const workspace = awsMicrovm();
 
 const session = await aex.sessions.create({
   model,
-  loop: pi(),
-  environments: { application, workspace },
-  tools: [
-    lookupOrder.bind(application),
-    bash().bind(workspace),
-  ],
+  agentloop: pi(),
+  environments: { workspace },
+  tools: [bash(), read(), write()],
 });`,
   },
   {
     label: "Storage",
-    code: `const state = await session.environment(workspace).status();
-if (!state.generation) throw new Error("Environment is not ready");
+    code: `const state = await session.sandbox.create();
+if (!state.generation) throw new Error("Sandbox is not ready");
 
-await session.storage.copyFromEnvironment(workspace, {
+await session.storage.copyFromSandbox({
   path: "/workspace/customer-review.md",
   key: "reviews/customer.md",
-  generation: state.generation,
+  sandboxGeneration: state.generation,
 });
 
 const saved = await session.storage.list({
