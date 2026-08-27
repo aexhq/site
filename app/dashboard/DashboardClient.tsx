@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { WaitlistForm } from "../components/WaitlistForm";
-import { compareMicroUsdDescending, formatDurationMs, formatMicroUsd } from "./exact-format.js";
+import { compareMicroUsdDescending, formatMicroUsd } from "./exact-format.js";
 
 type Account = {
   id: string;
@@ -32,7 +32,10 @@ type Topup = {
 type UsageLine = {
   session_id: string;
   state: string;
-  running_ms: string;
+  model_calls: number;
+  input_tokens: string;
+  output_tokens: string;
+  model_microusd: string;
   total_microusd: string;
 };
 type Usage = {
@@ -483,22 +486,23 @@ export function DashboardClient({
             Documentation
           </Link>
         </header>
-        <pre><code>{`npm install @aexhq/sdk zod
+        <pre><code>{`npm install @aexhq/sdk @aexhq/loop-pi
 
+import { readFile } from "node:fs/promises";
 import { Aex } from "@aexhq/sdk";
-import { z } from "zod";
+import { packageUrl } from "@aexhq/loop-pi";
 
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
+const loop = await aex.brain.admitAgentloop(await readFile(packageUrl), crypto.randomUUID());
 const session = await aex.sessions.create({
-  model: {
-    provider: "openai",
-    name: "gpt-5.4",
-    apiKey: process.env.OPENAI_API_KEY!,
-  },
+  agentloop_digest: loop.digest,
+  model: { binding_id: "vercel-ai-gateway", model: "openai/gpt-5.4" },
+  presentation: { system: "Do the work.", tools: [] },
+  environments: [],
+  tool_bindings: [],
+  metadata: {},
 });
-const result = await session.send("Do the work.", {
-  output: z.object({ answer: z.string() }),
-});`}</code></pre>
+await session.send("Plan my day.");`}</code></pre>
       </article>
 
       <div className="dashboard-grid">
@@ -509,14 +513,15 @@ const result = await session.send("Do the work.", {
           ) : (
             <div className="session-table-wrap">
               <table>
-                <thead><tr><th>Session</th><th>State</th><th>Runtime</th><th>Cost</th></tr></thead>
+                <thead><tr><th>Session</th><th>State</th><th>Model calls</th><th>Tokens in / out</th><th>Cost</th></tr></thead>
                 <tbody>
                   {sessions.map((session) => (
                     <tr key={session.session_id}>
                       <td><code>{session.session_id}</code></td>
                       <td><span className={"state state-" + session.state}>{session.state}</span></td>
-                      <td>{formatDurationMs(session.running_ms)}</td>
-                      <td><strong>{formatMicroUsd(session.total_microusd, 6)}</strong></td>
+                      <td>{session.model_calls}</td>
+                      <td>{session.input_tokens} / {session.output_tokens}</td>
+                      <td><strong>{formatMicroUsd(session.model_microusd, 6)}</strong></td>
                     </tr>
                   ))}
                 </tbody>
