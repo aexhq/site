@@ -127,7 +127,8 @@ export default function Docs() {
             <p>
               Cursor reads come from the durable session journal. Live telemetry is bounded and
               best effort: it retries briefly, then drops rather than blocking execution or growing
-              without limit. Bridge durable cursor reads into your own queue for at-least-once delivery.
+              without limit. You may forward events to your own queue, but Brain owns no queue
+              integration or at-least-once delivery guarantee.
             </p>
           </section>
 
