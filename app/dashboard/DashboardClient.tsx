@@ -486,21 +486,20 @@ export function DashboardClient({
             Documentation
           </Link>
         </header>
-        <pre><code>{`npm install @aexhq/sdk @aexhq/loop-pi
+        <pre><code>{`npm install @aexhq/sdk @aexhq/brain-pi
 
-import { readFile } from "node:fs/promises";
 import { Aex } from "@aexhq/sdk";
-import { packageUrl } from "@aexhq/loop-pi";
+import { pi } from "@aexhq/brain-pi";
 
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
-const loop = await aex.brain.admitAgentloop(await readFile(packageUrl), crypto.randomUUID());
 const session = await aex.sessions.create({
-  agentloop_digest: loop.digest,
-  model: { binding_id: "vercel-ai-gateway", model: "openai/gpt-5.4" },
-  presentation: { system: "Do the work.", tools: [] },
-  environments: [],
-  tool_bindings: [],
-  metadata: {},
+  brain: pi(),
+  model: {
+    provider: "vercel-ai-gateway",
+    name: "openai/gpt-5.4",
+    apiKey: "your-vercel-ai-gateway-key",
+  },
+  system: "Do the work.",
 });
 await session.send("Plan my day.");`}</code></pre>
       </article>

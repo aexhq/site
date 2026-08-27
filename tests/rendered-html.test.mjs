@@ -228,7 +228,8 @@ test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", a
   assert.doesNotMatch(dashboard, /localStorage|sessionStorage/);
   assert.match(dashboardPage, /cookies\(\)[\s\S]*aex_account/);
   assert.match(dashboard, /hasDashboardSession[\s\S]*dashboard-spinner/);
-  assert.match(dashboard, /admitAgentloop[\s\S]*vercel-ai-gateway/);
+  assert.match(dashboard, /sessions\.create[\s\S]*brain: pi\(\)[\s\S]*vercel-ai-gateway/);
+  assert.doesNotMatch(dashboard, /admitAgentloop|agentloop_digest/);
   assert.doesNotMatch(dashboard, /OPENAI_API_KEY|AI_GATEWAY_API_KEY|ai-gateway\.vercel\.sh/);
   assert.match(styles, /@media \(prefers-color-scheme: dark\)/);
   assert.match(styles, /:root\[data-theme="dark"\]/);
