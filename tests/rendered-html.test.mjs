@@ -134,7 +134,7 @@ test("serves the Brain documentation, generated API pages, and a static search i
 
   const concept = await render("/brain/docs/concepts/agent-loop");
   assert.equal(concept.status, 200);
-  assert.match((await concept.text()).replace(/<[^>]*>/g, " "), /No sockets, no filesystem/);
+  assert.match((await concept.text()).replace(/<[^>]*>/g, " "), /no filesystem, network, process/);
 
   // Generated from contracts/session/v1/openapi.yaml, never written by hand.
   const apiIndex = await render("/brain/docs/reference/api");
