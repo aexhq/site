@@ -6,7 +6,8 @@ import { DashboardClient } from "./DashboardClient";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Join Aex, add credit, create API keys, and see exact usage.",
+  description:
+    "The hosted Aex service is not open yet. Request access, or sign in if you have been invited.",
 };
 
 export default async function DashboardPage({

@@ -52,74 +52,77 @@ async function render(path = "/", init = {}) {
   return fetch(origin + path, { ...init, headers });
 }
 
-test("server-renders the backend landing page", async () => {
+test("server-renders the minimal landing shell", async () => {
   const response = await render();
   assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+  assert.match(response.headers.get("content-type") ?? "", /^text[/]html/i);
   assert.equal(response.headers.get("x-content-type-options"), "nosniff");
   assert.equal(response.headers.get("x-frame-options"), "DENY");
   assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
   assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
   const html = await response.text();
-  const text = html.replace(/<[^>]*>/g, "");
-  assert.match(html, /<title>The backend for AI workloads<\/title>/i);
+
+  assert.match(html, /<title>Agent infra for next era<\/title>/i);
+  assert.match(html, /Agent infra for next era/);
   assert.match(html, /rel="icon"[^>]+href="\/icon\.svg/i);
-  assert.match(html, /property="og:image"[^>]+content="http:\/\/127\.0\.0\.1:\d+\/og\.png"/i);
-  assert.match(html, /property="og:image:width"[^>]+content="1200"/i);
-  assert.match(html, /property="og:image:height"[^>]+content="630"/i);
-  assert.match(html, /name="twitter:card"[^>]+content="summary_large_image"/i);
-  assert.match(html, /name="twitter:image"[^>]+content="http:\/\/127\.0\.0\.1:\d+\/og\.png"/i);
-  assert.match(html, /The backend for AI workloads/);
-  assert.match(html, /High-performance, reliable, and simple infrastructure/i);
-  assert.match(html, /Start a session with your models and tools[\s\S]*structured data/i);
-  assert.match(html, /Docs[\s\S]*Dashboard[\s\S]*GitHub[\s\S]*Discord/);
   assert.match(html, /class="wordmark-mark"/);
   assert.match(html, /class="theme-toggle"/);
-  assert.match(html, /aria-label="Switch to dark mode"/);
-  assert.match(html, /href="https:\/\/github\.com\/aexhq\/aex"[^>]*>GitHub/);
-  assert.match(html, /href="https:\/\/discord\.gg\/Qk2YnHMHVb"[^>]*>Discord/);
-  assert.match(html, /role="tablist"/);
-  assert.match(html, /Start[\s\S]*Agentloop[\s\S]*Tools[\s\S]*Environments[\s\S]*Events/);
-  assert.doesNotMatch(html, />Continue<\/button>/);
-  assert.match(html, /<pre class="site-code"/);
-  assert.match(text, /admitAgentloop/);
-  assert.match(text, /agentloop_digest/);
-  assert.match(text, /vercel-ai-gateway/);
-  assert.match(text, /session\.send/);
-  assert.match(text, /gpt-5\.4/);
-  assert.doesNotMatch(text, /OPENAI_API_KEY|AI_GATEWAY_API_KEY|ai-gateway\.vercel\.sh/);
-  assert.match(text, /tool_bindings/);
-  assert.match(text, /Implementations execute in the remote Environment/);
-  assert.match(text, /saveCursor/);
-  assert.match(html, /class="syntax-keyword"/);
-  assert.match(html, /class="syntax-string"/);
-  assert.doesNotMatch(html, /sk-ant-/);
-  assert.match(html, /<h2 id="architecture-title">Architecture<\/h2>/);
-  assert.match(html, /architecture-grid/);
-  assert.match(html, /<h3>Journal<\/h3>[\s\S]*<h3>Telemetry<\/h3>[\s\S]*<h3>Your app<\/h3>[\s\S]*<h3>Brain Server<\/h3>[\s\S]*<h3>Agentloop<\/h3>[\s\S]*<h3>Environment<\/h3>/);
-  assert.doesNotMatch(html, /anthropic\.com\/engineering\/managed-agents/);
-  assert.match(html, /<h2 id="features-title">Features<\/h2>/);
-  assert.match(html, /agentloop-extension-features-title[\s\S]*model-extension-features-title[\s\S]*tool-extension-features-title[\s\S]*environment-extension-features-title/);
-  assert.match(html, /Explicit agent-loop policy such as Pi or Codex/);
-  assert.match(html, /Definitions are model presentation, separate from implementations/);
-  assert.doesNotMatch(html, /versioned (?:tool )?operations|10,000 concurrent sessions/);
-  assert.match(html, /<h2 id="pricing-title">Pricing<\/h2>/);
-  assert.match(html, /Models[\s\S]*Provider cost/);
-  assert.match(html, /Exact AI Gateway receipt[\s\S]*without Aex markup/);
-  assert.match(html, /Aex alpha[\s\S]*\$0/);
-  assert.match(html, /Join the alpha/);
-  assert.match(html, /prepay only the exact model-gateway cost/i);
-  assert.match(html, /future platform pricing before it takes effect/i);
-  assert.doesNotMatch(html, /A light engine leaves the model room to work|How the closest products draw the boundary|Claude Managed Agents|2,002/i);
-  assert.doesNotMatch(html, /demo-copy|demo-flow|section-index|Aex \/ Alpha|01 \/ SDK|02 \/ Product/i);
-  assert.doesNotMatch(html, /Suspended computer|State kept without active compute|\$0\.10/i);
-  assert.doesNotMatch(html, /Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine/i);
-  assert.doesNotMatch(html, /Agent backend for AI apps|The session backend for AI apps|simple, elegant|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers/i);
-  await access(new URL("public/og.png", templateRoot));
-  assert.doesNotMatch(html, /\bAEX\b|\bBeta\b/);
+  assert.match(html, /href="https:\/\/github\.com\/aexhq"[^>]*>GitHub/);
+  assert.match(html, /href="\/brain"[^>]*>Brain/);
+
+  // The hero carries the wordmark, the headline, and two links. Nothing else.
+  assert.doesNotMatch(html, /Pricing|Join the alpha|Provider cost|architecture-grid|feature-group/i);
+  assert.doesNotMatch(html, /High-performance, reliable, and simple infrastructure/i);
+  assert.doesNotMatch(html, /admitAgentloop|tool_bindings|role="tablist"/);
+
+  // Legal identity stays in the footer.
   assert.match(html, /THINK SLOWLY LTD[\s\S]*17224795/i);
   assert.match(html, /Registered office:[\s\S]*71-75 Shelton Street[\s\S]*WC2H 9JQ/i);
-  assert.doesNotMatch(html, /leakage-gate|Brain \/ Process/i);
+  await access(new URL("public/og.png", templateRoot));
+});
+
+test("server-renders the Brain page in README order", async () => {
+  const response = await render("/brain");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const text = html.replace(/<[^>]*>/g, "");
+
+  assert.match(html, /<title>Brain · Aex<\/title>/i);
+  assert.match(text, /The durable session kernel for AI agents\./);
+  assert.match(text, /Brain is under early development/);
+
+  const order = [
+    "what-it-is-title",
+    "features-title",
+    "benchmark-title",
+    "architecture-title",
+    "roadmap-title",
+    "getting-started-title",
+    "license-title",
+  ];
+  let cursor = -1;
+  for (const id of order) {
+    const at = html.indexOf(`id="${id}"`);
+    assert.ok(at > cursor, `${id} is out of order`);
+    cursor = at;
+  }
+
+  assert.match(text, /Sessions survive crashes/);
+  assert.match(text, /No network, no filesystem, no secrets, no clock/);
+  assert.match(text, /ghcr\.io\/aexhq\/brain:latest/);
+  assert.match(text, /MIT/);
+  assert.match(html, /href="\/brain\/docs"/);
+  assert.match(html, /href="https:\/\/github\.com\/aexhq\/brain"/);
+
+  // Benchmark numbers are not published until the harness is rebuilt.
+  assert.doesNotMatch(text, /2,002 turns|1\.4 ms|21-31 KiB/);
+  assert.doesNotMatch(text, /Apache/i);
+});
+
+test("retired documentation path redirects to the Brain docs", async () => {
+  const response = await render("/docs", { redirect: "manual" });
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "/brain/docs");
 });
 
 test("public status and company legal pages render", async () => {
@@ -147,24 +150,6 @@ test("public status and company legal pages render", async () => {
   assert.match(termsHtml, /personal, educational,[\s\S]*commercial projects/i);
   assert.doesNotMatch(termsHtml, /beta is for people using AEX wholly or mainly for a/i);
   assert.doesNotMatch(termsHtml, /\bAEX\b|\bBeta\b/);
-});
-
-test("server-renders the concise product documentation", async () => {
-  const response = await render("/docs");
-  assert.equal(response.status, 200);
-  const html = await response.text();
-  const text = html.replace(/<[^>]*>/g, "");
-  assert.match(html, /<title>Documentation · Aex<\/title>/i);
-  assert.match(html, /aria-label="Documentation sections"/);
-  assert.match(html, /href="#start"[\s\S]*href="#agentloop"[\s\S]*href="#tools"[\s\S]*href="#environments"[\s\S]*href="#events"[\s\S]*href="#lifecycle"/);
-  assert.match(text, /Build with Aex/);
-  assert.match(text, /admitAgentloop[\s\S]*agentloop_digest[\s\S]*tool_bindings/);
-  assert.match(text, /no native or built-in loop path/);
-  assert.match(text, /Tool implementation code never runs in Brain/);
-  assert.match(text, /Process-local connections are only caches/);
-  assert.match(text, /64 KiB[\s\S]*32 MiB[\s\S]*Account policy[\s\S]*Bounded/);
-  assert.match(html, /href="https:\/\/github\.com\/aexhq\/aex\/blob\/main\/docs\/quickstart\.md"/);
-  assert.doesNotMatch(text, /remote MCP|automatic workspace sync|copyFromSandbox/i);
 });
 
 test("server-renders dashboard-first waitlist and invited onboarding", async () => {
