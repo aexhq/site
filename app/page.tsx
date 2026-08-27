@@ -13,24 +13,14 @@ export const metadata: Metadata = {
 
 const prices = [
   {
-    item: "Active computer",
-    price: "$0.12 / hour",
-    details: "0.5 vCPU + 1 GiB memory. Billed per second.",
-  },
-  {
-    item: "Storage",
-    price: "$0.03 / GB-month",
-    details: "Explicitly saved session objects.",
-  },
-  {
-    item: "Web search",
-    price: "$0.003 / query",
-    details: "You pay only when you use it.",
-  },
-  {
     item: "Models",
-    price: "Bring your own key",
-    details: "Aex adds no markup.",
+    price: "Provider cost",
+    details: "Exact AI Gateway receipt, passed through without Aex markup.",
+  },
+  {
+    item: "Aex alpha",
+    price: "$0",
+    details: "No platform subscription or compute surcharge during alpha.",
   },
 ] as const;
 
@@ -61,29 +51,29 @@ export default function Home() {
         <section className="site-section" id="architecture" aria-labelledby="architecture-title">
           <h2 id="architecture-title">Architecture</h2>
           <p>
-            Aex keeps a minimal durable session kernel separate from replaceable
-            policy. Agentloop, Model, Tool, and Environment extensions are
-            imported explicitly and use the same public component contracts.
+            Aex keeps hosted account policy separate from Brain&apos;s execution kernel.
+            Every Agentloop uses one universal Component contract, models are remote
+            bindings, and Tool implementations execute in remote Environments.
           </p>
 
           <figure className="architecture-diagram">
             <figcaption className="sr-only">
-              Your app sends work to the Brain kernel, which persists its journal
-              in a database and composes loop and tool extensions. Bound environment
-              extensions execute tools and can copy files to durable storage explicitly.
+              Your app uses the Aex control plane to reach Brain. Brain journals each
+              session to disk, runs an Agentloop Component, calls a remote model, and
+              sends Tool operations to their bound Environment.
             </figcaption>
             <div className="architecture-grid">
               <article className="architecture-card architecture-database">
-                <h3>Database</h3>
-                <p>Persists durable session journals.</p>
+                <h3>Journal</h3>
+                <p>Records ordered session events on disk.</p>
               </article>
               <div className="architecture-arrow architecture-database-link" aria-hidden="true">
                 ↑
               </div>
 
               <article className="architecture-card architecture-storage">
-                <h3>Storage</h3>
-                <p>Keeps explicitly saved session objects.</p>
+                <h3>Telemetry</h3>
+                <p>Publishes bounded logs, metrics, and live events.</p>
               </article>
               <div className="architecture-arrow architecture-storage-link" aria-hidden="true">
                 ↑
@@ -98,16 +88,16 @@ export default function Home() {
               </div>
 
               <article className="architecture-card architecture-brain">
-                <h3>Brain</h3>
-                <p>Owns durable sessions, journaled effects, and recovery.</p>
+                <h3>Brain Server</h3>
+                <p>Owns live context, journal order, and execution.</p>
               </article>
               <div className="architecture-arrow architecture-brain-link" aria-hidden="true">
                 ↔
               </div>
 
               <article className="architecture-card architecture-extensions">
-                <h3>Extensions</h3>
-                <p>Supply imported Agentloop, Model, and Tool behavior.</p>
+                <h3>Agentloop</h3>
+                <p>Runs universal capability-pure Component policy.</p>
               </article>
               <div className="architecture-arrow architecture-extensions-link" aria-hidden="true">
                 ↔
@@ -124,8 +114,8 @@ export default function Home() {
         <section className="site-section" id="features" aria-labelledby="features-title">
           <h2 id="features-title">Features</h2>
           <p>
-            Durable orchestration, replaceable execution, and isolated compute
-            are separate pieces of the same session.
+            Session execution, extension policy, and remote capabilities stay
+            independently replaceable.
           </p>
 
           <div className="feature-groups">
@@ -134,37 +124,34 @@ export default function Home() {
               <ul>
                 <li>Explicit agent-loop policy such as Pi or Codex.</li>
                 <li>Automatic context management and compaction.</li>
-                <li>Durable child sessions for delegated work.</li>
                 <li>Cache-stable prompts for lower latency.</li>
               </ul>
             </section>
 
             <section className="feature-group" aria-labelledby="model-extension-features-title">
-              <h3 id="model-extension-features-title">Model extensions</h3>
+              <h3 id="model-extension-features-title">Model bindings</h3>
               <ul>
-                <li>OpenAI and Anthropic use the same public Model contract.</li>
-                <li>Provider streaming and usage mapping stay outside the kernel.</li>
-                <li>Credentials and model capacity are sealed at session creation.</li>
+                <li>Brain calls one OpenAI-compatible remote gateway.</li>
+                <li>Provider streaming and exact usage receipts become session events.</li>
+                <li>Credentials remain server-side runtime bindings.</li>
               </ul>
             </section>
 
             <section className="feature-group" aria-labelledby="tool-extension-features-title">
-              <h3 id="tool-extension-features-title">Tool extensions</h3>
+              <h3 id="tool-extension-features-title">Tool definitions</h3>
               <ul>
                 <li>Typed inputs and outputs fixed at session creation.</li>
-                <li>Managed tools carry one immutable runtime bundle.</li>
-                <li>Explicit environment prerequisites and network needs.</li>
-                <li>Official and third-party tools use the same contract.</li>
+                <li>Definitions are model presentation, separate from implementations.</li>
+                <li>Every Tool binds explicitly to one remote Environment.</li>
               </ul>
             </section>
 
             <section className="feature-group" aria-labelledby="environment-extension-features-title">
               <h3 id="environment-extension-features-title">Environment extensions</h3>
               <ul>
-                <li>Application callbacks or isolated AWS MicroVM compute.</li>
-                <li>Session-scoped secrets and network policy.</li>
-                <li>Explicit copies to durable storage.</li>
-                <li>Typed handles expose provider-specific capabilities.</li>
+                <li>Adapters manage setup, execution, cancellation, and teardown.</li>
+                <li>Complete sealed bindings make routing process-independent.</li>
+                <li>Several sessions can share one logical Environment.</li>
               </ul>
             </section>
           </div>
@@ -202,8 +189,8 @@ export default function Home() {
         <section className="site-section alpha-section" id="alpha" aria-labelledby="alpha-title">
           <h2 id="alpha-title">Join the alpha</h2>
           <p>
-            Alpha members get discounted platform rates for the first six
-            months after launch. We&apos;ll confirm the discount before billing starts.
+            Alpha members prepay only the exact model-gateway cost. We&apos;ll publish
+            and communicate any future platform pricing before it takes effect.
           </p>
           <WaitlistForm />
           <p className="site-small">

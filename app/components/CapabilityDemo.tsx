@@ -5,126 +5,81 @@ import { type KeyboardEvent, type ReactNode, useId, useState } from "react";
 const demos = [
   {
     label: "Start",
-    code: `import { app } from "@aexhq/env-app";
-import { pi } from "@aexhq/loop-pi";
-import { openai } from "@aexhq/model-openai";
-import { Aex, tool } from "@aexhq/sdk";
-import { z } from "zod";
+    code: `import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { Aex } from "@aexhq/sdk";
+import { packageUrl as piPackage } from "@aexhq/loop-pi";
 
-const catalog = new Map([["sku_123", { inStock: 7 }]]);
-const lookupStock = tool(
-  z.object({ sku: z.string() }),
-  async function lookupStock({ sku }) {
-    return catalog.get(sku) ?? { inStock: 0 };
-  },
-);
-
-const application = app({ id: "store-api" });
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
+const loop = await aex.brain.admitAgentloop(
+  await readFile(piPackage),
+  randomUUID(),
+);
 const session = await aex.sessions.create({
-  model: {
-    component: openai(),
-    provider: "openai",
-    name: "gpt-5.4",
-    apiKey: process.env.OPENAI_API_KEY!,
-  },
-  agentloop: pi(),
-  environments: { application },
-  tools: [lookupStock],
+  agentloop_digest: loop.digest,
+  model: { binding_id: "vercel-ai-gateway", model: "openai/gpt-5.4" },
+  presentation: { system: "Work carefully.", tools: [] },
+  environments: [],
+  tool_bindings: [],
+  metadata: {},
 });
 
-console.log(await session.send("Can we fulfill 3 units of sku_123?"));
-aex.close();`,
+await session.send("Plan a focused afternoon.");`,
+  },
+  {
+    label: "Agentloop",
+    code: `// Extension authors write ordinary TypeScript policy.
+export function decide(observation) {
+  if (observation.kind === "user_message") {
+    return { kind: "call_model" };
+  }
+  return { kind: "finish" };
+}
+
+// The package tooling validates and builds the universal
+// capability-pure Brain Component. No WIT knowledge is required.`,
   },
   {
     label: "Tools",
-    code: `import { tool } from "@aexhq/sdk";
-import { z } from "zod";
-import { inspect } from "../inspector.js";
+    code: `import { definitions } from "@aexhq/tools";
 
-export default tool(
-  z.object({ path: z.string() }),
-  async function inspectFile({ path }) {
-    return inspect(path);
-  },
-)
-  .describe("Inspect one workspace file.")
-  .client({ registration: "workspace-inspector-v1" });`,
-  },
-  {
-    label: "Structured Outputs",
-    code: `import { z } from "zod";
-
-const plan = await session.send(
-  "Plan a focused afternoon.",
-  {
-    output: z.object({
-      summary: z.string(),
-      tasks: z.array(z.string()),
-    }),
-  },
-);
-
-console.log(plan.tasks); // fully typed`,
-  },
-  {
-    label: "Files",
-    code: `const state = await session.sandbox.create();
-if (!state.generation) throw new Error("Sandbox is not ready");
-
-await session.sandbox.files.upload(
-  "/workspace/brief.txt",
-  "Turn these notes into a launch plan.",
-  { generation: state.generation },
-);
-
-const files = await session.sandbox.files.list("/workspace", {
-  generation: state.generation,
-});`,
-  },
-  {
-    label: "Components",
-    code: `const model = {
-  component: openai(),
-  provider: "openai",
-  name: "gpt-5.4",
-  apiKey: process.env.OPENAI_API_KEY!,
+const selected = [definitions.bash, definitions.read];
+const presentation = {
+  system: "Inspect the workspace.",
+  tools: selected.map((tool) => tool.definition),
 };
-const workspace = awsMicrovm();
+const tool_bindings = selected.map((tool) => ({
+  name: tool.definition.name,
+  environment_id: "workspace",
+  remote_tool_id: tool.remoteToolId,
+  grant: {},
+}));
 
-const session = await aex.sessions.create({
-  model,
-  agentloop: pi(),
-  environments: { workspace },
-  tools: [bash(), read(), write()],
-});`,
+// Implementations execute in the remote Environment, not Brain.`,
   },
   {
-    label: "Storage",
-    code: `const state = await session.sandbox.create();
-if (!state.generation) throw new Error("Sandbox is not ready");
+    label: "Environments",
+    code: `import { awsMicrovm } from "@aexhq/env-aws-microvm";
 
-await session.storage.copyFromSandbox({
-  environment: "workspace",
-  path: "/workspace/customer-review.md",
-  key: "reviews/customer.md",
-  sandboxGeneration: state.generation,
+const workspace = awsMicrovm({
+  id: "workspace",
+  lifecyclePolicy: "session",
 });
 
-const saved = await session.storage.list({
-  prefix: "reviews/",
-});`,
+// Every setup, execute, cancel, and teardown command carries
+// the complete sealed binding. Adapter caches are never authority.`,
   },
   {
-    label: "Subagents",
-    code: `const researcher = await session.children.create({
-  name: "research",
-  prompt: "Compare the three strongest options.",
-  forkTurns: "3",
-});
+    label: "Events",
+    code: `let cursor = 0;
+for await (const event of session.events(cursor)) {
+  console.log(event.sequence, event.event_type, event.data);
+  cursor = event.sequence;
+  await saveCursor(cursor);
+}
 
-const result = await researcher.wait();
-console.log(result.state);`,
+// Reconnect from the durable cursor. Telemetry is low latency
+// and best effort; the journal is the recovery source of truth.`,
   },
 ] as const;
 
