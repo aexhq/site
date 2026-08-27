@@ -13,6 +13,11 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
   "dependencies": {
+    "@types/mdx": "^2.0.14",
+    "fumadocs-core": "^16.15.4",
+    "fumadocs-mdx": "^15.4.0",
+    "fumadocs-openapi": "^11.3.5",
+    "fumadocs-ui": "^16.15.4",
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
