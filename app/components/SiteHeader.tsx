@@ -1,7 +1,8 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
-export function SiteHeader() {
+export function SiteHeader({ children }: { children?: ReactNode }) {
   return (
     <header className="site-header">
       <div className="shell header-inner">
@@ -10,10 +11,7 @@ export function SiteHeader() {
           <span>Aex</span>
         </Link>
         <nav aria-label="Main navigation">
-          <Link href="/docs">Docs</Link>
-          <Link href="/#architecture">Architecture</Link>
-          <Link href="/#pricing">Pricing</Link>
-          <Link href="/dashboard">Dashboard</Link>
+          {children}
           <ThemeToggle />
         </nav>
       </div>

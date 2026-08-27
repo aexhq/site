@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { headers } from "next/headers";
 import "./globals.css";
 import { siteDescription, siteSocialTitle } from "./site-copy";
 
@@ -28,21 +27,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host") ??
-    "aex.dev";
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
-  let metadataBase = new URL("https://aex.dev");
+// Resolved at build time, not per request. Reading headers() here would opt every
+// page out of static generation.
+function resolveMetadataBase(): URL {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  const vercel = process.env.VERCEL_URL;
+  const candidate = explicit ?? (vercel ? `https://${vercel}` : "https://aex.dev");
   try {
-    metadataBase = new URL(protocol + "://" + host);
+    return new URL(candidate);
   } catch {
-    // Keep the canonical fallback when a malformed Host header reaches a preview.
+    return new URL("https://aex.dev");
   }
+}
+
+export function generateMetadata(): Metadata {
+  const metadataBase = resolveMetadataBase();
 
   return {
     metadataBase,
@@ -61,7 +60,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: "/og.png",
           width: 1200,
           height: 630,
-          alt: "Aex alpha product preview.",
+          alt: "Aex.",
         },
       ],
     },

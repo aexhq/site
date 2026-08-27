@@ -482,7 +482,7 @@ export function DashboardClient({
       <article className="dashboard-card dashboard-quickstart">
         <header>
           <div><span>Get started</span><h2>Use your key.</h2></div>
-          <Link href="/docs">
+          <Link href="/brain/docs">
             Documentation
           </Link>
         </header>
