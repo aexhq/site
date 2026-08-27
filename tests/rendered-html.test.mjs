@@ -137,6 +137,10 @@ test("serves the Brain documentation, generated API pages, and a static search i
   assert.match((await concept.text()).replace(/<[^>]*>/g, " "), /No sockets, no filesystem/);
 
   // Generated from contracts/session/v1/openapi.yaml, never written by hand.
+  const apiIndex = await render("/brain/docs/reference/api");
+  assert.equal(apiIndex.status, 200);
+  assert.match((await apiIndex.text()).replace(/<[^>]*>/g, " "), /Create Session/);
+
   const api = await render("/brain/docs/reference/api/createSession");
   assert.equal(api.status, 200);
   const apiText = (await api.text()).replace(/<[^>]*>/g, " ");

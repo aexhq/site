@@ -116,6 +116,8 @@ jobs:
           grep -Fq "Brain runs agent sessions" docs.txt
 
           # Generated from the session contract, never written by hand.
+          curl_page /brain/docs/reference/api > api-index.html
+          grep -Fq "Create Session" api-index.html
           curl_page /brain/docs/reference/api/createSession > api.html
           sed -E 's/<[^>]+>//g' api.html > api.txt
           grep -Fq "Create Session" api.txt

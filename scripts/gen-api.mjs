@@ -23,6 +23,16 @@ await generateFiles({
   per: "operation",
   groupBy: "none",
   meta: true,
+  index: {
+    items: [
+      {
+        path: "index.mdx",
+        title: "API",
+        description: "Every session endpoint, generated from the contract.",
+      },
+    ],
+    url: { baseUrl: "/brain/docs/reference/api", contentDir: out },
+  },
 });
 
 const metaPath = join(out, "meta.json");
