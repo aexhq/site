@@ -94,24 +94,24 @@ const roadmap = [
   ["Later", "Hosted Brain"],
 ] as const;
 
-const installExample = `npm install @aexhq/brain @aexhq/loop-pi @aexhq/env-aws-microvm @aexhq/tools`;
+const installExample = `npm install @aexhq/brain @aexhq/brain-pi @aexhq/env-aws-microvm @aexhq/tools`;
 
 const sessionExample = `import { Brain } from "@aexhq/brain";
 import { awsMicroVm } from "@aexhq/env-aws-microvm";
-import { pi } from "@aexhq/loop-pi";
+import { pi } from "@aexhq/brain-pi";
 import { bash, read, write } from "@aexhq/tools";
 
 const brain = new Brain({ baseUrl: "http://127.0.0.1:8080" });
 const workspace = awsMicroVm({ region: "eu-west-2" });
 
-const session = await brain.createSession({
+const session = await brain.sessions.create({
   model: {
     provider: "vercel-ai-gateway",
     name: "openai/gpt-5-mini",
     apiKey: process.env.VERCEL_AI_GATEWAY_API_KEY!,
   },
-  agentLoop: pi(),
-  tools: [read().runIn(workspace), write().runIn(workspace), bash().runIn(workspace)],
+  brain: pi(),
+  tools: [read().useIn(workspace), write().useIn(workspace), bash().useIn(workspace)],
 });
 
 await session.send("Read README.md and summarize it.");
