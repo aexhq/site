@@ -77,53 +77,48 @@ jobs:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment_url }}
         shell: bash
         run: |
+          curl_page() {
+            npx --yes vercel@59.1.4 curl "$1" --deployment "$DEPLOYMENT_URL"
+          }
           for attempt in {1..12}; do
-            if npx --yes vercel@59.1.4 curl / --deployment "$DEPLOYMENT_URL" > homepage.html; then
-              break
-            fi
+            if curl_page / > homepage.html; then break; fi
             sleep 5
           done
           sed -E 's/<[^>]+>//g' homepage.html > homepage.txt
-          grep -Fq "The backend for AI workloads" homepage.txt
-          grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt
-          grep -Fq "Start a session with your models and tools" homepage.txt
-          grep -Fq "@aexhq/sdk" homepage.txt
-          grep -Fq "session.send" homepage.txt
-          grep -Fq "admitAgentloop" homepage.txt
-          grep -Fq "agentloop_digest" homepage.txt
-          grep -Fq "vercel-ai-gateway" homepage.txt
-          grep -Fq "definitions.bash" homepage.txt
-          grep -Fq "awsMicrovm" homepage.txt
-          grep -Fq "session.events" homepage.txt
-          grep -Fq "gpt-5.4" homepage.txt
-          ! grep -Fq "AI_GATEWAY_API_KEY" homepage.txt
-          ! grep -Fq "ai-gateway.vercel.sh" homepage.txt
-          ! grep -Fq "sk-ant-" homepage.txt
+
+          # The landing page is a shell: wordmark, headline, two links. Nothing else.
+          grep -Fq "Agent infra for next era" homepage.txt
           grep -Fq "wordmark-mark" homepage.html
-          grep -Fq "Brain Server" homepage.txt
-          grep -Fq "Agentloop extensions" homepage.txt
-          grep -Fq "Model bindings" homepage.txt
-          grep -Fq "Tool definitions" homepage.txt
-          grep -Fq "Environment extensions" homepage.txt
-          grep -Fq "Provider cost" homepage.txt
-          grep -Fq "Exact AI Gateway receipt" homepage.txt
-          grep -Fq "Join the alpha" homepage.txt
-          npx --yes vercel@59.1.4 curl /aex-mark-black.webp --deployment "$DEPLOYMENT_URL" > aex-mark-black.webp
-          npx --yes vercel@59.1.4 curl /aex-mark-white.webp --deployment "$DEPLOYMENT_URL" > aex-mark-white.webp
+          grep -Fq "theme-toggle" homepage.html
+          grep -Fq "https://github.com/aexhq" homepage.html
+          grep -Fq 'href="/brain"' homepage.html
+          grep -Fq "THINK SLOWLY LTD" homepage.txt
+
+          # Nothing the hosted product has not shipped.
+          ! grep -Eiq "The backend for AI workloads|High-performance, reliable|Join the alpha|Provider cost|Exact AI Gateway receipt|Agentloop extensions|Model bindings|Tool definitions|Environment extensions" homepage.txt
+          ! grep -Fq "admitAgentloop" homepage.txt
+          ! grep -Fq "sk-ant-" homepage.txt
+          ! grep -Fq "ai-gateway.vercel.sh" homepage.txt
+
+          curl_page /brain > brain.html
+          sed -E 's/<[^>]+>//g' brain.html > brain.txt
+          grep -Fq "The durable session kernel for AI agents." brain.txt
+          grep -Fq "Brain is under early development" brain.txt
+          grep -Fq "Sessions survive crashes" brain.txt
+          grep -Fq "ghcr.io/aexhq/brain:latest" brain.txt
+          grep -Fq "https://github.com/aexhq/brain" brain.html
+          # Benchmark figures stay unpublished until the harness is rebuilt.
+          ! grep -Eq "2,002 turns|1\.4 ms|21-31 KiB" brain.txt
+          ! grep -Fq "Apache" brain.txt
+
+          curl_page /aex-mark-black.webp > aex-mark-black.webp
+          curl_page /aex-mark-white.webp > aex-mark-white.webp
           test -s aex-mark-black.webp
           test -s aex-mark-white.webp
-          npx --yes vercel@59.1.4 curl /docs --deployment "$DEPLOYMENT_URL" > docs.html
-          sed -E 's/<[^>]+>//g' docs.html > docs.txt
-          grep -Fq "Build with Aex" docs.txt
-          grep -Fq "One Agentloop extension pipeline" docs.txt
-          grep -Fq "Separate Tool presentation from execution" docs.txt
-          grep -Fq "Let adapters manage Environment lifecycle" docs.txt
-          grep -Fq "Recover from the journal" docs.txt
-          grep -Fq "Cancel, end, and delete explicitly" docs.txt
+
           for route in /dashboard /status /privacy /terms; do
-            npx --yes vercel@59.1.4 curl "$route" --deployment "$DEPLOYMENT_URL" >/dev/null
+            curl_page "$route" >/dev/null
           done
-          ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt
       - name: Reconcile managed-environment source denies
         if: github.event_name == 'workflow_dispatch' && (inputs.promote || inputs.managed_environment_blocked_source_ipv4_cidrs != '')
         env:
@@ -139,49 +134,7 @@ jobs:
         shell: bash
         run: |
           for attempt in {1..12}; do
-            if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html \
-              && sed -E 's/<[^>]+>//g' homepage.html > homepage.txt \
-              && grep -Fq "The backend for AI workloads" homepage.txt \
-              && grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt \
-              && grep -Fq "Start a session with your models and tools" homepage.txt \
-              && grep -Fq "@aexhq/sdk" homepage.txt \
-              && grep -Fq "session.send" homepage.txt \
-              && grep -Fq "admitAgentloop" homepage.txt \
-              && grep -Fq "agentloop_digest" homepage.txt \
-              && grep -Fq "vercel-ai-gateway" homepage.txt \
-              && grep -Fq "definitions.bash" homepage.txt \
-              && grep -Fq "awsMicrovm" homepage.txt \
-              && grep -Fq "session.events" homepage.txt \
-              && grep -Fq "gpt-5.4" homepage.txt \
-              && ! grep -Fq "AI_GATEWAY_API_KEY" homepage.txt \
-              && ! grep -Fq "ai-gateway.vercel.sh" homepage.txt \
-              && ! grep -Fq "sk-ant-" homepage.txt \
-              && grep -Fq "wordmark-mark" homepage.html \
-              && grep -Fq "Brain Server" homepage.txt \
-              && grep -Fq "Agentloop extensions" homepage.txt \
-              && grep -Fq "Model bindings" homepage.txt \
-              && grep -Fq "Tool definitions" homepage.txt \
-              && grep -Fq "Environment extensions" homepage.txt \
-              && grep -Fq "Provider cost" homepage.txt \
-              && grep -Fq "Exact AI Gateway receipt" homepage.txt \
-              && grep -Fq "Join the alpha" homepage.txt \
-              && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-black.webp > aex-mark-black.webp \
-              && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-white.webp > aex-mark-white.webp \
-              && test -s aex-mark-black.webp \
-              && test -s aex-mark-white.webp \
-              && curl --fail --silent --show-error --max-time 20 https://aex.dev/docs > docs.html \
-              && sed -E 's/<[^>]+>//g' docs.html > docs.txt \
-              && grep -Fq "Build with Aex" docs.txt \
-              && grep -Fq "One Agentloop extension pipeline" docs.txt \
-              && grep -Fq "Separate Tool presentation from execution" docs.txt \
-              && grep -Fq "Let adapters manage Environment lifecycle" docs.txt \
-              && grep -Fq "Recover from the journal" docs.txt \
-              && grep -Fq "Cancel, end, and delete explicitly" docs.txt \
-              && curl --fail --silent --show-error --max-time 20 https://aex.dev/dashboard >/dev/null \
-              && curl --fail --silent --show-error --max-time 20 https://aex.dev/status >/dev/null \
-              && curl --fail --silent --show-error --max-time 20 https://aex.dev/privacy >/dev/null \
-              && curl --fail --silent --show-error --max-time 20 https://aex.dev/terms >/dev/null \
-              && ! grep -Eiq "Agent backend for AI apps|The session backend|Aex / Alpha|01 / SDK|From one tool to a finished result|Long-lived by design|The infrastructure between a prompt|Pay for the work|The brain remembers|simple, elegant|Suspended computer|A light engine leaves the model room to work|Claude Managed Agents|2,002|Founding beta|Join the beta|eu-west-1|Linux workspace|Suspended machine" homepage.txt; then
+            if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html               && sed -E 's/<[^>]+>//g' homepage.html > homepage.txt               && grep -Fq "Agent infra for next era" homepage.txt               && grep -Fq "wordmark-mark" homepage.html               && grep -Fq 'href="/brain"' homepage.html               && grep -Fq "THINK SLOWLY LTD" homepage.txt               && ! grep -Eiq "The backend for AI workloads|High-performance, reliable|Join the alpha|Provider cost|Exact AI Gateway receipt|Agentloop extensions" homepage.txt               && curl --fail --silent --show-error --max-time 20 https://aex.dev/brain > brain.html               && sed -E 's/<[^>]+>//g' brain.html > brain.txt               && grep -Fq "The durable session kernel for AI agents." brain.txt               && grep -Fq "Brain is under early development" brain.txt               && grep -Fq "Sessions survive crashes" brain.txt               && ! grep -Fq "Apache" brain.txt               && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-black.webp > aex-mark-black.webp               && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-white.webp > aex-mark-white.webp               && test -s aex-mark-black.webp               && test -s aex-mark-white.webp               && curl --fail --silent --show-error --max-time 20 https://aex.dev/dashboard >/dev/null               && curl --fail --silent --show-error --max-time 20 https://aex.dev/status >/dev/null               && curl --fail --silent --show-error --max-time 20 https://aex.dev/privacy >/dev/null               && curl --fail --silent --show-error --max-time 20 https://aex.dev/terms >/dev/null; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
