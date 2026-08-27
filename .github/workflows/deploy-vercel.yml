@@ -88,28 +88,25 @@ jobs:
           grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt
           grep -Fq "Start a session with your models and tools" homepage.txt
           grep -Fq "@aexhq/sdk" homepage.txt
-          grep -Fq "inspectFile" homepage.txt
           grep -Fq "session.send" homepage.txt
-          grep -Fq "agentloop: pi()" homepage.txt
-          grep -Fq "environments: { application }" homepage.txt
-          grep -Fq "output:" homepage.txt
-          ! grep -Fq "session.output" homepage.txt
+          grep -Fq "admitAgentloop" homepage.txt
+          grep -Fq "agentloop_digest" homepage.txt
+          grep -Fq "vercel-ai-gateway" homepage.txt
+          grep -Fq "definitions.bash" homepage.txt
+          grep -Fq "awsMicrovm" homepage.txt
+          grep -Fq "session.events" homepage.txt
           grep -Fq "gpt-5.4" homepage.txt
-          grep -Fq "OPENAI_API_KEY" homepage.txt
           ! grep -Fq "AI_GATEWAY_API_KEY" homepage.txt
           ! grep -Fq "ai-gateway.vercel.sh" homepage.txt
           ! grep -Fq "sk-ant-" homepage.txt
           grep -Fq "wordmark-mark" homepage.html
+          grep -Fq "Brain Server" homepage.txt
           grep -Fq "Agentloop extensions" homepage.txt
-          grep -Fq "Model extensions" homepage.txt
-          grep -Fq "Tool extensions" homepage.txt
+          grep -Fq "Model bindings" homepage.txt
+          grep -Fq "Tool definitions" homepage.txt
           grep -Fq "Environment extensions" homepage.txt
-          grep -Fq "Subagents" homepage.txt
-          grep -Fq "Active computer" homepage.txt
-          grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt
-          grep -Fq "Storage" homepage.txt
-          grep -Fq "first six months after launch" homepage.txt
-          grep -Fq "confirm the discount before billing starts" homepage.txt
+          grep -Fq "Provider cost" homepage.txt
+          grep -Fq "Exact AI Gateway receipt" homepage.txt
           grep -Fq "Join the alpha" homepage.txt
           npx --yes vercel@59.1.4 curl /aex-mark-black.webp --deployment "$DEPLOYMENT_URL" > aex-mark-black.webp
           npx --yes vercel@59.1.4 curl /aex-mark-white.webp --deployment "$DEPLOYMENT_URL" > aex-mark-white.webp
@@ -118,11 +115,11 @@ jobs:
           npx --yes vercel@59.1.4 curl /docs --deployment "$DEPLOYMENT_URL" > docs.html
           sed -E 's/<[^>]+>//g' docs.html > docs.txt
           grep -Fq "Build with Aex" docs.txt
-          grep -Fq "Review the customer record" docs.txt
-          grep -Fq ".client" docs.txt
-          grep -Fq "copyFromSandbox" docs.txt
-          grep -Fq "model.component: openai()" docs.txt
-          grep -Fq "cleanup job is retryable" docs.txt
+          grep -Fq "One Agentloop extension pipeline" docs.txt
+          grep -Fq "Separate Tool presentation from execution" docs.txt
+          grep -Fq "Let adapters manage Environment lifecycle" docs.txt
+          grep -Fq "Recover from the journal" docs.txt
+          grep -Fq "Cancel, end, and delete explicitly" docs.txt
           for route in /dashboard /status /privacy /terms; do
             npx --yes vercel@59.1.4 curl "$route" --deployment "$DEPLOYMENT_URL" >/dev/null
           done
@@ -148,28 +145,25 @@ jobs:
               && grep -Fq "High-performance, reliable, and simple infrastructure" homepage.txt \
               && grep -Fq "Start a session with your models and tools" homepage.txt \
               && grep -Fq "@aexhq/sdk" homepage.txt \
-              && grep -Fq "inspectFile" homepage.txt \
               && grep -Fq "session.send" homepage.txt \
-              && grep -Fq "agentloop: pi()" homepage.txt \
-              && grep -Fq "environments: { application }" homepage.txt \
-              && grep -Fq "output:" homepage.txt \
-              && ! grep -Fq "session.output" homepage.txt \
+              && grep -Fq "admitAgentloop" homepage.txt \
+              && grep -Fq "agentloop_digest" homepage.txt \
+              && grep -Fq "vercel-ai-gateway" homepage.txt \
+              && grep -Fq "definitions.bash" homepage.txt \
+              && grep -Fq "awsMicrovm" homepage.txt \
+              && grep -Fq "session.events" homepage.txt \
               && grep -Fq "gpt-5.4" homepage.txt \
-              && grep -Fq "OPENAI_API_KEY" homepage.txt \
               && ! grep -Fq "AI_GATEWAY_API_KEY" homepage.txt \
               && ! grep -Fq "ai-gateway.vercel.sh" homepage.txt \
               && ! grep -Fq "sk-ant-" homepage.txt \
               && grep -Fq "wordmark-mark" homepage.html \
+              && grep -Fq "Brain Server" homepage.txt \
               && grep -Fq "Agentloop extensions" homepage.txt \
-              && grep -Fq "Model extensions" homepage.txt \
-              && grep -Fq "Tool extensions" homepage.txt \
+              && grep -Fq "Model bindings" homepage.txt \
+              && grep -Fq "Tool definitions" homepage.txt \
               && grep -Fq "Environment extensions" homepage.txt \
-              && grep -Fq "Subagents" homepage.txt \
-              && grep -Fq "Active computer" homepage.txt \
-              && grep -Fq "0.5 vCPU + 1 GiB memory" homepage.txt \
-              && grep -Fq "Storage" homepage.txt \
-              && grep -Fq "first six months after launch" homepage.txt \
-              && grep -Fq "confirm the discount before billing starts" homepage.txt \
+              && grep -Fq "Provider cost" homepage.txt \
+              && grep -Fq "Exact AI Gateway receipt" homepage.txt \
               && grep -Fq "Join the alpha" homepage.txt \
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-black.webp > aex-mark-black.webp \
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-white.webp > aex-mark-white.webp \
@@ -178,11 +172,11 @@ jobs:
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/docs > docs.html \
               && sed -E 's/<[^>]+>//g' docs.html > docs.txt \
               && grep -Fq "Build with Aex" docs.txt \
-              && grep -Fq "Review the customer record" docs.txt \
-              && grep -Fq ".client" docs.txt \
-              && grep -Fq "copyFromSandbox" docs.txt \
-              && grep -Fq "model.component: openai()" docs.txt \
-              && grep -Fq "cleanup job is retryable" docs.txt \
+              && grep -Fq "One Agentloop extension pipeline" docs.txt \
+              && grep -Fq "Separate Tool presentation from execution" docs.txt \
+              && grep -Fq "Let adapters manage Environment lifecycle" docs.txt \
+              && grep -Fq "Recover from the journal" docs.txt \
+              && grep -Fq "Cancel, end, and delete explicitly" docs.txt \
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/dashboard >/dev/null \
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/status >/dev/null \
               && curl --fail --silent --show-error --max-time 20 https://aex.dev/privacy >/dev/null \
