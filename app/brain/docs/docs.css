@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+@source "../../../node_modules/fumadocs-ui/dist/**/*.js";
+
+/* The site sets data-theme on <html>; Fumadocs' dark variant keys off it too. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@import "fumadocs-openapi/css/preset.css";

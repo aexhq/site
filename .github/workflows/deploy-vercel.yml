@@ -111,6 +111,19 @@ jobs:
           ! grep -Eq "2,002 turns|1\.4 ms|21-31 KiB" brain.txt
           ! grep -Fq "Apache" brain.txt
 
+          curl_page /brain/docs > docs.html
+          sed -E 's/<[^>]+>//g' docs.html > docs.txt
+          grep -Fq "Brain runs agent sessions" docs.txt
+
+          # Generated from the session contract, never written by hand.
+          curl_page /brain/docs/reference/api/createSession > api.html
+          sed -E 's/<[^>]+>//g' api.html > api.txt
+          grep -Fq "Create Session" api.txt
+          grep -Fq "/v1/sessions" api.txt
+
+          curl_page /static.json > search.json
+          grep -Fq "/brain/docs/quickstart" search.json
+
           curl_page /aex-mark-black.webp > aex-mark-black.webp
           curl_page /aex-mark-white.webp > aex-mark-white.webp
           test -s aex-mark-black.webp
@@ -133,8 +146,52 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.promote
         shell: bash
         run: |
+          get() {
+            curl --fail --silent --show-error --max-time 20 "https://aex.dev$1"
+          }
+          text() {
+            sed -E 's/<[^>]+>//g'
+          }
+          check() {
+            get / > homepage.html || return 1
+            text < homepage.html > homepage.txt
+            grep -Fq "Agent infra for next era" homepage.txt || return 1
+            grep -Fq "wordmark-mark" homepage.html || return 1
+            grep -Fq 'href="/brain"' homepage.html || return 1
+            grep -Fq "THINK SLOWLY LTD" homepage.txt || return 1
+            ! grep -Eiq "The backend for AI workloads|High-performance, reliable|Join the alpha|Provider cost|Exact AI Gateway receipt|Agentloop extensions" homepage.txt || return 1
+
+            get /brain > brain.html || return 1
+            text < brain.html > brain.txt
+            grep -Fq "The durable session kernel for AI agents." brain.txt || return 1
+            grep -Fq "Brain is under early development" brain.txt || return 1
+            grep -Fq "Sessions survive crashes" brain.txt || return 1
+            ! grep -Fq "Apache" brain.txt || return 1
+
+            get /brain/docs > docs.html || return 1
+            text < docs.html > docs.txt
+            grep -Fq "Brain runs agent sessions" docs.txt || return 1
+
+            # Generated from the session contract, never written by hand.
+            get /brain/docs/reference/api/createSession > api.html || return 1
+            text < api.html > api.txt
+            grep -Fq "Create Session" api.txt || return 1
+            grep -Fq "/v1/sessions" api.txt || return 1
+
+            get /static.json > search.json || return 1
+            grep -Fq "/brain/docs/quickstart" search.json || return 1
+
+            get /aex-mark-black.webp > aex-mark-black.webp || return 1
+            get /aex-mark-white.webp > aex-mark-white.webp || return 1
+            test -s aex-mark-black.webp || return 1
+            test -s aex-mark-white.webp || return 1
+
+            for route in /dashboard /status /privacy /terms; do
+              get "$route" > /dev/null || return 1
+            done
+          }
           for attempt in {1..12}; do
-            if curl --fail --silent --show-error --max-time 20 https://aex.dev/ > homepage.html               && sed -E 's/<[^>]+>//g' homepage.html > homepage.txt               && grep -Fq "Agent infra for next era" homepage.txt               && grep -Fq "wordmark-mark" homepage.html               && grep -Fq 'href="/brain"' homepage.html               && grep -Fq "THINK SLOWLY LTD" homepage.txt               && ! grep -Eiq "The backend for AI workloads|High-performance, reliable|Join the alpha|Provider cost|Exact AI Gateway receipt|Agentloop extensions" homepage.txt               && curl --fail --silent --show-error --max-time 20 https://aex.dev/brain > brain.html               && sed -E 's/<[^>]+>//g' brain.html > brain.txt               && grep -Fq "The durable session kernel for AI agents." brain.txt               && grep -Fq "Brain is under early development" brain.txt               && grep -Fq "Sessions survive crashes" brain.txt               && ! grep -Fq "Apache" brain.txt               && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-black.webp > aex-mark-black.webp               && curl --fail --silent --show-error --max-time 20 https://aex.dev/aex-mark-white.webp > aex-mark-white.webp               && test -s aex-mark-black.webp               && test -s aex-mark-white.webp               && curl --fail --silent --show-error --max-time 20 https://aex.dev/dashboard >/dev/null               && curl --fail --silent --show-error --max-time 20 https://aex.dev/status >/dev/null               && curl --fail --silent --show-error --max-time 20 https://aex.dev/privacy >/dev/null               && curl --fail --silent --show-error --max-time 20 https://aex.dev/terms >/dev/null; then
+            if check; then
               echo "Promoted and verified https://aex.dev" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi

@@ -125,6 +125,31 @@ test("retired documentation path redirects to the Brain docs", async () => {
   assert.equal(response.headers.get("location"), "/brain/docs");
 });
 
+test("serves the Brain documentation, generated API pages, and a static search index", async () => {
+  const intro = await render("/brain/docs");
+  assert.equal(intro.status, 200);
+  const introText = (await intro.text()).replace(/<[^>]*>/g, " ");
+  assert.match(introText, /Brain runs agent sessions/);
+  assert.match(introText, /Quickstart/);
+
+  const concept = await render("/brain/docs/concepts/agent-loop");
+  assert.equal(concept.status, 200);
+  assert.match((await concept.text()).replace(/<[^>]*>/g, " "), /No sockets, no filesystem/);
+
+  // Generated from contracts/session/v1/openapi.yaml, never written by hand.
+  const api = await render("/brain/docs/reference/api/createSession");
+  assert.equal(api.status, 200);
+  const apiText = (await api.text()).replace(/<[^>]*>/g, " ");
+  assert.match(apiText, /Create Session/);
+  assert.match(apiText, /POST/);
+  assert.match(apiText, /[/]v1[/]sessions/);
+
+  const index = await render("/static.json", { headers: { accept: "application/json" } });
+  assert.equal(index.status, 200);
+  const payload = await index.json();
+  assert.ok(JSON.stringify(payload).includes("/brain/docs/quickstart"));
+});
+
 test("public status and company legal pages render", async () => {
   const status = await render("/status");
   assert.equal(status.status, 200);
