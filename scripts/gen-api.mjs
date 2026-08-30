@@ -3,7 +3,7 @@
 // The pages are output, never input: editing them by hand would be overwritten on the next build,
 // which is the point. The contract is the only place the API is described.
 import { readFile, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { basename, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { generateFiles } from "fumadocs-openapi";
 import { createOpenAPI } from "fumadocs-openapi/server";
@@ -31,7 +31,7 @@ await generateFiles({
         description: "Every session endpoint, generated from the contract.",
       },
     ],
-    url: { baseUrl: "/brain/docs/reference/api", contentDir: out },
+    url: (file) => `/brain/docs/reference/api/${basename(file, extname(file))}`,
   },
 });
 
