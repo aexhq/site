@@ -1,7 +1,7 @@
 export const siteHeadline = "Agent infra for next era";
 
 export const siteDescription =
-  "Aex builds infrastructure for AI agents. Brain, an open-source durable session kernel, is under early development.";
+  "Aex builds infrastructure for AI agents. Brain, a tiny open-source agent kernel, is under early development.";
 
 export const siteSocialTitle = `Aex: ${siteHeadline}`;
 
