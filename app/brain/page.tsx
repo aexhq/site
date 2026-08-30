@@ -5,7 +5,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { brainRepoUrl, discordUrl } from "../site-copy";
 
 const title = "Brain";
-const tagline = "The durable session kernel for AI agents.";
+const tagline = "A tiny, blazing fast, extensible agent kernel.";
 
 export const metadata: Metadata = {
   title,
@@ -14,40 +14,40 @@ export const metadata: Metadata = {
 
 const features = [
   [
-    "Sessions survive crashes",
-    "Brain writes each step to disk before it runs. Kill the process mid-turn, start it again, and the session carries on from where it stopped.",
-  ],
-  [
     "Tools run wherever you want",
-    "Brain never executes tool code. It calls whatever you bind the tool to — a sandbox VM, a browser tab, your own backend, the user's laptop.",
+    "Brain never executes tool code. It calls whatever you bind the tool to — a sandbox VM, a browser tab driving the DOM, your own backend, the user's laptop — and one session can span several at once.",
   ],
   [
-    "Any language",
-    "Agent loops compile to WebAssembly. Tools and environments talk to Brain over plain HTTP. One tool in Rust and another in Node, in the same session.",
-  ],
-  [
-    "Any agent loop",
-    "Pi, Codex-style, or your own. Brain is not an agent — it is what agents run on, and the loop we ship has no privileges yours doesn't.",
+    "Built for low overhead",
+    "Session state lives in memory and the journal is written behind the turn: 25 ms round trips, 0.6 ms session creation, ~14 KiB per idle session. The numbers are measured, and CI holds them.",
   ],
   [
     "Any model",
     "Anthropic and OpenAI wire formats, gateways, your own keys. The model is pinned when the session starts, so nothing swaps it out mid-conversation.",
   ],
   [
+    "Any agent loop",
+    "Pi, Codex-style, or your own — and sessions can create sessions for subagent work. Brain is not an agent; it is what agents run on, and the loop we ship has no privileges yours doesn't.",
+  ],
+  [
     "The loop is sealed off",
-    "An agent loop gets an observation and returns a decision. No network, no filesystem, no secrets, no clock. Brain performs every effect.",
+    "An agent loop compiles to WebAssembly and runs in a standalone runtime with no network, no filesystem, no secrets, no clock. Brain performs every effect.",
   ],
   [
-    "More than one machine",
-    "Environments are addressed by a stable name, so two sessions on two servers can share one workspace when you want them to.",
-  ],
-  [
-    "Server or library",
-    "Run the binary with a SQLite file, or embed the brain crate in your own Rust service and supply your own storage and transport.",
+    "Any language",
+    "Agent loops compile to WebAssembly. Tools and environments talk to Brain over plain HTTP. One tool in Rust and another in Node, in the same session.",
   ],
   [
     "Everything is an event log",
-    "A session is an ordered, replayable log of what happened. Live streaming sits on top and drops events rather than stalling a turn.",
+    "A session is an ordered, replayable log of what happened, and a running turn streams the model's output token by token. Live streaming drops rather than stalling a turn.",
+  ],
+  [
+    "Conversations outlive processes",
+    "Sessions rebuild from their own journal on restart, an interrupted turn says so with a turn_interrupted event, and a conversation can be handed to a new session as history — on another machine if you like.",
+  ],
+  [
+    "Server or library",
+    "Run the binary — the journal is the only thing it writes — or embed the brain crate in your own Rust service and supply your own storage and transport.",
   ],
 ] as const;
 
@@ -77,21 +77,17 @@ const parts = [
 const roadmap = [
   ["Shipped", "Four-part kernel: agent loop, model, tool, environment"],
   ["Shipped", "WebAssembly agent loop pipeline"],
-  ["Shipped", "SQLite log, crash recovery, writing to disk before acting"],
+  ["Shipped", "Append-only segment log with best-effort restart recovery"],
   ["Shipped", "HTTP/SSE session API and the TypeScript SDK"],
   ["Shipped", "Remote environment contract with the official adapters"],
-  ["In progress", "Storage split apart from sandboxing"],
-  ["In progress", "Benchmarks and the cross-session isolation test, rebuilt on the current kernel"],
+  ["Shipped", "End-to-end benchmark harness against other runtimes"],
+  ["In progress", "Cross-session isolation test"],
   ["In progress", "A frozen v1 API and tagged releases"],
-  ["Next", "MCP client"],
-  ["Next", "Subagents"],
   ["Next", "File access and workspace sync"],
-  ["Next", "Web search and fetch"],
   ["Next", "crates.io publication"],
   ["Later", "Sessions spread across machines, sharing environments"],
   ["Later", "Checkpoint and restore"],
   ["Later", "Custom images, scoped credentials, network metering"],
-  ["Later", "Hosted Brain"],
 ] as const;
 
 const installExample = `npm install @aexhq/brain @aexhq/brain-pi @aexhq/env-aws-microvm @aexhq/tools`;
@@ -148,14 +144,11 @@ export default function BrainPage() {
         <section className="site-section" id="what-it-is" aria-labelledby="what-it-is-title">
           <h2 id="what-it-is-title">What it is</h2>
           <p>
-            Brain runs agent sessions. It holds the conversation, decides what happens next, calls
-            the model, hands out tool calls, and writes all of it to a durable log. That is the
-            entire job.
-          </p>
-          <p>
-            Four things plug in, and all four are yours to replace: the agent loop, the model, the
-            tools, and the environment tools run in. The packages we ship use the same interface you
-            would — nothing built in gets a shortcut.
+            Brain is a tiny agent kernel that runs sessions: it holds the conversation, decides
+            what happens next, calls the model, hands out tool calls, and journals every step — in
+            about 7,300 lines of Rust. The agent loop, the model, the tools, and the environment
+            they run in all plug in and are yours to replace, and the packages we ship use the same
+            interface you would — nothing built in gets a shortcut.
           </p>
           <p>
             The name comes from Anthropic&apos;s split of{" "}
@@ -184,10 +177,10 @@ export default function BrainPage() {
         <section className="site-section" id="benchmark" aria-labelledby="benchmark-title">
           <h2 id="benchmark-title">Benchmark</h2>
           <p>
-            The benchmark measures the engine, not a model: it drives the real HTTP and SSE paths
-            with an instant scripted provider and an in-process echo environment, so nothing here is
-            model latency. The harness is being rebuilt against the current kernel, so the numbers
-            below are not filled in yet.
+            The benchmark measures the engine, not a model: every subject is driven through its own
+            public API on the same machine, against the same scripted model, so nothing here is
+            model latency. Medians on an AWS c7g.xlarge; the harness lives in the repository, so
+            the numbers can be re-run rather than trusted.
           </p>
           <div className="table-scroll">
             <table className="compare-table">
@@ -195,57 +188,57 @@ export default function BrainPage() {
                 <tr>
                   <th scope="col">&nbsp;</th>
                   <th scope="col">Brain</th>
+                  <th scope="col">ZeroClaw</th>
                   <th scope="col">LangGraph Server</th>
-                  <th scope="col">Temporal-backed loop</th>
-                  <th scope="col">Plain in-process loop</th>
+                  <th scope="col">OpenClaw</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <th scope="row">First visible byte, one session</th>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
+                  <th scope="row">Turn round-trip</th>
+                  <td>25 ms</td>
+                  <td>51 ms</td>
+                  <td>1049 ms</td>
+                  <td>1257 ms</td>
                 </tr>
                 <tr>
-                  <th scope="row">Complete text turn, one session</th>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
+                  <th scope="row">Time to first token</th>
+                  <td>≤25 ms</td>
+                  <td>9.6 ms</td>
+                  <td>48.6 ms</td>
+                  <td>874.4 ms</td>
                 </tr>
                 <tr>
-                  <th scope="row">Throughput, 64 sessions</th>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
+                  <th scope="row">New session</th>
+                  <td>0.6 ms</td>
+                  <td>1.9 ms</td>
+                  <td>0.7 ms</td>
+                  <td>3.7 ms</td>
                 </tr>
                 <tr>
-                  <th scope="row">Memory per live session</th>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
+                  <th scope="row">Cold start</th>
+                  <td>25 ms</td>
+                  <td>10 ms</td>
+                  <td>2.5 s</td>
+                  <td>5.98 s</td>
                 </tr>
                 <tr>
-                  <th scope="row">Survives process death mid-turn</th>
-                  <td>yes</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>no</td>
-                </tr>
-                <tr>
-                  <th scope="row">Tool code isolated from the kernel</th>
-                  <td>yes</td>
-                  <td>TBD</td>
-                  <td>TBD</td>
-                  <td>no</td>
+                  <th scope="row">Memory per idle session</th>
+                  <td>14 KiB</td>
+                  <td>50 MiB</td>
+                  <td>—</td>
+                  <td>490 MiB</td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <p>
+            Brain&apos;s first-token figure is an upper bound — under an instant scripted model the
+            turn completes before a delta reaches the stream. Cold-start figures other than
+            Brain&apos;s come from each project&apos;s own published numbers. The full charts,
+            including OpenFang, CrewAI, and AutoGen, are in the{" "}
+            <a href={`${brainRepoUrl}#benchmarks`}>repository README</a>.
+          </p>
         </section>
 
         <section className="site-section" id="architecture" aria-labelledby="architecture-title">
