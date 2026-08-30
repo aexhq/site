@@ -31,7 +31,7 @@ const features = [
   ],
   [
     "The loop is sealed off",
-    "An agent loop compiles to WebAssembly and runs in a standalone runtime with no network, no filesystem, no secrets, no clock. Brain performs every effect.",
+    "An agent loop compiles to WebAssembly and runs in a standalone runtime. No network, no filesystem, no secrets, no clock — Brain performs every effect.",
   ],
   [
     "Any language",

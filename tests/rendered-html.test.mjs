@@ -88,7 +88,7 @@ test("server-renders the Brain page in README order", async () => {
   const text = html.replace(/<[^>]*>/g, "");
 
   assert.match(html, /<title>Brain · Aex<\/title>/i);
-  assert.match(text, /The durable session kernel for AI agents\./);
+  assert.match(text, /A tiny, blazing fast, extensible agent kernel\./);
   assert.match(text, /Brain is under early development/);
 
   const order = [
@@ -107,15 +107,17 @@ test("server-renders the Brain page in README order", async () => {
     cursor = at;
   }
 
-  assert.match(text, /Sessions survive crashes/);
+  assert.match(text, /Conversations outlive processes/);
   assert.match(text, /No network, no filesystem, no secrets, no clock/);
   assert.match(text, /ghcr\.io\/aexhq\/brain:latest/);
   assert.match(text, /MIT/);
   assert.match(html, /href="\/brain\/docs"/);
   assert.match(html, /href="https:\/\/github\.com\/aexhq\/brain"/);
 
-  // Benchmark numbers are not published until the harness is rebuilt.
-  assert.doesNotMatch(text, /2,002 turns|1\.4 ms|21-31 KiB/);
+  // Current measured figures, not the pre-rebuild archive.
+  assert.match(text, /Turn round-trip[\s\S]*25 ms/);
+  assert.match(text, /14 KiB/);
+  assert.doesNotMatch(text, /TBD|2,002 turns|1\.4 ms|21-31 KiB/);
   assert.doesNotMatch(text, /Apache/i);
 });
 
