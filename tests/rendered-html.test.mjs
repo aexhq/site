@@ -112,7 +112,9 @@ test("server-renders the Brain page in README order", async () => {
   assert.match(text, /ghcr\.io\/aexhq\/brain:latest/);
   assert.match(text, /MIT/);
   assert.match(html, /href="\/brain\/docs"/);
+  assert.match(html, /href="\/brain\/docs\/reference\/api"/);
   assert.match(html, /href="https:\/\/github\.com\/aexhq\/brain"/);
+  assert.doesNotMatch(text, /env-aws-microvm|VERCEL_AI_GATEWAY_API_KEY/);
 
   // Current measured figures, not the pre-rebuild archive.
   assert.match(text, /Turn round-trip[\s\S]*25 ms/);
@@ -141,7 +143,10 @@ test("serves the Brain documentation, generated API pages, and a static search i
   // Generated from contracts/session/v1/openapi.yaml, never written by hand.
   const apiIndex = await render("/brain/docs/reference/api");
   assert.equal(apiIndex.status, 200);
-  assert.match((await apiIndex.text()).replace(/<[^>]*>/g, " "), /Create Session/);
+  const apiIndexHtml = await apiIndex.text();
+  assert.match(apiIndexHtml.replace(/<[^>]*>/g, " "), /Create Session/);
+  assert.match(apiIndexHtml, /href="\/brain\/docs\/reference\/api\/createSession"/);
+  assert.doesNotMatch(apiIndexHtml, /%5C/);
 
   const api = await render("/brain/docs/reference/api/createSession");
   assert.equal(api.status, 200);
