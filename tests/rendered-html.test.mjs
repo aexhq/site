@@ -88,7 +88,7 @@ test("server-renders the Brain page in README order", async () => {
   const text = html.replace(/<[^>]*>/g, "");
 
   assert.match(html, /<title>Brain · Aex<\/title>/i);
-  assert.match(text, /A tiny, blazing fast, extensible agent kernel\./);
+  assert.match(text, /A tiny, blazing fast, extensible agent runtime\./);
   assert.match(text, /Brain is under early development/);
 
   const order = [

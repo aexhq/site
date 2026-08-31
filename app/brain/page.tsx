@@ -5,7 +5,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { brainRepoUrl, discordUrl } from "../site-copy";
 
 const title = "Brain";
-const tagline = "A tiny, blazing fast, extensible agent kernel.";
+const tagline = "A tiny, blazing fast, extensible agent runtime.";
 
 export const metadata: Metadata = {
   title,
@@ -75,7 +75,7 @@ const parts = [
 ] as const;
 
 const roadmap = [
-  ["Shipped", "Four-part kernel: agent loop, model, tool, environment"],
+  ["Shipped", "Four-part runtime: agent loop, model, tool, environment"],
   ["Shipped", "WebAssembly agent loop pipeline"],
   ["Shipped", "Append-only segment log with best-effort restart recovery"],
   ["Shipped", "HTTP/SSE session API and the TypeScript SDK"],
@@ -107,7 +107,7 @@ const session = await brain.sessions.create({
   system: "Answer briefly and directly.",
 });
 
-await session.send("Explain what a session kernel does, in one sentence.");
+await session.send("Explain what a session runtime does, in one sentence.");
 for await (const event of session.events()) console.log(event);
 
 await session.end();
@@ -144,7 +144,7 @@ export default function BrainPage() {
         <section className="site-section" id="what-it-is" aria-labelledby="what-it-is-title">
           <h2 id="what-it-is-title">What it is</h2>
           <p>
-            Brain is a tiny agent kernel that runs sessions: it holds the conversation, decides
+            Brain is a tiny agent runtime that runs sessions: it holds the conversation, decides
             what happens next, calls the model, hands out tool calls, and journals every step — in
             about 7,300 lines of Rust. The agent loop, the model, the tools, and the environment
             they run in all plug in and are yours to replace, and the packages we ship use the same
