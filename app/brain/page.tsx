@@ -5,7 +5,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { brainRepoUrl, discordUrl } from "../site-copy";
 
 const title = "Brain";
-const tagline = "A tiny, blazing fast, extensible agent runtime.";
+const tagline = "A minimal, blazing fast, extensible agent runtime.";
 
 export const metadata: Metadata = {
   title,
@@ -19,7 +19,7 @@ const features = [
   ],
   [
     "Built for low overhead",
-    "Session state lives in memory and the journal is written behind the turn: 25 ms round trips, 0.6 ms session creation, ~14 KiB per idle session. The numbers are measured, and CI holds them.",
+    "Session state lives in memory and the journal is written behind the turn: sub-millisecond session creation, ~14 KiB per idle session. The numbers are measured, and CI holds them.",
   ],
   [
     "Any model",
@@ -83,6 +83,7 @@ const roadmap = [
   ["Shipped", "End-to-end benchmark harness against other runtimes"],
   ["In progress", "Cross-session isolation test"],
   ["In progress", "A frozen v1 API and tagged releases"],
+  ["Next", "Multimodal input — images and files on send"],
   ["Next", "File access and workspace sync"],
   ["Next", "crates.io publication"],
   ["Later", "Sessions spread across machines, sharing environments"],
@@ -90,10 +91,10 @@ const roadmap = [
   ["Later", "Custom images, scoped credentials, network metering"],
 ] as const;
 
-const installExample = `npm install @aexhq/brain @aexhq/brain-pi`;
+const installExample = `npm install @aexhq/brain @aexhq/agentloop-pi`;
 
 const sessionExample = `import { Brain } from "@aexhq/brain";
-import { pi } from "@aexhq/brain-pi";
+import { pi } from "@aexhq/agentloop-pi";
 
 const brain = new Brain({ baseUrl: "http://127.0.0.1:8080" });
 
@@ -103,7 +104,7 @@ const session = await brain.sessions.create({
     name: "gpt-5-mini",
     apiKey: process.env.OPENAI_API_KEY!,
   },
-  brain: pi(),
+  agentloop: pi(),
   system: "Answer briefly and directly.",
 });
 
@@ -144,11 +145,12 @@ export default function BrainPage() {
         <section className="site-section" id="what-it-is" aria-labelledby="what-it-is-title">
           <h2 id="what-it-is-title">What it is</h2>
           <p>
-            Brain is a tiny agent runtime that runs sessions: it holds the conversation, decides
-            what happens next, calls the model, hands out tool calls, and journals every step — in
-            about 7,300 lines of Rust. The agent loop, the model, the tools, and the environment
-            they run in all plug in and are yours to replace, and the packages we ship use the same
-            interface you would — nothing built in gets a shortcut.
+            Brain is a minimal, blazingly fast agent runtime. Build your own AI-native apps, with
+            tools that run anywhere from a client browser to a server sandbox. Run any agentloop,
+            from pi to codex. Deploy flexibly as a Docker image or an embedded Rust crate. Secure
+            by design, with Wasm-isolated agentloop and tool execution. Scale easily with minimal
+            memory overhead. Instant observability with real-time events — and the packages we
+            ship use the same interface you would, so nothing built in gets a shortcut.
           </p>
           <p>
             The name comes from Anthropic&apos;s split of{" "}
