@@ -30,7 +30,7 @@ const features = [
     "Pi, Codex-style, or your own — and sessions can create sessions for subagent work. Brain is not an agent; it is what agents run on, and the loop we ship has no privileges yours doesn't.",
   ],
   [
-    "The loop is sealed off",
+    "The loop is isolated",
     "An agent loop compiles to WebAssembly and runs in a standalone runtime. No network, no filesystem, no secrets, no clock — Brain performs every effect.",
   ],
   [
@@ -39,7 +39,7 @@ const features = [
   ],
   [
     "Everything is an event log",
-    "A session is an ordered, replayable log of what happened, and a running turn streams the model's output token by token. Live streaming drops rather than stalling a turn.",
+    "A session is an ordered, replayable log of what happened, and a running turn streams the model's output token by token. A live subscriber that falls behind drops, and the turn keeps its pace.",
   ],
   [
     "Conversations outlive processes",
@@ -182,7 +182,7 @@ export default function BrainPage() {
             The benchmark measures the engine, not a model: every subject is driven through its own
             public API on the same machine, against the same scripted model, so nothing here is
             model latency. Medians on an AWS c7g.xlarge; the harness lives in the repository, so
-            the numbers can be re-run rather than trusted.
+            the numbers can be re-run on your own hardware.
           </p>
           <div className="table-scroll">
             <table className="compare-table">
