@@ -192,14 +192,14 @@ export default function BrainPage() {
               <tbody>
                 <tr>
                   <th scope="row">Turn round-trip</th>
-                  <td>51 ms</td>
+                  <td>40 ms</td>
                   <td>53 ms</td>
                   <td>1.22 s</td>
                   <td>3.33 s</td>
                 </tr>
                 <tr>
                   <th scope="row">Time to first token</th>
-                  <td>≤51 ms</td>
+                  <td>≤40 ms</td>
                   <td>10.6 ms</td>
                   <td>207 ms</td>
                   <td>1.33 s</td>
