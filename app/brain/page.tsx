@@ -198,31 +198,31 @@ export default function BrainPage() {
               <tbody>
                 <tr>
                   <th scope="row">Turn round-trip</th>
-                  <td>25 ms</td>
                   <td>51 ms</td>
-                  <td>1049 ms</td>
-                  <td>1257 ms</td>
+                  <td>53 ms</td>
+                  <td>1.22 s</td>
+                  <td>3.33 s</td>
                 </tr>
                 <tr>
                   <th scope="row">Time to first token</th>
-                  <td>≤25 ms</td>
-                  <td>9.6 ms</td>
-                  <td>48.6 ms</td>
-                  <td>874.4 ms</td>
+                  <td>≤51 ms</td>
+                  <td>10.6 ms</td>
+                  <td>207 ms</td>
+                  <td>1.33 s</td>
                 </tr>
                 <tr>
                   <th scope="row">New session</th>
-                  <td>0.6 ms</td>
-                  <td>1.9 ms</td>
-                  <td>0.7 ms</td>
-                  <td>3.7 ms</td>
+                  <td>0.76 ms</td>
+                  <td>2.2 ms</td>
+                  <td>0.66 ms</td>
+                  <td>5.4 ms</td>
                 </tr>
                 <tr>
-                  <th scope="row">Cold start</th>
-                  <td>25 ms</td>
-                  <td>10 ms</td>
-                  <td>2.5 s</td>
-                  <td>5.98 s</td>
+                  <th scope="row">Journal growth per 100 turns</th>
+                  <td>0.23 MiB</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>—</td>
                 </tr>
                 <tr>
                   <th scope="row">Memory per idle session</th>
@@ -236,9 +236,9 @@ export default function BrainPage() {
           </div>
           <p>
             Brain&apos;s first-token figure is an upper bound — under an instant scripted model the
-            turn completes before a delta reaches the stream. Cold-start figures other than
-            Brain&apos;s come from each project&apos;s own published numbers. The full charts,
-            including OpenFang, CrewAI, and AutoGen, are in the{" "}
+            turn completes before a delta reaches the stream. The full charts, with nine more
+            measured subjects — VoltAgent, Mastra, Agno, Restate, Temporal, AgentScope, Letta,
+            Awaken, OpenFang — are in the{" "}
             <a href={`${brainRepoUrl}#benchmarks`}>repository README</a>.
           </p>
         </section>
