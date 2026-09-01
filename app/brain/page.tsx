@@ -199,7 +199,7 @@ export default function BrainPage() {
                 </tr>
                 <tr>
                   <th scope="row">Time to first token</th>
-                  <td>≤40 ms</td>
+                  <td>2.9 ms</td>
                   <td>10.6 ms</td>
                   <td>207 ms</td>
                   <td>1.33 s</td>
@@ -229,8 +229,8 @@ export default function BrainPage() {
             </table>
           </div>
           <p>
-            Brain&apos;s first-token figure is an upper bound — under an instant scripted model the
-            turn completes before a delta reaches the stream. The full charts compare agent
+            Brain&apos;s first-token figure is a real measurement: the scripted provider delays
+            its first token deliberately and the probe subtracts the delay. The full charts compare agent
             runtimes only — with AgentScope Runtime, Letta, Awaken, and OpenFang beside the
             columns here — in the{" "}
             <a href={`${brainRepoUrl}#benchmarks`}>repository README</a>.
