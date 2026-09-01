@@ -231,7 +231,7 @@ export default function BrainPage() {
           <p>
             Brain&apos;s first-token figure is an upper bound — under an instant scripted model the
             turn completes before a delta reaches the stream. The full charts compare agent
-            runtimes only — with Letta, Awaken, and OpenFang beside the
+            runtimes only — with AgentScope Runtime, Letta, Awaken, and OpenFang beside the
             columns here — in the{" "}
             <a href={`${brainRepoUrl}#benchmarks`}>repository README</a>.
           </p>
