@@ -102,7 +102,7 @@ jobs:
 
           curl_page /brain > brain.html
           sed -E 's/<[^>]+>//g' brain.html > brain.txt
-          grep -Fq "A tiny, blazing fast, extensible agent runtime." brain.txt
+          grep -Fq "A minimal, blazing fast, extensible agent runtime." brain.txt
           grep -Fq "Brain is under early development" brain.txt
           grep -Fq "Sessions rebuild from their own journal on restart" brain.txt
           grep -Fq "ghcr.io/aexhq/brain:latest" brain.txt
@@ -165,7 +165,7 @@ jobs:
 
             get /brain > brain.html || return 1
             text < brain.html > brain.txt
-            grep -Fq "A tiny, blazing fast, extensible agent runtime." brain.txt || return 1
+            grep -Fq "A minimal, blazing fast, extensible agent runtime." brain.txt || return 1
             grep -Fq "Brain is under early development" brain.txt || return 1
             grep -Fq "Sessions rebuild from their own journal on restart" brain.txt || return 1
             ! grep -Fq "Apache" brain.txt || return 1
