@@ -89,7 +89,7 @@ test("server-renders the Brain page in README order", async () => {
 
   assert.match(html, /<title>Brain · Aex<\/title>/i);
   assert.match(text, /A minimal, blazing fast, extensible agent runtime\./);
-  assert.match(text, /Brain is under early development/);
+  assert.match(text, /extensible agent runtime server/);
 
   const order = [
     "what-it-is-title",

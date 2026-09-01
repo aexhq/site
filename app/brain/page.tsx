@@ -136,21 +136,15 @@ export default function BrainPage() {
           <a href={discordUrl}>Discord</a>
         </nav>
 
-        <p className="callout-note">
-          Brain is under early development. Contracts are replaced in place until the first stable
-          release, and there is no upgrade path from earlier builds. APIs, package names, and wire
-          formats will change without notice.
-        </p>
-
         <section className="site-section" id="what-it-is" aria-labelledby="what-it-is-title">
           <h2 id="what-it-is-title">What it is</h2>
           <p>
-            Brain is a minimal, blazingly fast agent runtime. Build your own AI-native apps, with
-            tools that run anywhere from a client browser to a server sandbox. Run any agentloop,
-            from pi to codex. Deploy flexibly as a Docker image or an embedded Rust crate. Secure
-            by design, with Wasm-isolated agentloop and tool execution. Scale easily with minimal
-            memory overhead. Instant observability with real-time events — and the packages we
-            ship use the same interface you would, so nothing built in gets a shortcut.
+            Brain is a minimal, blazingly fast, extensible agent runtime server. Deploy and
+            build your own AI-native apps, write customized agentloop, tools that run in any
+            environment from client browser to server sandbox. Secure by design, with
+            Wasm-isolated agentloop and execution. Scale easily with minimal memory overhead.
+            Instant observability with real-time events — and the packages we ship use the same
+            interface you would, so nothing built in gets a shortcut.
           </p>
           <p>
             The name comes from Anthropic&apos;s split of{" "}
