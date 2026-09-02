@@ -9,9 +9,11 @@ export default function BrainDocsLayout({ children }: { children: ReactNode }) {
   return (
     <RootProvider
       theme={{
-        attribute: "data-theme",
+        // Fumadocs' palette and Shiki dark tokens live under a literal `.dark` selector,
+        // while the rest of the site keys off `data-theme`. Set both.
+        attribute: ["class", "data-theme"],
         storageKey: "aex-theme",
-        defaultTheme: "light",
+        defaultTheme: "system",
         enableSystem: true,
       }}
       search={{ options: { type: "static" } }}
