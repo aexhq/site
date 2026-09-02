@@ -43,7 +43,7 @@ const features = [
   ],
   [
     "Conversations outlive processes",
-    "Sessions rebuild from their own journal on restart, an interrupted turn says so with a turn_interrupted event, and a conversation can be handed to a new session as history — on another machine if you like.",
+    "Sessions rebuild from their own journal on restart, an interrupted turn says so with a turn_failed event whose code is interrupted, and a conversation can be handed to a new session as history — on another machine if you like.",
   ],
   [
     "Server or library",
