@@ -108,7 +108,10 @@ test("server-renders the Brain page in README order", async () => {
   }
 
   assert.match(text, /Conversations outlive processes/);
-  assert.match(text, /No network, no filesystem, no secrets, no clock/);
+  assert.match(text, /Resident Tools omit it and remain in the host that declared them/);
+  assert.match(text, /agentloop: pi\(\{ env: brainWasm\(\) \}\)/);
+  assert.match(text, /token: &quot;quickstart&quot;/);
+  assert.match(text, /BRAIN_LISTEN=0\.0\.0\.0:8080/);
   assert.match(text, /ghcr\.io\/aexhq\/brain:latest/);
   assert.match(text, /MIT/);
   assert.match(html, /href="\/brain\/docs"/);
@@ -139,7 +142,10 @@ test("serves the Brain documentation, generated API pages, and a static search i
 
   const concept = await render("/brain/docs/concepts/agent-loop");
   assert.equal(concept.status, 200);
-  assert.match((await concept.text()).replace(/<[^>]*>/g, " "), /no filesystem, network, process/);
+  assert.match(
+    (await concept.text()).replace(/<[^>]*>/g, " "),
+    /Brain accepts an already-built WebAssembly Component/,
+  );
 
   // Generated from contracts/session/v1/openapi.yaml, never written by hand.
   const apiIndex = await render("/brain/docs/reference/api");
@@ -236,7 +242,10 @@ test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", a
   assert.doesNotMatch(dashboard, /localStorage|sessionStorage/);
   assert.match(dashboardPage, /cookies\(\)[\s\S]*aex_account/);
   assert.match(dashboard, /hasDashboardSession[\s\S]*dashboard-spinner/);
-  assert.match(dashboard, /sessions\.create[\s\S]*brain: pi\(\)[\s\S]*vercel-ai-gateway/);
+  assert.match(
+    dashboard,
+    /sessions\.create[\s\S]*agentloop: pi\(\{ env: brainWasm\(\) \}\)[\s\S]*vercel-ai-gateway/,
+  );
   assert.doesNotMatch(dashboard, /admitAgentloop|agentloop_digest/);
   assert.doesNotMatch(dashboard, /OPENAI_API_KEY|AI_GATEWAY_API_KEY|ai-gateway\.vercel\.sh/);
   assert.match(styles, /@media \(prefers-color-scheme: dark\)/);

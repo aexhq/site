@@ -486,14 +486,14 @@ export function DashboardClient({
             Documentation
           </Link>
         </header>
-        <pre><code>{`npm install @aexhq/sdk @aexhq/brain-pi
+        <pre><code>{`npm install @aexhq/sdk @aexhq/agentloop-pi
 
-import { Aex } from "@aexhq/sdk";
-import { pi } from "@aexhq/brain-pi";
+import { Aex, brainWasm } from "@aexhq/sdk";
+import { pi } from "@aexhq/agentloop-pi";
 
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
 const session = await aex.sessions.create({
-  brain: pi(),
+  agentloop: pi({ env: brainWasm() }),
   model: {
     provider: "vercel-ai-gateway",
     name: "openai/gpt-5.4",

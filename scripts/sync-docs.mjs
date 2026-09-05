@@ -24,11 +24,10 @@ async function sourceDir() {
   const lock = JSON.parse(await readFile(join(root, "docs.lock.json"), "utf8"));
   const dir = await mkdtemp(join(tmpdir(), "brain-docs-"));
   console.log(`docs: cloning ${lock.repo} at ${lock.ref}`);
-  execFileSync(
-    "git",
-    ["clone", "--depth", "1", "--branch", lock.ref, lock.repo, dir],
-    { stdio: "inherit" },
-  );
+  execFileSync("git", ["init", "--quiet", dir], { stdio: "inherit" });
+  execFileSync("git", ["-C", dir, "remote", "add", "origin", lock.repo], { stdio: "inherit" });
+  execFileSync("git", ["-C", dir, "fetch", "--depth", "1", "origin", lock.ref], { stdio: "inherit" });
+  execFileSync("git", ["-C", dir, "checkout", "--quiet", "--detach", "FETCH_HEAD"], { stdio: "inherit" });
   return { dir, cleanup: () => rm(dir, { recursive: true, force: true }) };
 }
 
