@@ -88,8 +88,8 @@ test("server-renders the Brain page in README order", async () => {
   const text = html.replace(/<[^>]*>/g, "");
 
   assert.match(html, /<title>Brain · Aex<\/title>/i);
-  assert.match(text, /A minimal, blazing fast, extensible agent runtime\./);
-  assert.match(text, /extensible agent runtime server/);
+  assert.match(text, /A minimal, extensible, distributed agent runtime\./);
+  assert.match(text, /extensible, distributed agent runtime/);
 
   const order = [
     "what-it-is-title",
@@ -119,11 +119,10 @@ test("server-renders the Brain page in README order", async () => {
   assert.match(html, /href="https:\/\/github\.com\/aexhq\/brain"/);
   assert.doesNotMatch(text, /env-aws-microvm|VERCEL_AI_GATEWAY_API_KEY/);
 
-  // Current measured figures, not the pre-rebuild archive.
-  assert.match(text, /Turn round-trip[\s\S]*40 ms/);
-  assert.match(text, /14 KiB/);
-  assert.doesNotMatch(text, /Cold start|1049 ms|874\.4 ms/);
-  assert.doesNotMatch(text, /TBD|2,002 turns|1\.4 ms|21-31 KiB/);
+  assert.match(text, /Transcripts and recorded Events remain readable from disk/);
+  assert.match(text, /tool-env inspection and explicit environment lifecycle operations/);
+  assert.match(html, /href="\/brain\/docs\/reference\/benchmarks"/);
+  assert.doesNotMatch(text, /14 KiB|sub-millisecond session creation/);
   assert.doesNotMatch(text, /Apache/i);
 });
 
