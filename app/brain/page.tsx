@@ -5,7 +5,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { brainRepoUrl, discordUrl } from "../site-copy";
 
 const title = "Brain";
-const tagline = "A minimal, blazing fast, extensible agent runtime.";
+const tagline = "A minimal, extensible, distributed agent runtime.";
 
 export const metadata: Metadata = {
   title,
@@ -19,7 +19,7 @@ const features = [
   ],
   [
     "Built for low overhead",
-    "Session state lives in memory while effect intents are durably committed before dispatch: sub-millisecond session creation, ~14 KiB per idle session. The numbers are measured, and CI holds them.",
+    "Prepared code is reused, each invocation gets a fresh Wasm store, and session execution is released between turns. Transcripts and recorded Events remain readable from disk while execution is suspended.",
   ],
   [
     "Any model",
@@ -83,7 +83,13 @@ const roadmap = [
   ["Shipped", "Environment driver contract with the official adapters"],
   ["Shipped", "End-to-end benchmark harness against other runtimes"],
   ["Shipped", "Cross-session native workspace isolation"],
-  ["In progress", "A frozen v1 API and tagged releases"],
+  ["Shipped", "Turn-end suspension and transcript reads without activation"],
+  ["Shipped", "Agentloop Event reads and model-visible environment failures"],
+  ["Shipped", "Independent provider routes and a lazy Environment example"],
+  ["Next", "tool-env inspection and explicit environment lifecycle operations"],
+  ["Next", "Mutable tool bindings and unbound-tool placement"],
+  ["Next", "Tenant resource limits, fairness, and stronger isolation"],
+  ["Later", "External commit services and suspension during model or tool waits"],
   ["Next", "Multimodal input — images and files on send"],
   ["Next", "File access and workspace sync"],
   ["Next", "crates.io publication"],
@@ -151,11 +157,11 @@ export default function BrainPage() {
         <section className="site-section" id="what-it-is" aria-labelledby="what-it-is-title">
           <h2 id="what-it-is-title">What it is</h2>
           <p>
-            Brain is a minimal, blazingly fast, extensible agent runtime server. Build AI-native
+            Brain is a minimal, extensible, distributed agent runtime. Build AI-native
             apps from Agentloops, models, Tools, and Environments. Each Agentloop is a prebuilt
             Component, and every placed extension is bound explicitly to an Environment. A Tool
             with <code>run</code> stays resident in the application process that declared it. Brain
-            owns the durable session, journal, model effects, and routing; extension code runs in
+            owns session records, model effects, and routing; extension code runs in
             the host you chose.
           </p>
           <p>
@@ -163,7 +169,7 @@ export default function BrainPage() {
             <a href="https://www.anthropic.com/engineering/managed-agents">
               the brain from the hands
             </a>
-            . Brain is the brain: it decides. Environments are explicit hands for placed
+            . Agentloops make decisions; Brain executes and records their requests. Environments host placed
             Agentloops and Tools — a sandbox, local process, or remote service — while resident
             Tools stay with your application. The small-and-extensible shape follows{" "}
             <a href="https://github.com/earendil-works/pi">Pi</a>.
@@ -183,75 +189,30 @@ export default function BrainPage() {
         </section>
 
         <section className="site-section" id="benchmark" aria-labelledby="benchmark-title">
-          <h2 id="benchmark-title">Benchmark</h2>
+          <h2 id="benchmark-title">Performance</h2>
           <p>
-            The benchmark measures the engine, not a model: every subject is driven through its own
-            public API on the same machine, against the same scripted model, so nothing here is
-            model latency. Medians on an AWS c7g.xlarge; the harness lives in the repository, so
-            the numbers can be re-run on your own hardware.
+            Brain targets low startup and resume latency and low CPU and memory use when many
+            sessions share a machine. Admission, session creation, activation, and history reads
+            are separate operations. Providers own environment lifetime and can allocate on the
+            first tool call.
           </p>
-          <div className="table-scroll">
-            <table className="compare-table">
-              <thead>
-                <tr>
-                  <th scope="col">&nbsp;</th>
-                  <th scope="col">Brain</th>
-                  <th scope="col">ZeroClaw</th>
-                  <th scope="col">LangGraph Server</th>
-                  <th scope="col">OpenClaw</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Turn round-trip</th>
-                  <td>40 ms</td>
-                  <td>53 ms</td>
-                  <td>1.22 s</td>
-                  <td>3.33 s</td>
-                </tr>
-                <tr>
-                  <th scope="row">Time to first token</th>
-                  <td>2.9 ms</td>
-                  <td>10.6 ms</td>
-                  <td>207 ms</td>
-                  <td>1.33 s</td>
-                </tr>
-                <tr>
-                  <th scope="row">New session</th>
-                  <td>0.76 ms</td>
-                  <td>2.2 ms</td>
-                  <td>0.66 ms</td>
-                  <td>5.4 ms</td>
-                </tr>
-                <tr>
-                  <th scope="row">Journal growth per 100 turns</th>
-                  <td>0.23 MiB</td>
-                  <td>—</td>
-                  <td>—</td>
-                  <td>—</td>
-                </tr>
-                <tr>
-                  <th scope="row">Memory per idle session</th>
-                  <td>14 KiB</td>
-                  <td>50 MiB</td>
-                  <td>—</td>
-                  <td>490 MiB</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
           <p>
-            Brain&apos;s first-token figure is a real measurement: the scripted provider delays
-            its first token deliberately and the probe subtracts the delay. The full charts compare agent
-            runtimes only — with AgentScope Runtime, Letta, Awaken, and OpenFang beside the
-            columns here — in the{" "}
-            <a href={`${brainRepoUrl}#benchmarks`}>repository README</a>.
+            CI checks journal growth, worker concurrency, history reads without activation, and
+            turn-end memory release. A disposable checkpoint avoids decoding unchanged history;
+            its index and transcript still grow with the session. Earlier comparison numbers
+            describe the previous architecture and are archived in the{" "}
+            <Link href="/brain/docs/reference/benchmarks">benchmark documentation</Link>.
           </p>
         </section>
 
         <section className="site-section" id="architecture" aria-labelledby="architecture-title">
           <h2 id="architecture-title">Architecture</h2>
-          <p>Brain owns the session. Four extension roles plug into it.</p>
+          <p>
+            Brain is standalone and cloud independent. Assemble four primitives through public
+            contracts. Aex can consume Brain like any third party; platform workflow durability
+            and provisioning are separate concerns. Interrupted turns are recorded for the caller
+            to resolve, and tool or environment failures are never retried automatically.
+          </p>
           <div className="table-scroll">
             <table className="compare-table">
               <thead>
