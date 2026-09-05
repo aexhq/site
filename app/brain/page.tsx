@@ -15,27 +15,27 @@ export const metadata: Metadata = {
 const features = [
   [
     "Tools run wherever you want",
-    "Brain never executes tool code. It calls whatever you bind the tool to — a sandbox VM, a browser tab driving the DOM, your own backend, the user's laptop — and one session can span several at once.",
+    "A Tool is either resident in the application process that declared its callback, or explicitly placed in an Environment. One session can mix an application-resident Tool with a Component in a sandbox without hiding where either runs.",
   ],
   [
     "Built for low overhead",
-    "Session state lives in memory and the journal is written behind the turn: sub-millisecond session creation, ~14 KiB per idle session. The numbers are measured, and CI holds them.",
+    "Session state lives in memory while effect intents are durably committed before dispatch: sub-millisecond session creation, ~14 KiB per idle session. The numbers are measured, and CI holds them.",
   ],
   [
     "Any model",
     "Anthropic and OpenAI wire formats, gateways, your own keys. The model is pinned when the session starts, so nothing swaps it out mid-conversation.",
   ],
   [
-    "Any agent loop",
-    "Pi, Codex-style, or your own — and sessions can create sessions for subagent work. Brain is not an agent; it is what agents run on, and the loop we ship has no privileges yours doesn't.",
+    "Any Agentloop",
+    "Pi, Codex-style, or your own — each Agentloop is a prebuilt Component bound to an explicit Environment. Brain is not an agent; it is what agents run on, and the loop we ship has no privileges yours doesn't.",
   ],
   [
-    "The loop is isolated",
-    "An agent loop compiles to WebAssembly and runs in a standalone runtime. No network, no filesystem, no secrets, no clock — Brain performs every effect.",
+    "Components, not source bundles",
+    "Brain accepts prebuilt WebAssembly Components. It does not compile application source or infer dependencies: brainWasm() is the built-in native placement, and Environment extensions provide other hosts.",
   ],
   [
-    "Any language",
-    "Agent loops compile to WebAssembly. Tools and environments talk to Brain over plain HTTP. One tool in Rust and another in Node, in the same session.",
+    "Placement is explicit",
+    "Factories for placed extensions require { env }. Resident Tools omit it and remain in the host that declared them, while Brain records and seals every Environment binding when the session is created.",
   ],
   [
     "Everything is an event log",
@@ -47,15 +47,15 @@ const features = [
   ],
   [
     "Server or library",
-    "Run the binary — the journal is the only thing it writes — or embed the brain crate in your own Rust service and supply your own storage and transport.",
+    "Run the binary with its local-disk store, or embed the brain crate in your own Rust service and supply your own storage and transport.",
   ],
 ] as const;
 
 const parts = [
   [
-    "Agent loop",
-    "The policy: given what just happened, what next",
-    "Runs it in a WebAssembly sandbox and carries out the decision",
+    "Agentloop",
+    "A Component and configuration, bound to an Environment",
+    "Admits the Component, activates it through that binding, and carries out its decisions",
   ],
   [
     "Model",
@@ -64,39 +64,48 @@ const parts = [
   ],
   [
     "Tool",
-    "A name, description, schema, and where it runs",
-    "Logs the call and sends it to the bound environment",
+    "A model-facing schema and either a resident callback or a placed implementation",
+    "Routes it to its registered resident host or bound Environment, then journals and dispatches calls",
   ],
   [
     "Environment",
-    "Somewhere tool calls actually execute",
-    "Sets it up, attaches, calls, cancels, tears it down",
+    "Explicit placement and authority for Agentloops and placed Tools",
+    "Sets it up, validates requirements, invokes, cancels, and detaches",
   ],
 ] as const;
 
 const roadmap = [
-  ["Shipped", "Four-part runtime: agent loop, model, tool, environment"],
-  ["Shipped", "WebAssembly agent loop pipeline"],
-  ["Shipped", "Append-only segment log with best-effort restart recovery"],
+  ["Shipped", "Four-part runtime: Agentloop, Model, Tool, Environment"],
+  ["Shipped", "Prebuilt Components with explicit Environment placement"],
+  ["Shipped", "One canonical journal with restart recovery and derived projections"],
   ["Shipped", "HTTP/SSE session API and the TypeScript SDK"],
-  ["Shipped", "Remote environment contract with the official adapters"],
+  ["Shipped", "Resident Tool hosts for application and client callbacks"],
+  ["Shipped", "Environment driver contract with the official adapters"],
   ["Shipped", "End-to-end benchmark harness against other runtimes"],
-  ["In progress", "Cross-session isolation test"],
+  ["Shipped", "Cross-session native workspace isolation"],
   ["In progress", "A frozen v1 API and tagged releases"],
   ["Next", "Multimodal input — images and files on send"],
   ["Next", "File access and workspace sync"],
   ["Next", "crates.io publication"],
   ["Later", "Sessions spread across machines, sharing environments"],
-  ["Later", "Checkpoint and restore"],
+  ["Later", "Session export and import"],
   ["Later", "Custom images, scoped credentials, network metering"],
 ] as const;
 
-const installExample = `npm install @aexhq/brain @aexhq/agentloop-pi`;
+const installExample = `npm install @aexhq/brain @aexhq/agentloop-pi zod`;
 
-const sessionExample = `import { Brain } from "@aexhq/brain";
+const sessionExample = `import { Brain, brainWasm, tool } from "@aexhq/brain";
 import { pi } from "@aexhq/agentloop-pi";
+import { z } from "zod";
 
-const brain = new Brain({ baseUrl: "http://127.0.0.1:8080" });
+const lookupOrder = tool({
+  name: "lookup_order",
+  description: "Look up an order by id.",
+  input: z.object({ id: z.string() }),
+  run: async ({ id }) => ({ id, status: "shipped" }),
+});
+
+const brain = new Brain({ baseUrl: "http://127.0.0.1:8080", token: "quickstart" });
 
 const session = await brain.sessions.create({
   model: {
@@ -104,7 +113,8 @@ const session = await brain.sessions.create({
     name: "gpt-5-mini",
     apiKey: process.env.OPENAI_API_KEY!,
   },
-  agentloop: pi(),
+  agentloop: pi({ env: brainWasm() }),
+  tools: [lookupOrder()],
   system: "Answer briefly and directly.",
 });
 
@@ -114,7 +124,9 @@ for await (const event of session.events()) console.log(event);
 await session.end();
 await session.delete();`;
 
-const runExample = `docker run --rm -p 8080:8080 -v brain-data:/var/lib/brain ghcr.io/aexhq/brain:latest`;
+const runExample = `docker run --rm -p 127.0.0.1:8080:8080 \\
+  -e BRAIN_LISTEN=0.0.0.0:8080 -e BRAIN_API_TOKEN=quickstart \\
+  -v brain-data:/var/lib/brain ghcr.io/aexhq/brain:latest`;
 
 export default function BrainPage() {
   return (
@@ -139,21 +151,21 @@ export default function BrainPage() {
         <section className="site-section" id="what-it-is" aria-labelledby="what-it-is-title">
           <h2 id="what-it-is-title">What it is</h2>
           <p>
-            Brain is a minimal, blazingly fast, extensible agent runtime server. Deploy and
-            build your own AI-native apps, write customized agentloop, tools that run in any
-            environment from client browser to server sandbox. Secure by design, with
-            Wasm-isolated agentloop and execution. Scale easily with minimal memory overhead.
-            Instant observability with real-time events — and the packages we ship use the same
-            interface you would, so nothing built in gets a shortcut.
+            Brain is a minimal, blazingly fast, extensible agent runtime server. Build AI-native
+            apps from Agentloops, models, Tools, and Environments. Each Agentloop is a prebuilt
+            Component, and every placed extension is bound explicitly to an Environment. A Tool
+            with <code>run</code> stays resident in the application process that declared it. Brain
+            owns the durable session, journal, model effects, and routing; extension code runs in
+            the host you chose.
           </p>
           <p>
             The name comes from Anthropic&apos;s split of{" "}
             <a href="https://www.anthropic.com/engineering/managed-agents">
               the brain from the hands
             </a>
-            . Brain is the brain: it decides. Environments are the hands — a sandbox, a browser,
-            your backend, someone&apos;s laptop — where the work actually happens. The
-            small-and-extensible shape follows{" "}
+            . Brain is the brain: it decides. Environments are explicit hands for placed
+            Agentloops and Tools — a sandbox, local process, or remote service — while resident
+            Tools stay with your application. The small-and-extensible shape follows{" "}
             <a href="https://github.com/earendil-works/pi">Pi</a>.
           </p>
         </section>
@@ -239,7 +251,7 @@ export default function BrainPage() {
 
         <section className="site-section" id="architecture" aria-labelledby="architecture-title">
           <h2 id="architecture-title">Architecture</h2>
-          <p>Brain owns the session. Four kinds of component plug into it.</p>
+          <p>Brain owns the session. Four extension roles plug into it.</p>
           <div className="table-scroll">
             <table className="compare-table">
               <thead>
@@ -280,7 +292,10 @@ export default function BrainPage() {
           aria-labelledby="getting-started-title"
         >
           <h2 id="getting-started-title">Getting started</h2>
-          <p>Drive a session from TypeScript:</p>
+          <p>
+            Drive a session from TypeScript. The Agentloop is placed in Brain&apos;s built-in native
+            Environment; the Tool remains resident in this Node process.
+          </p>
           <pre className="site-code" aria-label="Install the Brain packages">
             <code>{installExample}</code>
           </pre>
