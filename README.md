@@ -30,3 +30,8 @@ The canonical SDK quickstart and API contracts live in
 workflow in `.github/workflows/deploy-vercel.yml`. Promotion also requires the exact three-entry
 `managed_environment_blocked_source_ipv4_cidrs` JSON output from Platform. The workflow reconciles
 those source denies across every Vercel project hostname before assigning `aex.dev`.
+
+The Brain product page and documentation describe the standalone runtime. Canonical Brain prose
+and schemas are imported from the immutable revision in `docs.lock.json`; edit them in the Brain
+repository. Local validation can set `BRAIN_REPO_PATH` to a Brain checkout. Performance copy must
+name its workload and version; archived results are not current release claims.
