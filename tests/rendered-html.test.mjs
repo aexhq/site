@@ -108,8 +108,8 @@ test("server-renders the Brain page in README order", async () => {
   }
 
   assert.match(text, /Conversations outlive processes/);
-  assert.match(text, /Resident Tools omit it and remain in the host that declared them/);
-  assert.match(text, /agentloop: pi\(\{ env: brainWasm\(\) \}\)/);
+  assert.match(text, /including hostEnv for application functions/);
+  assert.match(text, /agentloop: pi\(\{ env: brainEnv\(\{ name: (?:"|&quot;)brain(?:"|&quot;) \}\) \}\)/);
   assert.match(text, /token: &quot;quickstart&quot;/);
   assert.match(text, /BRAIN_LISTEN=0\.0\.0\.0:8080/);
   assert.match(text, /ghcr\.io\/aexhq\/brain:latest/);
@@ -120,7 +120,7 @@ test("server-renders the Brain page in README order", async () => {
   assert.doesNotMatch(text, /env-aws-microvm|VERCEL_AI_GATEWAY_API_KEY/);
 
   assert.match(text, /Transcripts and recorded Events remain readable from disk/);
-  assert.match(text, /tool-env inspection and explicit environment lifecycle operations/);
+  assert.match(text, /Multiple authorized Tool placements and optional model-visible selection/);
   assert.match(html, /href="\/brain\/docs\/reference\/benchmarks"/);
   assert.doesNotMatch(text, /14 KiB|sub-millisecond session creation/);
   assert.doesNotMatch(text, /Apache/i);
@@ -243,7 +243,7 @@ test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", a
   assert.match(dashboard, /hasDashboardSession[\s\S]*dashboard-spinner/);
   assert.match(
     dashboard,
-    /sessions\.create[\s\S]*agentloop: pi\(\{ env: brainWasm\(\) \}\)[\s\S]*vercel-ai-gateway/,
+    /sessions\.create[\s\S]*agentloop: pi\(\{ env: brainEnv\(\{ name: "brain" \}\) \}\)[\s\S]*vercel-ai-gateway/,
   );
   assert.doesNotMatch(dashboard, /admitAgentloop|agentloop_digest/);
   assert.doesNotMatch(dashboard, /OPENAI_API_KEY|AI_GATEWAY_API_KEY|ai-gateway\.vercel\.sh/);
