@@ -146,7 +146,7 @@ test("serves the Brain documentation, generated API pages, and a static search i
     /Brain accepts an already-built WebAssembly Component/,
   );
 
-  // Generated from contracts/session/v1/openapi.yaml, never written by hand.
+  // Generated from Brain's crates/brain-http/generated/contract/session/v1/openapi.yaml, never written by hand.
   const apiIndex = await render("/brain/docs/reference/api");
   assert.equal(apiIndex.status, 200);
   const apiIndexHtml = await apiIndex.text();
