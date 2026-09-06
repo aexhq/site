@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const features = [
   [
     "Tools run wherever you want",
-    "A Tool is either resident in the application process that declared its callback, or explicitly placed in an Environment. One session can mix an application-resident Tool with a Component in a sandbox without hiding where either runs.",
+    "One session can use Tools in a browser, a sandbox, and the native Brain Environment. Each invocation explicitly names an authorized Tool and Environment.",
   ],
   [
     "Built for low overhead",
@@ -27,15 +27,15 @@ const features = [
   ],
   [
     "Any Agentloop",
-    "Pi, Codex-style, or your own — each Agentloop is a prebuilt Component bound to an explicit Environment. Brain is not an agent; it is what agents run on, and the loop we ship has no privileges yours doesn't.",
+    "Pi, Codex-style, or your own: each Agentloop runs in a selected Environment through the same execution interface. Brain journals its model and Tool effects.",
   ],
   [
     "Components, not source bundles",
-    "Brain accepts prebuilt WebAssembly Components. It does not compile application source or infer dependencies: brainWasm() is the built-in native placement, and Environment extensions provide other hosts.",
+    "brainEnv runs packaged WebAssembly Components in a managed pool of worker processes. Remote Environments interpret their own implementation descriptors and can provide other runtimes.",
   ],
   [
     "Placement is explicit",
-    "Factories for placed extensions require { env }. Resident Tools omit it and remain in the host that declared them, while Brain records and seals every Environment binding when the session is created.",
+    "Every factory placement names an Environment, including hostEnv for application functions. A Tool can have several authorized placements; the Agentloop can choose privately or expose that choice to the model.",
   ],
   [
     "Everything is an event log",
@@ -54,8 +54,8 @@ const features = [
 const parts = [
   [
     "Agentloop",
-    "A Component and configuration, bound to an Environment",
-    "Admits the Component, activates it through that binding, and carries out its decisions",
+    "An implementation and configuration, placed in an Environment",
+    "Executes it with scoped model, dispatch, events, emit, and telemetry services",
   ],
   [
     "Model",
@@ -64,12 +64,12 @@ const parts = [
   ],
   [
     "Tool",
-    "A model-facing schema and either a resident callback or a placed implementation",
-    "Routes it to its registered resident host or bound Environment, then journals and dispatches calls",
+    "A canonical schema and implementations placed in named Environments",
+    "Validates the selected pair and schemas, journals the intent, then dispatches once",
   ],
   [
     "Environment",
-    "Explicit placement and authority for Agentloops and placed Tools",
+    "Execution and lifecycle mechanisms for Agentloops and Tools",
     "Sets it up, validates requirements, invokes, cancels, and detaches",
   ],
 ] as const;
@@ -79,15 +79,15 @@ const roadmap = [
   ["Shipped", "Prebuilt Components with explicit Environment placement"],
   ["Shipped", "One canonical journal with restart recovery and derived projections"],
   ["Shipped", "HTTP/SSE session API and the TypeScript SDK"],
-  ["Shipped", "Resident Tool hosts for application and client callbacks"],
+  ["Shipped", "hostEnv for application and browser functions"],
   ["Shipped", "Environment driver contract with the official adapters"],
   ["Shipped", "End-to-end benchmark harness against other runtimes"],
-  ["Shipped", "Cross-session native workspace isolation"],
+  ["Shipped", "Native workspaces isolated by session and Environment"],
   ["Shipped", "Turn-end suspension and transcript reads without activation"],
   ["Shipped", "Agentloop Event reads and model-visible environment failures"],
   ["Shipped", "Independent provider routes and a lazy Environment example"],
-  ["Next", "tool-env inspection and explicit environment lifecycle operations"],
-  ["Next", "Mutable tool bindings and unbound-tool placement"],
+  ["Shipped", "brain-sessions and a separate native worker pool"],
+  ["Shipped", "Multiple authorized Tool placements and optional model-visible selection"],
   ["Next", "Tenant resource limits, fairness, and stronger isolation"],
   ["Later", "External commit services and suspension during model or tool waits"],
   ["Next", "Multimodal input — images and files on send"],
@@ -100,7 +100,7 @@ const roadmap = [
 
 const installExample = `npm install @aexhq/brain @aexhq/agentloop-pi zod`;
 
-const sessionExample = `import { Brain, brainWasm, tool } from "@aexhq/brain";
+const sessionExample = `import { Brain, brainEnv, hostEnv, tool } from "@aexhq/brain";
 import { pi } from "@aexhq/agentloop-pi";
 import { z } from "zod";
 
@@ -119,8 +119,8 @@ const session = await brain.sessions.create({
     name: "gpt-5-mini",
     apiKey: process.env.OPENAI_API_KEY!,
   },
-  agentloop: pi({ env: brainWasm() }),
-  tools: [lookupOrder()],
+  agentloop: pi({ env: brainEnv({ name: "brain" }) }),
+  tools: [lookupOrder({ env: hostEnv({ name: "app" }) })],
   system: "Answer briefly and directly.",
 });
 
@@ -158,9 +158,9 @@ export default function BrainPage() {
           <h2 id="what-it-is-title">What it is</h2>
           <p>
             Brain is a minimal, extensible, distributed agent runtime. Build AI-native
-            apps from Agentloops, models, Tools, and Environments. Each Agentloop is a prebuilt
-            Component, and every placed extension is bound explicitly to an Environment. A Tool
-            with <code>run</code> stays resident in the application process that declared it. Brain
+            apps from Agentloops, models, Tools, and Environments. Every implementation is explicitly
+            placed. A Tool with <code>run</code> uses <code>hostEnv</code> in the application
+            process that declared it. Brain
             owns session records, model effects, and routing; extension code runs in
             the host you chose.
           </p>
@@ -170,8 +170,8 @@ export default function BrainPage() {
               the brain from the hands
             </a>
             . Agentloops make decisions; Brain executes and records their requests. Environments host placed
-            Agentloops and Tools — a sandbox, local process, or remote service — while resident
-            Tools stay with your application. The small-and-extensible shape follows{" "}
+            Agentloops and Tools in a sandbox, the native worker pool, or a remote service. Application
+            functions use the same session abstraction through hostEnv. The small-and-extensible shape follows{" "}
             <a href="https://github.com/earendil-works/pi">Pi</a>.
           </p>
         </section>
@@ -193,8 +193,8 @@ export default function BrainPage() {
           <p>
             Brain targets low startup and resume latency and low CPU and memory use when many
             sessions share a machine. Admission, session creation, activation, and history reads
-            are separate operations. Providers own environment lifetime and can allocate on the
-            first tool call.
+            are separate operations. Callers decide Environment lifetime; providers implement lifecycle
+            mechanisms and can allocate on the first execution.
           </p>
           <p>
             CI checks journal growth, worker concurrency, history reads without activation, and
@@ -255,7 +255,7 @@ export default function BrainPage() {
           <h2 id="getting-started-title">Getting started</h2>
           <p>
             Drive a session from TypeScript. The Agentloop is placed in Brain&apos;s built-in native
-            Environment; the Tool remains resident in this Node process.
+            Environment; the Tool runs in this Node process through hostEnv.
           </p>
           <pre className="site-code" aria-label="Install the Brain packages">
             <code>{installExample}</code>

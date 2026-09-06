@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const contentDocs = join(root, "content", "docs");
 const contentContract = join(root, "content", "contract");
-// Rendered by `cargo run -p brain-http --bin contract` in the Brain repository; never hand-written.
+// Rendered by `cargo run -p brain-http --bin brain-http-contract` in the Brain repository; never hand-written.
 const openapi = "session/v1/openapi.yaml";
 
 async function sourceDir() {
