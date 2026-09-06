@@ -13,7 +13,7 @@ const out = join(root, "content", "docs", "reference", "api");
 
 // Relative, so the generated pages stay portable between a laptop and CI.
 const openapi = createOpenAPI({
-  input: ["content/contracts/session/v1/openapi.yaml"],
+  input: ["content/contract/session/v1/openapi.yaml"],
 });
 
 await rm(out, { recursive: true, force: true });

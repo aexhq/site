@@ -1,4 +1,4 @@
-// Copies Brain's documentation and contracts into content/ before the site builds.
+// Copies Brain's documentation and its session OpenAPI contract into content/ before the site builds.
 //
 // The prose lives in aexhq/brain next to the code it describes, so a behaviour change and its page
 // land in one pull request. Nothing in content/ is edited here; it is replaced on every build.
@@ -12,7 +12,9 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const contentDocs = join(root, "content", "docs");
-const contentContracts = join(root, "content", "contracts");
+const contentContract = join(root, "content", "contract");
+// Rendered by `cargo run -p brain-http --bin contract` in the Brain repository; never hand-written.
+const openapi = "session/v1/openapi.yaml";
 
 async function sourceDir() {
   const local = process.env.BRAIN_REPO_PATH;
@@ -34,10 +36,13 @@ async function sourceDir() {
 const { dir, cleanup } = await sourceDir();
 try {
   await rm(contentDocs, { recursive: true, force: true });
-  await rm(contentContracts, { recursive: true, force: true });
+  await rm(contentContract, { recursive: true, force: true });
   await cp(join(dir, "docs"), contentDocs, { recursive: true });
-  await cp(join(dir, "contracts"), contentContracts, { recursive: true });
-  console.log("docs: synced docs/ and contracts/ into content/");
+  await cp(
+    join(dir, "crates", "brain-http", "generated", "contract", openapi),
+    join(contentContract, openapi),
+  );
+  console.log("docs: synced docs/ and the session OpenAPI contract into content/");
 } finally {
   await cleanup();
 }
