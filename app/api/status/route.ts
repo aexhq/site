@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const API_HEALTH_URL = "https://api.aex.dev/v1/rates";
+const API_HEALTH_URL = "https://api.aex.dev/health/ready";
 
 export async function GET() {
   const started = Date.now();

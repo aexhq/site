@@ -11,12 +11,11 @@ export default function TermsPage() {
     <main>
       <SiteHeader />
       <article className="legal-page prose-shell">
-        <p className="site-kicker">Last updated 20 August 2026</p>
+        <p className="site-kicker">Last updated 7 September 2026</p>
         <h1>Alpha terms</h1>
 
         <p>
-          These terms apply when you accept an Aex invitation. The waitlist is
-          free and does not create a service contract. Aex is operated by{" "}
+          These terms apply when you register for or use Aex. Aex is operated by{" "}
           {identity.operator}, trading as Aex (
           <a href={identity.companiesHouseUrl}>
             company number {identity.companyNumber}
@@ -44,7 +43,7 @@ export default function TermsPage() {
 
         <h2>Your account and use</h2>
         <p>
-          Keep account recovery tokens and API keys secure. You are responsible
+          Keep your Google account and API keys secure. You are responsible
           for activity under your credentials and for the applications, prompts,
           files, model keys, and third-party tools you connect. Do not use Aex
           unlawfully; to harm others; to interfere with the service; to probe
@@ -54,18 +53,15 @@ export default function TermsPage() {
         <h2>Models and third parties</h2>
         <p>
           You bring supported model-provider keys and remain responsible for
-          the provider account, terms, content rules, and model charges. Payment
-          checkout is provided by Stripe. Aex is not responsible for a
+          the provider account, terms, content rules, and model charges. Aex is not responsible for a
           third-party service outside its control.
         </p>
 
-        <h2>Prices, credit, and refunds</h2>
+        <h2>Preview pricing</h2>
         <p>
-          Prices are shown before top-up and in the live rate card. Credit is in
-          USD, prepaid, and deducted from the usage ledger. Model-provider costs
-          are separate. You may request a refund of unused credit by contacting
-          support; consumed credit and third-party charges are not refundable
-          unless the law requires otherwise.
+          This preview has no Aex hosting charge. You pay your model provider
+          directly. The dashboard shows account limits and usage. We will
+          present pricing and obtain agreement before starting paid hosting.
         </p>
 
         <h2>Your data and intellectual property</h2>

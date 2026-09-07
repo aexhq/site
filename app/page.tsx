@@ -18,6 +18,7 @@ export default function Home() {
         <h1>{siteHeadline}</h1>
         <nav className="site-links" aria-label="Primary">
           <a href={orgRepoUrl}>GitHub</a>
+          <Link href="/dashboard">Dashboard</Link>
           <Link href="/brain">Brain</Link>
         </nav>
       </article>
