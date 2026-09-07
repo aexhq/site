@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { accountCookie, controlOrigin } from "../../../../lib/control";
+import { accountCookie, controlOrigin, siteOrigin } from "../../../../lib/control";
 export const dynamic = "force-dynamic";
 async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const path = (await context.params).path.join("/"), method = request.method;
   const allowed = (method === "GET" && ["account", "usage", "keys"].includes(path))
-    || (method === "POST" && path === "keys")
+    || (method === "POST" && ["keys", "auth/grants"].includes(path))
     || (["PATCH", "DELETE"].includes(method) && /^keys\/key_[a-f0-9]{64}$/.test(path))
     || (method === "DELETE" && path === "account/session");
   const error = (status: number, message: string) => NextResponse.json({ message }, { status, headers: { "cache-control": "no-store" } });
   if (!allowed || request.nextUrl.search) return error(404, "Not found");
-  if (method !== "GET" && request.headers.get("origin") !== request.nextUrl.origin) return error(403, "Invalid request origin");
+  if (method !== "GET" && request.headers.get("origin") !== siteOrigin()) return error(403, "Invalid request origin");
   const token = request.cookies.get(accountCookie)?.value;
   if (!token) return error(401, "Sign in to continue");
   let body: string | undefined;

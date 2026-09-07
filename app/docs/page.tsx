@@ -32,8 +32,19 @@ try {
 // Keep history until retention expires, or explicitly await session.delete().`;
 export default function Docs() {
   return <main><SiteHeader /><article className="shell preview-dashboard"><h1>Get started</h1>
-    <p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
-    <pre><code>npm install @aexhq/sdk@0.69.0 @aexhq/agentloop-pi@4.0.0 zod@4</code></pre>
+    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.37.0
+aex login
+aex keys create "My application"
+aex keys list
+aex keys rename KEY_ID "New name"
+aex keys revoke KEY_ID
+aex account
+aex billing
+aex usage
+aex docs
+aex logout`}</code></pre><p>Login opens your browser for sign-in or registration. Authorize the CLI on the same computer, then return to your terminal. Results are JSON. Account sessions expire after seven days; API key secrets are shown only at creation.</p>
+    <h2>SDK</h2><p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
+    <pre><code>npm install @aexhq/sdk@0.70.0 @aexhq/agentloop-pi@4.0.0 zod@4</code></pre>
     <p>Set <code>AEX_API_KEY</code> and your provider&apos;s <code>OPENAI_API_KEY</code> in your application environment. Keep both on your server.</p>
     <pre style={{ overflowX: "auto", margin: "1.5rem 0" }}><code>{example}</code></pre>
     <h2>Where code runs</h2><p>The Agentloop runs in hosted Brain. This example&apos;s lookup function runs in your application through hostEnv. To host a Tool, supply a precompiled Brain-compatible Wasm Component and place it in brainEnv.</p>

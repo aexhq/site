@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { loginReturn } from "../../../../../lib/cli-login";
 import { accountCookie, controlOrigin, secret, siteOrigin } from "../../../../../lib/control";
 const jwks = createRemoteJWKSet(new URL("https://www.googleapis.com/oauth2/v3/certs"));
 export async function GET(request: NextRequest) {
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
     const session = await upstream.json();
     if (typeof session.token !== "string" || !session.token.startsWith("aex_account_") || !Number.isSafeInteger(session.expires)) throw new Error("invalid account session");
     response.cookies.set(accountCookie, session.token, { httpOnly: true, secure: true, sameSite: "lax", path: "/", expires: new Date(session.expires * 1000) });
+    response.headers.set("location", `${siteOrigin()}${loginReturn(login.returnTo)}`);
     return response;
   } catch {
     response.headers.set("location", `${siteOrigin()}/dashboard?error=signin`);
