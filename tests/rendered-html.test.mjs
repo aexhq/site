@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
+import { createServer } from "node:http";
 import { once } from "node:events";
 import { access, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -12,12 +13,21 @@ const port = 31_000 + (process.pid % 1_000);
 const origin = `http://127.0.0.1:${port}`;
 let server;
 let serverOutput = "";
+let api;
+let apiRequests = [];
 
 before(async () => {
+  api = createServer(async (req, res) => {
+    let body = ""; for await (const chunk of req) body += chunk;
+    apiRequests.push({ path: req.url, authorization: req.headers.authorization, body: body ? JSON.parse(body) : undefined });
+    res.setHeader("content-type", "application/json");
+    res.end(JSON.stringify(req.url === "/v1/account" ? { email: "cli@example.com" } : { code: "one-time-code" }));
+  });
+  await new Promise(resolve => api.listen(0, "127.0.0.1", resolve));
   server = spawn(
     process.execPath,
     [nextBin, "start", "--hostname", "127.0.0.1", "--port", String(port)],
-    { cwd: projectRoot, env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" }, stdio: ["ignore", "pipe", "pipe"] },
+    { cwd: projectRoot, env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1", AEX_SITE_ORIGIN: origin, AEX_API_BASE_URL: `http://127.0.0.1:${api.address().port}`, AEX_OAUTH_GOOGLE_CLIENT_ID: "fixture-client" }, stdio: ["ignore", "pipe", "pipe"] },
   );
   for (const stream of [server.stdout, server.stderr]) {
     stream.on("data", (chunk) => {
@@ -41,9 +51,33 @@ before(async () => {
 });
 
 after(async () => {
+  if (api) await new Promise(resolve => api.close(resolve));
   if (!server || server.exitCode !== null) return;
   server.kill();
   await Promise.race([once(server, "exit"), new Promise((resolve) => setTimeout(resolve, 5_000))]);
+});
+
+test("CLI login uses account API grants and denies cross-origin approval and unsafe redirects", async () => {
+  const input = { redirect_uri: "http://127.0.0.1:34567/callback", code_challenge: "a".repeat(43), state: "b".repeat(43) };
+  const query = new URLSearchParams(input);
+  const page = await render(`/cli?${query}`);
+  assert.match(await page.text(), /Continue with Google/);
+  const approved = await render(`/cli?${query}`, { headers: { cookie: "aex_account=account-fixture" } });
+  assert.match(await approved.text(), /Authorize CLI/);
+  assert.match(await (await render("/cli?redirect_uri=https://evil.example")).text(), /Invalid login request/);
+  assert.equal((await render("/api/auth/login?returnTo=https://evil.example")).status, 400);
+  const login = await render(`/api/auth/login?returnTo=${encodeURIComponent(`/cli?${query}`)}`, { redirect: "manual" });
+  assert.equal(login.status, 307);
+  assert.equal(new URL(login.headers.get("location")).hostname, "accounts.google.com");
+  const body = { code_challenge: input.code_challenge, redirect_uri: input.redirect_uri };
+  const post = (extra = {}) => render("/api/control/auth/grants", { method: "POST", headers: { origin, cookie: "aex_account=account-fixture", "content-type": "application/json", ...extra }, body: JSON.stringify(body) });
+  assert.equal((await post({ origin: "https://evil.example" })).status, 403);
+  assert.equal((await post({ cookie: "" })).status, 401);
+  const response = await post();
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).code, "one-time-code");
+  assert.deepEqual(apiRequests.at(-1), { path: "/v1/auth/grants", authorization: "Bearer account-fixture", body });
+  assert.equal(response.headers.get("cache-control"), "no-store");
 });
 
 async function render(path = "/", init = {}) {
@@ -130,7 +164,7 @@ test("serves the hosted SDK quickstart", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /@aexhq\/sdk@0.69.0/);
+  assert.match(html, /@aexhq\/sdk@0.70.0/);
   assert.match(html, /hostEnv/);
   assert.match(html, /customer-selected HTTP Environments/i);
 });
