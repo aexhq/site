@@ -14,7 +14,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      lint: ${{ github.event_name != 'pull_request' || steps.filter.outputs.site == 'true' }}
+      site: ${{ github.event_name != 'pull_request' || steps.filter.outputs.site == 'true' }}
+    steps:
+      - uses: actions/checkout@v7
+        if: github.event_name == 'pull_request'
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      # Published Markdown and MDX remain build inputs; only repository prose is excluded.
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4
+        if: github.event_name == 'pull_request'
+        id: filter
+        with:
+          token: ''
+          predicate-quantifier: every
+          filters: |
+            site:
+              - '!*.md'
+
   lint:
+    needs: changes
+    if: needs.changes.outputs.lint == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -26,7 +50,9 @@ jobs:
       - run: npm ci
       - run: npm run lint
 
-  build-test:
+  site:
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -39,3 +65,24 @@ jobs:
       - run: npm run build
       # Rendered-route tests intentionally start the production server from this build.
       - run: npm test
+
+  build-test:
+    if: always()
+    needs: [changes, lint, site]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Every affected check passed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const { changes, ...jobs } = JSON.parse(process.env.NEEDS);
+          assert.equal(changes.result, 'success', 'change detection must succeed');
+          for (const [name, job] of Object.entries(jobs)) {
+            const selected = changes.outputs[name];
+            assert.ok(['true', 'false'].includes(selected), `${name}: missing selection`);
+            const expected = selected === 'true' ? 'success' : 'skipped';
+            assert.equal(job.result, expected, `${name}: expected ${expected}, got ${job.result}`);
+          }
+          NODE

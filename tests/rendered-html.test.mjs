@@ -126,10 +126,13 @@ test("server-renders the Brain page in README order", async () => {
   assert.doesNotMatch(text, /Apache/i);
 });
 
-test("retired documentation path redirects to the Brain docs", async () => {
-  const response = await render("/docs", { redirect: "manual" });
-  assert.equal(response.status, 308);
-  assert.equal(response.headers.get("location"), "/brain/docs");
+test("serves the hosted SDK quickstart", async () => {
+  const response = await render("/docs");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /@aexhq\/sdk@0.69.0/);
+  assert.match(html, /hostEnv/);
+  assert.match(html, /customer-selected HTTP Environments/i);
 });
 
 test("serves the Brain documentation, generated API pages, and a static search index", async () => {
@@ -194,85 +197,35 @@ test("public status and company legal pages render", async () => {
   assert.doesNotMatch(termsHtml, /\bAEX\b|\bBeta\b/);
 });
 
-test("server-renders dashboard-first waitlist and invited onboarding", async () => {
-  const waitlist = await render("/dashboard");
-  assert.equal(waitlist.status, 200);
-  const waitlistHtml = await waitlist.text();
-  assert.match(waitlistHtml, /<title>Dashboard · Aex<\/title>/);
-  assert.match(waitlistHtml, /Start in the dashboard\./);
-  assert.match(waitlistHtml, /Join the alpha/);
-
-  const invited = await render("/dashboard?mode=invite");
-  assert.equal(invited.status, 200);
-  const invitedHtml = await invited.text();
-  assert.match(invitedHtml, /Create your account\./);
-  assert.match(invitedHtml, /aex_iv_/);
-  assert.match(invitedHtml, /I agree to the[\s\S]*Alpha terms/);
-  assert.doesNotMatch(invitedHtml, /professional or business purposes/i);
-  assert.doesNotMatch(invitedHtml, /Founding beta|eu-west-1/i);
-  assert.doesNotMatch(invitedHtml, /\bAEX\b|\bBeta\b/);
-
-  const returning = await render("/dashboard", {
-    headers: { cookie: "aex_account=aex_at_returning_session_hint" },
-  });
-  assert.equal(returning.status, 200);
-  const returningHtml = await returning.text();
-  assert.match(returningHtml, /dashboard-spinner/);
-  assert.match(returningHtml, /Opening your dashboard\./);
-  assert.match(returningHtml, /aria-busy="true"/);
-  assert.doesNotMatch(returningHtml, /Start in the dashboard\./);
+test("dashboard has exactly the three requested navigation items and self-service sign-in", async () => {
+  const response = await render("/dashboard");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const nav=html.match(/<nav[^>]*aria-label="Dashboard"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
+  assert.ok(nav);
+  assert.equal((nav.match(/<(?:a|button)\b/g) ?? []).length,3);
+  for(const label of ["API keys","Docs","Account / Billing / Usage"]) assert.ok(nav.includes(label));
+  assert.match(html,/Continue with Google/);
+  assert.doesNotMatch(html,/Join the alpha|aex_iv_|Top up|Recovery token/);
+  const signedIn=await render("/dashboard",{headers:{cookie:"aex_account=aex_account_test"}});
+  assert.match(await signedIn.text(),/Loading account/);
 });
 
-test("dashboard proxy is a fixed mutation allowlist with an HttpOnly session", async () => {
-  const proxy = await readFile(new URL("../app/api/control/[...path]/route.ts", import.meta.url), "utf8");
-  const dashboard = await readFile(new URL("../app/dashboard/DashboardClient.tsx", import.meta.url), "utf8");
-  const dashboardPage = await readFile(new URL("../app/dashboard/page.tsx", import.meta.url), "utf8");
-  const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  const themeToggle = await readFile(new URL("../app/components/ThemeToggle.tsx", import.meta.url), "utf8");
-  assert.match(proxy, /function routeFor/);
-  assert.match(proxy, /https:\/\/api\.aex\.dev/);
-  assert.match(proxy, /HttpOnly/);
-  assert.match(proxy, /SameSite=Lax/);
-  assert.match(proxy, /Secure/);
-  assert.match(proxy, /redirect: "manual"/);
-  assert.match(proxy, /response\.status === 204 \? null : await response\.arrayBuffer\(\)/);
-  assert.match(proxy, /accountToken,\s*"GET",\s*\)/);
-  assert.doesNotMatch(proxy, /request\.nextUrl\.searchParams\.get\(["'](?:url|origin|host)/);
-  assert.doesNotMatch(dashboard, /localStorage|sessionStorage/);
-  assert.match(dashboardPage, /cookies\(\)[\s\S]*aex_account/);
-  assert.match(dashboard, /hasDashboardSession[\s\S]*dashboard-spinner/);
-  assert.match(
-    dashboard,
-    /sessions\.create[\s\S]*agentloop: pi\(\{ env: brainEnv\(\{ name: "brain" \}\) \}\)[\s\S]*vercel-ai-gateway/,
-  );
-  assert.doesNotMatch(dashboard, /admitAgentloop|agentloop_digest/);
-  assert.doesNotMatch(dashboard, /OPENAI_API_KEY|AI_GATEWAY_API_KEY|ai-gateway\.vercel\.sh/);
-  assert.match(styles, /@media \(prefers-color-scheme: dark\)/);
-  assert.match(styles, /:root\[data-theme="dark"\]/);
-  assert.match(styles, /color-scheme: dark/);
-  assert.match(styles, /--wordmark-icon: url\("\/aex-mark-black\.webp"\)/);
-  assert.match(styles, /--wordmark-icon: url\("\/aex-mark-white\.webp"\)/);
-  assert.match(themeToggle, /localStorage\.setItem\(storageKey, nextTheme\)/);
-  await access(new URL("public/aex-mark-black.webp", templateRoot));
-  await access(new URL("public/aex-mark-white.webp", templateRoot));
-  await assert.rejects(access(new URL("../app/_sites-preview", templateRoot)));
+test("customer proxy denies retired routes, cross-origin mutations and missing sessions",async()=>{
+  assert.equal((await render("/api/control/keys")).status,401);
+  assert.equal((await render("/api/control/topups")).status,404);
+  assert.equal((await render("/api/control/accounts",{method:"POST"})).status,404);
+  assert.equal((await render("/api/control/keys",{method:"POST",headers:{origin:"https://attacker.example",cookie:"aex_account=test"},body:'{"name":"x"}'})).status,403);
+  assert.equal((await render("/api/control/keys",{method:"POST",body:'{"name":"x"}'})).status,403);
+  assert.equal((await render("/api/control/keys?url=https://attacker.example")).status,404);
+  const callback=await render("/api/auth/callback/google?code=forged&state=forged",{redirect:"manual"});
+  assert.equal(callback.status,307);
+  assert.match(callback.headers.get("location"),/dashboard\?error=signin/);
+  assert.doesNotMatch(callback.headers.get("set-cookie")??"",/aex_account=/);
+  const source=await readFile(new URL("../app/dashboard/DashboardClient.tsx",import.meta.url),"utf8");
+  assert.doesNotMatch(source,/localStorage|sessionStorage/);
 });
 
-test("checkout return routes render", async () => {
-  const success = await render("/topup/success");
-  assert.equal(success.status, 200);
-  assert.match(await success.text(), /Checking the ledger/);
-  const successPage = await readFile(new URL("../app/topup/success/page.tsx", import.meta.url), "utf8");
-  const statusClient = await readFile(new URL("../app/topup/TopupStatusClient.tsx", import.meta.url), "utf8");
-  const proxy = await readFile(new URL("../app/api/control/[...path]/route.ts", import.meta.url), "utf8");
-  assert.match(successPage, /session_id/);
-  assert.match(statusClient, /api\/control\/checkout/);
-  assert.match(statusClient, /response\.status === 200/);
-  assert.match(statusClient, /response\.status === 202/);
-  assert.match(statusClient, /response\.status === 410/);
-  assert.match(proxy, /topups\/checkout/);
-  assert.match(proxy, /checkoutReturn[\s\S]*needsAccount: false/);
-  const cancelled = await render("/topup/cancelled");
-  assert.equal(cancelled.status, 200);
-  assert.match(await cancelled.text(), /No charge was made/);
+test("retired checkout routes are unavailable",async()=>{
+  for(const path of ["/topup/success","/topup/cancelled"]) assert.equal((await render(path)).status,404);
 });

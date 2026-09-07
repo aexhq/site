@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <main>
       <SiteHeader />
       <article className="legal-page prose-shell">
-        <p className="site-kicker">Last updated 20 August 2026</p>
+        <p className="site-kicker">Last updated 7 September 2026</p>
         <h1>Privacy</h1>
 
         <p>
@@ -32,35 +32,30 @@ export default function PrivacyPage() {
 
         <h2>Information we use</h2>
         <p>
-          We use the email you submit to manage the waitlist and invitations.
-          If you create an account, we also process account identifiers,
-          essential session-cookie data, API-key metadata, top-ups, usage,
-          support messages, and technical security records. Stripe processes
-          card details on its hosted checkout; Aex does not receive full card
-          numbers.
+          We process your verified Google identifier and email to create your
+          account, essential authentication cookies, API-key metadata, usage,
+          support messages, and technical security records. Brain processes
+          session content, tool results, and model credentials to run your agents.
         </p>
 
         <h2>Why we use it</h2>
         <p>
-          We process this information to respond to your request for alpha
-          access, provide and secure the service, keep an accurate usage and
-          payment ledger, meet legal obligations, and handle support. We do not
-          use the waitlist for marketing and do not sell personal information.
+          We process this information to provide and secure the service, keep accurate usage records, meet legal obligations, and handle support. We do not
+          sell personal information.
         </p>
 
         <h2>Providers and location</h2>
         <p>
           Aex uses infrastructure and service providers including AWS for the
-          production runtime, Vercel for website hosting, Cloudflare for DNS and
-          edge proxying, and Stripe for payments. A provider may process limited
+          production runtime and account database in us-east-1, Vercel for website hosting, Cloudflare for DNS,
+          and Google for sign-in. Your chosen model provider processes model requests. A provider may process limited
           account or technical data in another country under its contractual
           safeguards.
         </p>
 
         <h2>Retention</h2>
         <p>
-          Waitlist records are removed when no longer needed for the alpha or on
-          a valid deletion request. Account and session data is retained while
+          Session retention is currently seven days. Account data is retained while
           the account is active, then deleted or anonymised except where records
           must be kept for security, disputes, tax, or accounting. Deleted
           production data can remain in encrypted backups for up to seven days.

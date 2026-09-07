@@ -1,0 +1,45 @@
+import Link from "next/link";
+import { SiteHeader } from "../components/SiteHeader";
+import { SiteFooter } from "../components/SiteFooter";
+export const metadata = { title: "Docs", description: "Create your first hosted Brain session with the Aex SDK." };
+const example = `import { Aex, brainEnv, hostEnv, tool } from "@aexhq/sdk";
+import { pi } from "@aexhq/agentloop-pi";
+import { z } from "zod";
+
+const aex = new Aex({ apiKey: process.env.AEX_API_KEY });
+const lookup = tool({
+  name: "lookup", description: "Look up an item",
+  input: z.object({ id: z.string() }),
+  run: async ({ id }) => ({ id, name: "Example item" }),
+});
+const session = await aex.sessions.create({
+  agentloop: pi({ env: brainEnv({ name: "brain" }) }),
+  model: {
+    provider: "openai", name: "gpt-4.1-mini",
+    apiKey: process.env.OPENAI_API_KEY,
+  },
+  tools: [lookup({ env: hostEnv({ name: "app" }) })],
+});
+const registration = await aex.register();
+try {
+  await session.send("Look up item 42.");
+  for await (const event of session.events()) console.log(event);
+} finally {
+  await session.end();
+  registration.pump.stop();
+  await registration.pump.closed;
+}
+// Keep history until retention expires, or explicitly await session.delete().`;
+export default function Docs() {
+  return <main><SiteHeader /><article className="shell preview-dashboard"><h1>Get started</h1>
+    <p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
+    <pre><code>npm install @aexhq/sdk@0.69.0 @aexhq/agentloop-pi@4.0.0 zod@4</code></pre>
+    <p>Set <code>AEX_API_KEY</code> and your provider&apos;s <code>OPENAI_API_KEY</code> in your application environment. Keep both on your server.</p>
+    <pre style={{ overflowX: "auto", margin: "1.5rem 0" }}><code>{example}</code></pre>
+    <h2>Where code runs</h2><p>The Agentloop runs in hosted Brain. This example&apos;s lookup function runs in your application through hostEnv. To host a Tool, supply a precompiled Brain-compatible Wasm Component and place it in brainEnv.</p>
+    <p>Hosted Components have bounded memory and execution time, and no access to server secrets, host files or native network grants. Customer-selected HTTP Environments are not enabled in this release.</p>
+    <h2>Events and storage</h2><p>Brain retains committed session history. Subscribe with session.stream(), reconnect from a committed sequence, and store application data wherever you choose. Account storage figures include active reservations.</p>
+    <p>This preview uses customer model keys and one serving node. Maintenance interrupts live work. PostgreSQL holds account and ownership data; Brain retains its journal on persistent disk.</p>
+    <p><Link href="/brain/docs">Brain documentation</Link> · <Link href="/brain/docs/reference/api">Session API reference</Link> · <a href="mailto:support@aex.dev">Support</a></p>
+  </article><SiteFooter /></main>;
+}
