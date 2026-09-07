@@ -58,12 +58,16 @@ jobs:
       - name: Verify public routes
         run: |
           set -euo pipefail
-          for route in / /dashboard /docs /brain /brain/docs /status /privacy /terms; do
+          for route in / /dashboard /docs /cli /brain /brain/docs /status /privacy /terms; do
             curl --retry 6 --retry-all-errors --fail --silent --show-error "https://aex.dev$route" -o /dev/null
           done
           curl --fail --silent https://aex.dev/dashboard -o dashboard.html
           curl --fail --silent https://aex.dev/docs -o docs.html
           grep -q 'Continue with Google' dashboard.html
-          grep -q '@aexhq/sdk@0.69.0' docs.html
+          for package in sdk cli; do
+            expected=$(grep -oE "@aexhq/$package@[0-9]+\.[0-9]+\.[0-9]+" app/docs/page.tsx)
+            test -n "$expected"
+            grep -Fq "$expected" docs.html
+          done
           test "$(curl --silent -o /dev/null -w '%{http_code}' https://api.aex.dev/health/ready)" = 204
           echo 'Deployed and verified https://aex.dev' >> "$GITHUB_STEP_SUMMARY"
