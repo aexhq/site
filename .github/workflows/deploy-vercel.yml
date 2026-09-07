@@ -43,14 +43,27 @@ jobs:
       - run: npx --yes vercel@59.1.4 pull --yes --environment=production
       - run: npx --yes vercel@59.1.4 build --prod
       - name: Deploy production
-        run: npx --yes vercel@59.1.4 deploy --prebuilt --prod
+        id: deployment
+        run: |
+          set -euo pipefail
+          url=$(npx --yes vercel@59.1.4 deploy --prebuilt --prod | tail -n 1)
+          [[ "$url" == https://*.vercel.app ]]
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Assign production domains
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment.outputs.url }}
+        run: |
+          npx --yes vercel@59.1.4 alias set "$DEPLOYMENT_URL" aex.dev
+          npx --yes vercel@59.1.4 alias set "$DEPLOYMENT_URL" www.aex.dev
       - name: Verify public routes
         run: |
           set -euo pipefail
           for route in / /dashboard /docs /brain /brain/docs /status /privacy /terms; do
             curl --retry 6 --retry-all-errors --fail --silent --show-error "https://aex.dev$route" -o /dev/null
           done
-          curl --fail --silent https://aex.dev/dashboard | grep -q 'Continue with Google'
-          curl --fail --silent https://aex.dev/docs | grep -q '@aexhq/sdk@0.69.0'
+          curl --fail --silent https://aex.dev/dashboard -o dashboard.html
+          curl --fail --silent https://aex.dev/docs -o docs.html
+          grep -q 'Continue with Google' dashboard.html
+          grep -q '@aexhq/sdk@0.69.0' docs.html
           test "$(curl --silent -o /dev/null -w '%{http_code}' https://api.aex.dev/health/ready)" = 204
           echo 'Deployed and verified https://aex.dev' >> "$GITHUB_STEP_SUMMARY"
