@@ -27,9 +27,9 @@ npm test
 
 The canonical SDK quickstart and API contracts live in
 [`aexhq/aex`](https://github.com/aexhq/aex). Production deployments use the protected Vercel
-workflow in `.github/workflows/deploy-vercel.yml`. Promotion also requires the exact three-entry
-`managed_environment_blocked_source_ipv4_cidrs` JSON output from Platform. The workflow reconciles
-those source denies across every Vercel project hostname before assigning `aex.dev`.
+workflow in `.github/workflows/deploy-vercel.yml`, dispatched on a CI-approved immutable
+`release/sha-<commit>` tag. It verifies public routes and the SDK/CLI pins after assigning
+`aex.dev` and `www.aex.dev`. The quickstart targets Aex SDK 0.71, CLI 0.38 and extensions 5.x.
 
 The Brain product page and documentation describe the standalone runtime. Canonical Brain prose
 and schemas are imported from the immutable revision in `docs.lock.json`; edit them in the Brain
