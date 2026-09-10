@@ -32,7 +32,7 @@ try {
 // Keep history until retention expires, or explicitly await session.delete().`;
 export default function Docs() {
   return <main><SiteHeader /><article className="shell preview-dashboard"><h1>Get started</h1>
-    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.38.0
+    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.39.0
 aex login
 aex keys create "My application"
 aex keys list
@@ -44,10 +44,21 @@ aex usage
 aex docs
 aex logout`}</code></pre><p>Login opens your browser for sign-in or registration. Authorize the CLI on the same computer, then return to your terminal. Results are JSON. Account sessions expire after seven days; API key secrets are shown only at creation.</p>
     <h2>SDK</h2><p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
-    <pre><code>npm install @aexhq/sdk@0.71.0 @aexhq/agentloop-pi@5.0.0 zod@4</code></pre>
+    <pre><code>npm install @aexhq/sdk@0.72.0 @aexhq/agentloop-pi@5.0.0 zod@4</code></pre>
     <p>Set <code>AEX_API_KEY</code> and your provider&apos;s <code>OPENAI_API_KEY</code> in your application environment. Keep both on your server.</p>
     <pre style={{ overflowX: "auto", margin: "1.5rem 0" }}><code>{example}</code></pre>
-    <p>SDK 0.71 uses Brain 0.20 and official extensions 5.x. Rebuild custom Wasm Components against the matching Brain WIT contract. Existing session configurations are not migrated automatically.</p>
+    <p>SDK 0.72 uses Brain SDK 0.21 and official extensions 5.x. The Brain 0.20 runtime contract remains compatible; this SDK update requires no Component rebuild.</p>
+    <h2>Structured output</h2>
+    <p>Request a typed answer on an individual send by supplying a Zod schema.</p>
+    <pre><code>{`const person = await session.send("Ada is 37 years old. Extract her details.", {
+  output: {
+    type: z.object({ name: z.string(), age: z.number() }),
+    maxRetries: 2,
+  },
+});
+// person: { name: string; age: number }`}</code></pre>
+    <p>The SDK prompts for JSON and validates it locally. Two additional correction turns are allowed by default; zero disables retries. Exhaustion throws StructuredOutputError. Ordinary sends keep returning session state.</p>
+    <p>Corrections run in your client and use the session&apos;s existing Agentloop and tools. Use one caller for sends during the operation. Raw attempts remain visible in history and streams. <Link href="/brain/docs/guides/structured-output">Read the full structured-output contract</Link>.</p>
     <h2>Where code runs</h2><p>The Agentloop runs in hosted Brain. This example&apos;s lookup function runs in your application through hostEnv. To host a Tool, supply a precompiled Brain-compatible Wasm Component and place it in brainEnv.</p>
     <p>Hosted Components have bounded memory and execution time, and no access to server secrets, host files or native network grants. Customer-selected HTTP Environments are not enabled in this release.</p>
     <p>Prepare application Tool dependencies before registering hostEnv. Extensions do not declare dependency strings; each Environment owns preparation and resource access. Hosted brainEnv configuration must be empty.</p>
