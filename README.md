@@ -21,6 +21,7 @@ cookie, and the same-origin proxy accepts only its explicit method and path allo
 
 ```sh
 npm run lint
+npm audit --audit-level=high
 npm run build
 npm test
 ```
