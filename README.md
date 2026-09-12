@@ -30,8 +30,9 @@ The canonical SDK quickstart and API contracts live in
 [`aexhq/aex`](https://github.com/aexhq/aex). Production deployments use the protected Vercel
 workflow in `.github/workflows/deploy-vercel.yml`, dispatched on a CI-approved immutable
 `release/sha-<commit>` tag. It verifies public routes and the SDK/CLI pins after assigning
-`aex.dev` and `www.aex.dev`. The quickstart targets Aex SDK 0.73, CLI 0.40, Brain 0.22 and
-Pi/Codex 5.1. It covers direct Tool outcomes and the official MCP, Docker and browser extensions.
+`aex.dev` and `www.aex.dev`. The quickstart targets Aex SDK 0.75, CLI 0.42, Brain SDK 0.24 and
+Pi/Codex 6.1. It covers client/session lifetime, structured output, attachment-backed media,
+Tool schemas and outcomes, and the official MCP, Docker and browser extensions.
 
 The Brain product page and documentation describe the standalone runtime. Canonical Brain prose
 and schemas are imported from the immutable revision in `docs.lock.json`; edit them in the Brain
