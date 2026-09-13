@@ -31,7 +31,7 @@ try {
 `;
 export default function Docs() {
   return <main><SiteHeader /><article className="shell preview-dashboard"><h1>Get started</h1>
-    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.42.1
+    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.42.2
 aex login
 aex keys create "My application"
 aex keys list
@@ -43,10 +43,11 @@ aex usage
 aex docs
 aex logout`}</code></pre><p>Login opens your browser for sign-in or registration. Authorize the CLI on the same computer, then return to your terminal. Results are JSON. Account sessions expire after seven days; API key secrets are shown only at creation.</p>
     <h2>SDK</h2><p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
-    <pre><code>npm install @aexhq/sdk@0.75.1 @aexhq/agentloop-pi@6.1.1 zod@4</code></pre>
+    <pre><code>npm install @aexhq/sdk@0.75.2 @aexhq/agentloop-pi@6.1.2 zod@4</code></pre>
     <p>Set <code>AEX_API_KEY</code> and your provider&apos;s <code>OPENAI_API_KEY</code> in your application environment. Keep both on your server.</p>
     <pre style={{ overflowX: "auto", margin: "1.5rem 0" }}><code>{example}</code></pre>
     <p>SDK 0.75 uses Brain SDK 0.24 with Pi, Codex and Tools 6.1. Upgrade the matching packages together; existing sessions retain their admitted loop and tool schemas.</p>
+    <p><code>await aex.models()</code> returns Brain&apos;s full supported model catalogue and known capabilities. Aex passes model discovery and validation through to Brain. For DeepSeek, select <code>provider: &quot;deepseek&quot;, name: &quot;deepseek-flash&quot;</code> with your DeepSeek API key. See the <Link href="/brain/docs/concepts/model">model contract</Link> for supported protocols and media.</p>
     <h2>Session and client lifetime</h2>
     <p><code>session.interrupt()</code> stops the current turn while keeping the session available. <code>session.end()</code> finishes the conversation and keeps history. <code>session.delete()</code> removes an ended or failed session. SDK <code>interrupt()</code> replaces <code>cancel()</code>.</p>
     <p><code>await aex.close()</code> releases client connections and local handlers. It is safe to repeat and leaves stored sessions available. The shared host connection stays open until close, including after failed creation, so creation belongs inside the try/finally scope. The official loops explain unanswered calls after interruption without automatically replaying them.</p>
