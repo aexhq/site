@@ -5,6 +5,7 @@ import { once } from "node:events";
 import { access, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import test, { after, before } from "node:test";
+import { chromium } from "playwright";
 
 const templateRoot = new URL("../", import.meta.url);
 const projectRoot = fileURLToPath(templateRoot);
@@ -15,12 +16,15 @@ let server;
 let serverOutput = "";
 let api;
 let apiRequests = [];
+let billingFixture;
 
 before(async () => {
   api = createServer(async (req, res) => {
     let body = ""; for await (const chunk of req) body += chunk;
-    apiRequests.push({ path: req.url, authorization: req.headers.authorization, body: body ? JSON.parse(body) : undefined });
+    apiRequests.push({ path: req.url, authorization: req.headers.authorization, body: body ? JSON.parse(body) : undefined,
+      ...(req.headers["idempotency-key"] ? { key: req.headers["idempotency-key"] } : {}) });
     res.setHeader("content-type", "application/json");
+    if (billingFixture) { await billingFixture(req,res,body); return; }
     res.end(JSON.stringify(req.url === "/v1/account" ? { email: "cli@example.com" } : { code: "one-time-code" }));
   });
   await new Promise(resolve => api.listen(0, "127.0.0.1", resolve));
@@ -85,6 +89,76 @@ async function render(path = "/", init = {}) {
   if (!headers.has("accept")) headers.set("accept", "text/html");
   return fetch(origin + path, { ...init, headers });
 }
+
+test("billing proxy preserves payment identities and rejects unowned writes and unbounded queries", async () => {
+  const headers = { origin, cookie: "aex_account=account-fixture", "content-type": "application/json", "idempotency-key": "payment-once" };
+  const before = apiRequests.length;
+  for (const [path, extra] of [["billing/topups", { origin: "https://evil.example" }], ["billing/refunds", { cookie: "" }], ["billing/topups", { "idempotency-key": "" }]]) {
+    assert.ok((await render(`/api/control/${path}`, { method: "POST", headers: { ...headers, ...extra }, body: "{}" })).status >= 400);
+  }
+  for (const query of ["?before=1&before=2", "?before=-1", "?before=1e3", "?customer=x", "?before=9007199254740992"]) {
+    assert.equal((await render(`/api/control/billing/ledger${query}`, { headers })).status, 404);
+  }
+  assert.equal(apiRequests.length, before);
+  const body = { amount_cents: 1000 };
+  assert.equal((await render("/api/control/billing/topups", { method: "POST", headers, body: JSON.stringify(body) })).status, 200);
+  assert.deepEqual(apiRequests.at(-1), { path: "/v1/billing/topups", authorization: "Bearer account-fixture", key: "payment-once", body });
+  assert.equal((await render("/api/control/billing", { method: "PUT", headers, body: JSON.stringify({ pricebook: "test-v1", spend_limit_micro_usd: 20000000 }) })).status, 200);
+  assert.equal((await render("/api/control/billing/ledger?before=12", { headers })).status, 200);
+  assert.equal(apiRequests.at(-1).path, "/v1/billing/ledger?before=12");
+});
+
+test("billing browser flow requires price acceptance and recovers one payment intent across reload", { timeout: 60000 }, async () => {
+  const wallet = { mode: "preview", currency: "usd", balance_micro_usd: 0, available_micro_usd: 0, reserved_micro_usd: 0,
+    spent_this_month_micro_usd: 0, suspended: false, accepted_pricebook: null, spend_limit_micro_usd: null,
+    offered_pricebook: { id: "test-v1", rates: { turn_ms: { micro_usd: 10, units: 1000 } } }, payment_mode: "test", topup_amounts_cents: [1000] };
+  let lost = true;
+  billingFixture = async (req,res,body) => {
+    if (req.url === "/v1/account") return res.end(JSON.stringify({ id: "account-browser", email: "billing@example.com", usage: {}, limits: {} }));
+    if (req.url === "/v1/keys") return res.end("[]");
+    if (req.url === "/v1/billing") {
+      if (req.method === "PUT") {
+        const input = JSON.parse(body); wallet.accepted_pricebook = input.pricebook; wallet.spend_limit_micro_usd = input.spend_limit_micro_usd; wallet.mode = "prepaid";
+      }
+      return res.end(JSON.stringify(wallet));
+    }
+    if (req.url === "/v1/billing/topups" && req.method === "POST") {
+      if (lost) { lost = false; res.statusCode = 503; return res.end('{"message":"Payment response was lost"}'); }
+      return res.end(JSON.stringify({ id: "topup-fixture", state: "open", checkout_url: "https://checkout.stripe.com/c/pay/cs_test_fixture" }));
+    }
+    if (req.url === "/v1/billing/ledger") return res.end('{"entries":[]}');
+    if (["/v1/billing/topups", "/v1/billing/refunds"].includes(req.url)) return res.end("[]");
+    res.statusCode = 404; res.end("{}");
+  };
+  const browser = await chromium.launch();
+  try {
+    const context = await browser.newContext();
+    await context.addCookies([{ name: "aex_account", value: "account-fixture", url: origin }]);
+    await context.route("https://checkout.stripe.com/**", route => route.fulfill({ contentType: "text/html", body: "Checkout fixture" }));
+    const page = await context.newPage();
+    await page.goto(`${origin}/dashboard?section=billing`);
+    await page.getByRole("heading", { name: "Published prices · test-v1" }).waitFor();
+    assert.equal(await page.getByRole("button", { name: "Accept prices and enable prepaid" }).isDisabled(), true);
+    await page.getByLabel("Monthly spend limit (USD)").fill("19.99");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: "Accept prices and enable prepaid" }).click();
+    await page.getByText("Billing settings saved.", { exact: true }).waitFor();
+    assert.equal(wallet.spend_limit_micro_usd, 19990000);
+    await page.getByRole("button", { name: "Continue to Stripe Checkout" }).click();
+    await page.getByRole("alert").filter({ hasText: "Payment response was lost" }).waitFor();
+    const original = apiRequests.findLast(request => request.path === "/v1/billing/topups" && request.key);
+    assert.ok(original.key);
+    await page.reload();
+    await page.getByRole("button", { name: "Retry original request" }).waitFor();
+    assert.equal(await page.getByRole("button", { name: "Continue to Stripe Checkout" }).isDisabled(), true);
+    await page.getByRole("button", { name: "Retry original request" }).click();
+    await page.waitForURL("https://checkout.stripe.com/**");
+    const retried = apiRequests.findLast(request => request.path === "/v1/billing/topups" && request.key);
+    assert.equal(retried.key, original.key);
+    assert.deepEqual(retried.body, original.body);
+    await context.close();
+  } finally { await browser.close(); billingFixture = undefined; }
+});
 
 test("server-renders the minimal landing shell", async () => {
   const response = await render();
@@ -164,11 +238,13 @@ test("serves the hosted SDK quickstart", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /@aexhq\/sdk@0.75.3/);
+  assert.match(html, /@aexhq\/sdk@0.76.0/);
   assert.match(html, /Structured output/);
   assert.match(html, /maxRetries/);
   assert.match(html, /hostEnv/);
-  assert.match(html, /customer-selected HTTP Environments/i);
+  assert.match(html, /managed Modal profiles/i);
+  assert.match(html, /maxCorrections/);
+  assert.match(html, /session.submit/);
 });
 
 test("serves the Brain documentation, generated API pages, and a static search index", async () => {

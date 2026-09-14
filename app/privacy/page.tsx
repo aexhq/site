@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <main>
       <SiteHeader />
       <article className="legal-page prose-shell">
-        <p className="site-kicker">Last updated 7 September 2026</p>
+        <p className="site-kicker">Last updated 14 September 2026</p>
         <h1>Privacy</h1>
 
         <p>
@@ -36,6 +36,9 @@ export default function PrivacyPage() {
           account, essential authentication cookies, API-key metadata, usage,
           support messages, and technical security records. Brain processes
           session content, tool results, and model credentials to run your agents.
+          For payments, we retain amounts, status, provider references and receipt
+          links. Stripe collects payment details through Checkout; Aex does not
+          receive your full card number.
         </p>
 
         <h2>Why we use it</h2>
@@ -48,7 +51,9 @@ export default function PrivacyPage() {
         <p>
           Aex uses infrastructure and service providers including AWS for the
           production runtime and account database in us-east-1, Vercel for website hosting, Cloudflare for DNS,
-          and Google for sign-in. Your chosen model provider processes model requests. A provider may process limited
+          Google for sign-in, Modal for managed tool execution, and Stripe for payments.
+          Managed tools process the inputs, files and scoped application configuration
+          supplied to them. Your chosen model provider processes model requests. A provider may process limited
           account or technical data in another country under its contractual
           safeguards.
         </p>
@@ -67,8 +72,9 @@ export default function PrivacyPage() {
           personal information, or object to some uses, by emailing{" "}
           <a href="mailto:support@aex.dev">support@aex.dev</a>. You can also
           complain to the UK Information Commissioner’s Office. The dashboard
-          uses only an essential authentication cookie; there are no advertising
-          or analytics cookies on the public site.
+          uses an essential authentication cookie and local storage for pending
+          payment request identifiers and amounts, so a reload can recover the same
+          request. There are no advertising or analytics cookies on the public site.
         </p>
       </article>
       <SiteFooter />

@@ -1347,3 +1347,17 @@ td code {
 .new-key code { display: block; overflow-wrap: anywhere; margin-bottom: 1rem; }
 .usage-list > div { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 0; border-bottom: 1px solid #8885; }
 .usage-list { margin-bottom: 1rem; }
+.billing-panel { border-block: 1px solid #8885; margin-block: 2rem; padding-bottom: 2rem; }
+.billing-panel h4 { font-size: 1.05rem; font-weight: 600; margin: 2rem 0 1rem; }
+.billing-form { display: grid; gap: .75rem; justify-items: start; margin-bottom: 1.5rem; }
+.billing-form input:not([type=checkbox]), .billing-form select { width: min(100%, 32rem); font: inherit; padding: .6rem; border: 1px solid #888; border-radius: 6px; background: var(--background); color: inherit; }
+.billing-consent { display: flex; gap: .5rem; align-items: baseline; }
+.billing-balances dd, .billing-table td:last-child { font-variant-numeric: tabular-nums; }
+.billing-status { padding: 1rem; margin-block: 1rem; border: 1px solid #888; border-radius: 6px; }
+.billing-table { overflow-x: auto; margin-bottom: 1rem; }
+.billing-table table { border-collapse: collapse; width: 100%; text-align: left; font-size: .9rem; }
+.billing-table th, .billing-table td { border-bottom: 1px solid #8885; padding: .8rem .6rem; vertical-align: top; }
+.billing-table small { display: block; opacity: .65; }
+.billing-table a { display: inline-block; margin: .4rem .7rem .4rem 0; text-decoration: underline; }
+.billing-panel details { margin-top: .5rem; max-width: 20rem; overflow-wrap: anywhere; font-size: .8rem; }
+.billing-refunds li { margin-bottom: 1rem; }
