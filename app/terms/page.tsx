@@ -11,7 +11,7 @@ export default function TermsPage() {
     <main>
       <SiteHeader />
       <article className="legal-page prose-shell">
-        <p className="site-kicker">Last updated 7 September 2026</p>
+        <p className="site-kicker">Last updated 14 September 2026</p>
         <h1>Alpha terms</h1>
 
         <p>
@@ -57,11 +57,20 @@ export default function TermsPage() {
           third-party service outside its control.
         </p>
 
-        <h2>Preview pricing</h2>
+        <h2>Pricing and credits</h2>
         <p>
-          This preview has no Aex hosting charge. You pay your model provider
-          directly. The dashboard shows account limits and usage. We will
-          present pricing and obtain agreement before starting paid hosting.
+          Preview accounts have no Aex hosting charge until they accept a published
+          pricebook and enable prepaid hosting. The dashboard presents prices and
+          spend limits before acceptance. Managed compute requires prepaid credits.
+          You pay your model provider directly, separately from Aex charges.
+        </p>
+        <p>
+          Where payments are enabled, you can top up manually through Stripe and
+          request a refund of unused, unreserved credits to the original payment
+          method. There are no automatic topups. Work reserves credits before it
+          starts; settlement charges measured usage and releases the remainder.
+          Pending work and refunds can keep credits reserved. Price changes require
+          acceptance for new work; existing reservations keep their agreed prices.
         </p>
 
         <h2>Your data and intellectual property</h2>

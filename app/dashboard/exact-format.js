@@ -39,3 +39,12 @@ export function compareMicroUsdDescending(left, right) {
   const rightValue = BigInt(right);
   return leftValue === rightValue ? 0 : leftValue > rightValue ? -1 : 1;
 }
+
+/** Parse a user-entered USD amount without floating-point multiplication. @param {string} value */
+export function parseUsd(value) {
+  if (!/^(0|[1-9][0-9]*)(\.[0-9]{1,2})?$/.test(value)) throw new Error("Enter USD with at most two decimal places.");
+  const [whole, fraction = ""] = value.split(".");
+  const micros = BigInt(whole) * 1_000_000n + BigInt(fraction.padEnd(2, "0")) * 10_000n;
+  if (micros > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("Amount is too large.");
+  return Number(micros);
+}
