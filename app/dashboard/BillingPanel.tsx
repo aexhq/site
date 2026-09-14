@@ -8,7 +8,7 @@ type Payment = { key: string } & ({ kind: "topups"; input: TopupInput } | { kind
 const money = (amount: number) => formatMicroUsd(String(amount), 6);
 const date = (seconds: number) => new Date(seconds * 1000).toLocaleString();
 const units: Record<string, [number, string]> = {
-  turn_ms: [1000, "Active turn / second"], sandbox_ms: [1000, "Sandbox / second (1 core, 1 GiB)"],
+  turn_ms: [1000, "Active turn / second"], sandbox_ms: [60000, "Sandbox / minute (1 core, 1 GiB)"],
   attachment_byte_secs: [1073741824 * 86400, "Attachment storage / GiB-day"], egress_bytes: [1073741824, "Attachment reads / GiB"],
 };
 
@@ -94,7 +94,7 @@ export function BillingPanel({ accountId }: { accountId: string }) {
           const [quantity, label] = units[meter];
           return <div key={meter}><dt>{label}</dt><dd>{formatMicroUsd(String(BigInt(rate.micro_usd) * BigInt(quantity) / BigInt(rate.units)), 6)}</dd></div>;
         })}</dl>
-        <p className="muted">Sandbox time includes waiting between tools. Storage and reads are charged only for Aex attachments. Prices for active reservations remain fixed.</p>
+        <p className="muted">Sandbox time includes waiting between tools. Displayed unit prices are rounded down to micro-USD; settlement rounds cumulative usage once. Storage and reads are charged only for Aex attachments. Prices for active reservations remain fixed.</p>
         {needsAcceptance && wallet.accepted_pricebook && <p>Your current pricebook is {wallet.accepted_pricebook}. Accepting this offer changes the pricebook for new work.</p>}
         <form onSubmit={save} className="billing-form">
           <label htmlFor="spend-limit">Monthly spend limit (USD)</label>
