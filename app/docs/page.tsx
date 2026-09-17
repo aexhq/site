@@ -31,7 +31,7 @@ try {
 `;
 export default function Docs() {
   return <main><SiteHeader /><article className="shell preview-dashboard"><h1>Get started</h1>
-    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.43.0
+    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.44.0
 aex login
 aex keys create "My application"
 aex keys list
@@ -43,10 +43,10 @@ aex usage
 aex docs
 aex logout`}</code></pre><p>Login opens your browser for sign-in or registration. Authorize the CLI on the same computer, then return to your terminal. Results are JSON. Account sessions expire after seven days; API key secrets are shown only at creation.</p>
     <h2>SDK</h2><p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
-    <pre><code>npm install @aexhq/sdk@0.76.0 @aexhq/agentloop-pi@6.2.0 zod@4</code></pre>
+    <pre><code>npm install @aexhq/sdk@0.77.0 @aexhq/agentloop-pi@6.2.1 zod@4</code></pre>
     <p>Set <code>AEX_API_KEY</code> and your provider&apos;s <code>OPENAI_API_KEY</code> in your application environment. Keep both on your server.</p>
     <pre style={{ overflowX: "auto", margin: "1.5rem 0" }}><code>{example}</code></pre>
-    <p>SDK 0.76 uses Brain SDK 0.25 with Pi and Codex 6.2 and Tools 6.1. Upgrade the matching packages together; existing sessions retain their admitted loop and tool schemas.</p>
+    <p>SDK 0.77 uses Brain SDK 0.27 with Pi and Codex 6.2.1 and Tools 6.1.5. Upgrade the matching packages together; existing sessions retain their admitted loop and tool schemas.</p>
     <p><code>await aex.models()</code> returns Brain&apos;s full supported model catalogue and known capabilities. Aex passes model discovery and validation through to Brain. For DeepSeek, select <code>provider: &quot;deepseek&quot;, name: &quot;deepseek-flash&quot;</code> with your DeepSeek API key. See the <Link href="/brain/docs/concepts/model">model contract</Link> for supported protocols and media.</p>
     <h2>Session and client lifetime</h2>
     <p><code>session.interrupt()</code> stops the current turn while keeping the session available. <code>session.end()</code> finishes the conversation and keeps history. <code>session.delete()</code> removes an ended or failed session. SDK <code>interrupt()</code> replaces <code>cancel()</code>.</p>
@@ -84,8 +84,11 @@ aex logout`}</code></pre><p>Login opens your browser for sign-in or registration
     <p>Defaulted Tool arguments are optional in the model schema; Zod applies defaults and transforms before calling the handler. Ordinary objects strip extra fields and strict objects reject them. Pi dispatches in parallel; Tools and their Environments coordinate shared resources.</p>
     <h2>Server Actions and managed tools</h2>
     <p>Keep Aex and model keys in your server environment, including Vercel Server Actions. Select a profile and fixed command from your account&apos;s catalog, then submit a durable turn.</p>
-    <pre><code>{`const profiles = await aex.environments.list();
-const workspace = await aex.environments.modal({
+    <pre><code>{`import { modal } from "@aexhq/env-modal";
+
+const catalog = await aex.environments.list();
+const workspace = modal({
+  url: catalog.driver_url,
   name: "analysis", profile: "python-v1", lifetimeMs: 300_000,
 });
 const calculate = tool({
@@ -94,14 +97,15 @@ const calculate = tool({
   implementation: { type: "modal_command", name: "calculate" },
 });
 // Create with tools: [calculate({ env: workspace })].
-const receipt = await session.submit("Calculate for 42.", {
+const sequence = await session.submit("Calculate for 42.", {
   idempotencyKey: "turn-once",
 });
-// Persist session.id and receipt in your application database.
+// session.id identifies the conversation; sequence identifies this turn.
 await aex.close();`}</code></pre>
     <p>The example profile is illustrative; use an ID and command your catalog publishes. Managed compute requires accepted prices, prepaid credits and a per-operation cost ceiling. Set <code>maxCostMicroUsd</code> on the Aex client.</p>
-    <p>The submit receipt confirms durable acceptance. Closing the client leaves the turn running; poll or stream committed events for its result. Reuse the original idempotency key when a response is lost. Tools placed in hostEnv still require your host process to remain connected.</p>
+    <p><code>submit()</code> returns the saved turn&apos;s event sequence. Closing the client leaves the turn running. Load <code>session.transcript()</code> when opening a conversation, then read updates with <code>session.events(after)</code> or <code>session.stream(after)</code>, passing the last event sequence. Reuse the original idempotency key when a response is lost. Tools placed in hostEnv still require your host process to remain connected.</p>
     <p>A prepared image contains Python, data and dependencies. One binding shares temporary files and has a fixed lifetime of at most five minutes. Commands receive JSON on stdin and return JSON on stdout. Store business data and durable files in your application database or object storage. Database administrator and provider keys stay outside the sandbox. <a href="https://github.com/aexhq/aex/blob/main/docs/environments.md">Managed environment contract</a>.</p>
+    <p>A Modal profile can set <code>terminateAfterTurn: true</code>. The extension registers its cleanup method with Brain, which saves the answer before calling it. Cleanup and its outcome appear in session events; the conversation and transcript remain available. Each Environment extension owns its provider configuration and deployment.</p>
     <h2>Images and PDFs</h2>
     <p>Publish bytes through <code>aex.attachments.upload()</code> and send the returned media as native model input. For Tool output, use the same media in the official loop envelope:</p>
     <pre><code>{`const attachment = await aex.attachments.upload(session.id, pngBytes, {
