@@ -108,7 +108,7 @@ const lookupOrder = tool({
   name: "lookup_order",
   description: "Look up an order by id.",
   input: z.object({ id: z.string() }),
-  run: async ({ id }) => ({ id, status: "shipped" }),
+  run: async ({ id }, ctx) => ctx.finish({ id, status: "shipped" }),
 });
 
 const brain = new Brain({ baseUrl: "http://127.0.0.1:8080", token: "quickstart" });
