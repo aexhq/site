@@ -109,16 +109,16 @@ test("billing proxy preserves payment identities and rejects unowned writes and 
 });
 
 test("billing browser flow requires price acceptance and recovers one payment intent across reload", { timeout: 60000 }, async () => {
-  const wallet = { mode: "preview", currency: "usd", balance_micro_usd: 0, available_micro_usd: 0, reserved_micro_usd: 0,
+  const wallet = { mode: "preview", currency: "usd", balance_micro_usd: 0, available_micro_usd: 0, reserved_micro_usd: 0, pending_estimate_micro_usd: 25, accepted_rates: null,
     spent_this_month_micro_usd: 0, suspended: false, accepted_pricebook: null, spend_limit_micro_usd: null,
-    offered_pricebook: { id: "test-v1", rates: { turn_ms: { micro_usd: 10, units: 1000 } } }, payment_mode: "test", topup_amounts_cents: [1000] };
+    offered_pricebook: { id: "test-v1", rates: { model_tokens: { micro_usd: 10, units: 1000 } } }, payment_mode: "test", topup_amounts_cents: [1000] };
   let lost = true;
   billingFixture = async (req,res,body) => {
-    if (req.url === "/v1/account") return res.end(JSON.stringify({ id: "account-browser", email: "billing@example.com", usage: {}, limits: {} }));
+    if (req.url === "/v1/account") return res.end(JSON.stringify({ id: "account-browser", email: "billing@example.com", usage: { model: { reported_input_tokens: 1234, reported_output_tokens: 567, unmeasured_calls: 1, rated_micro_usd: 30, charged_micro_usd: 20, pending_estimate_micro_usd: 25 } }, limits: {} }));
     if (req.url === "/v1/keys") return res.end("[]");
     if (req.url === "/v1/billing") {
       if (req.method === "PUT") {
-        const input = JSON.parse(body); wallet.accepted_pricebook = input.pricebook; wallet.spend_limit_micro_usd = input.spend_limit_micro_usd; wallet.mode = "prepaid";
+        const input = JSON.parse(body); wallet.accepted_pricebook = input.pricebook; wallet.accepted_rates = wallet.offered_pricebook; wallet.spend_limit_micro_usd = input.spend_limit_micro_usd; wallet.mode = "prepaid";
       }
       return res.end(JSON.stringify(wallet));
     }
@@ -138,6 +138,8 @@ test("billing browser flow requires price acceptance and recovers one payment in
     const page = await context.newPage();
     await page.goto(`${origin}/dashboard?section=billing`);
     await page.getByRole("heading", { name: "Published prices · test-v1" }).waitFor();
+    await page.getByText("Pending hosting estimate", { exact: true }).waitFor();
+    await page.getByText("Model hosting / million input + output tokens", { exact: true }).waitFor();
     assert.equal(await page.getByRole("button", { name: "Accept prices and enable prepaid" }).isDisabled(), true);
     await page.getByLabel("Monthly spend limit (USD)").fill("19.99");
     await page.getByRole("checkbox").check();
@@ -238,7 +240,7 @@ test("serves the hosted SDK quickstart", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /@aexhq\/sdk@0.78.0/);
+  assert.match(html, /@aexhq\/sdk@0.79.0/);
   assert.match(html, /Structured output/);
   assert.match(html, /maxRetries/);
   assert.match(html, /hostEnv/);
