@@ -1315,6 +1315,11 @@ td code {
   line-height: 1.1;
 }
 
+.home-hero h1 { max-width: 20ch; }
+.home-hero > p { max-width: 40rem; margin: 0; line-height: 1.7; color: var(--text-soft); }
+.home-hero .home-detail { max-width: 36rem; font-size: .9rem; }
+.home-hero p a { text-decoration: underline; text-underline-offset: 3px; }
+
 .home-hero .site-links {
   justify-content: center;
 }

@@ -1,7 +1,7 @@
-export const siteHeadline = "Agent infra for next era";
+export const siteHeadline = "Run AI agents without operating an agent server.";
 
 export const siteDescription =
-  "Aex builds infrastructure for AI agents. Brain, a minimal open-source agent runtime, is under early development.";
+  "Aex hosts your AI agent sessions. Bring your model key and tools, follow progress, and return to saved conversations.";
 
 export const siteSocialTitle = `Aex: ${siteHeadline}`;
 

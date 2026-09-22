@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getLegalIdentity } from "../legal";
-import { brainRepoUrl, discordUrl } from "../site-copy";
+import { discordUrl, orgRepoUrl } from "../site-copy";
 
 export function SiteFooter() {
   const identity = getLegalIdentity();
@@ -15,13 +15,13 @@ export function SiteFooter() {
         </p>
         <nav aria-label="Footer navigation">
           <Link href="/brain">Brain</Link>
-          <Link href="/brain/docs">Docs</Link>
+          <Link href="/docs">Docs</Link>
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/status">Status</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
           <a href="mailto:support@aex.dev">Support</a>
-          <a href={brainRepoUrl}>GitHub</a>
+          <a href={orgRepoUrl}>GitHub</a>
           <a href={discordUrl}>Discord</a>
         </nav>
       </div>

@@ -1,138 +1,130 @@
 import Link from "next/link";
 import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
-export const metadata = { title: "Docs", description: "Create your first hosted Brain session with the Aex SDK." };
+
+export const metadata = {
+  title: "Get started",
+  description: "Connect your model and tools, then run your first AI agent on Aex.",
+};
+
 const example = `import { Aex, brainEnv, hostEnv, tool } from "@aexhq/sdk";
 import { pi } from "@aexhq/agentloop-pi";
 import { z } from "zod";
 
-const aex = new Aex({ apiKey: process.env.AEX_API_KEY });
-const lookup = tool({
-  name: "lookup", description: "Look up an item",
+const lookupOrder = tool({
+  name: "lookup_order",
+  description: "Look up an order by id.",
   input: z.object({ id: z.string() }),
-  run: async ({ id }, ctx) => ctx.finish({ id, name: "Example item" }),
+  run: ({ id }, ctx) => ctx.finish({ id, status: "shipped" }),
 });
+
+const aex = new Aex({ apiKey: process.env.AEX_API_KEY });
 try {
   const session = await aex.sessions.create({
+    model: { provider: "openai", name: "gpt-4.1-mini", apiKey: process.env.OPENAI_API_KEY },
     agentloop: pi({ env: brainEnv({ name: "brain" }) }),
-    model: {
-      provider: "openai", name: "gpt-4.1-mini",
-      apiKey: process.env.OPENAI_API_KEY,
-    },
-    tools: [lookup({ env: hostEnv({ name: "app" }) })],
+    tools: [lookupOrder({ env: hostEnv({ name: "app" }) })],
   });
-  await session.send("Look up item 42.");
-  for await (const event of session.events()) console.log(event);
-  await session.end();
-  // History remains until retention expires or session.delete().
+  try {
+    await session.send("Look up order A-1001. Has it shipped?");
+    console.log(JSON.stringify(await session.transcript(), null, 2));
+    console.log("Session:", session.id);
+  } finally {
+    await session.end();
+  }
 } finally {
   await aex.close();
-}
-`;
+}`;
+
 export default function Docs() {
-  return <main><SiteHeader /><article className="shell preview-dashboard"><h1>Get started</h1>
-    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.46.0
+  return (
+    <main>
+      <SiteHeader><Link href="/dashboard">Dashboard</Link></SiteHeader>
+      <article className="site-overview prose-shell">
+        <header className="site-intro">
+          <h1>Run your first agent on Aex</h1>
+          <p>Aex hosts the agent session while your application supplies a model key and tools.
+            This example asks an agent to look up an order and prints its answer.</p>
+        </header>
+
+        <section className="site-section" aria-labelledby="keys-title">
+          <h2 id="keys-title">1. Get your keys</h2>
+          <p>You need Node.js 22 or newer and an OpenAI API key. Sign in to the
+            <Link href="/dashboard"> dashboard</Link> and create an Aex API key. Save it when
+            it appears; the secret is shown only once.</p>
+          <pre className="site-code"><code>{`export AEX_API_KEY="your-aex-key"
+export OPENAI_API_KEY="your-openai-key"`}</code></pre>
+          <p>In PowerShell, use <code>$env:AEX_API_KEY = &quot;your-aex-key&quot;</code> and
+            <code> $env:OPENAI_API_KEY = &quot;your-openai-key&quot;</code>. Keep keys on your server
+            and out of source control. Your model provider bills calls separately.</p>
+        </section>
+
+        <section className="site-section" aria-labelledby="install-title">
+          <h2 id="install-title">2. Install</h2>
+          <pre className="site-code"><code>{`mkdir aex-example
+cd aex-example
+npm init -y
+npm install @aexhq/sdk@0.79.0 @aexhq/agentloop-pi@7.0.1 zod@4`}</code></pre>
+        </section>
+
+        <section className="site-section" aria-labelledby="run-title">
+          <h2 id="run-title">3. Add a tool and run the agent</h2>
+          <p>Save this as <code>order.mjs</code>. The same API works in TypeScript.</p>
+          <pre className="site-code"><code>{example}</code></pre>
+          <pre className="site-code"><code>node order.mjs</code></pre>
+          <p>The transcript includes the lookup result and an answer that order A-1001 has shipped.
+            Replace the sample lookup with your own data. Add more <code>session.send(...)</code>
+            calls before <code>session.end()</code> to continue the conversation.</p>
+          <p>The loop runs on Aex. The lookup runs in your application through <code>hostEnv</code>,
+            so keep its process connected while the agent needs it. Ending the session keeps history;
+            <code> session.delete()</code> removes an ended session.</p>
+        </section>
+
+        <section className="site-section" aria-labelledby="next-title">
+          <h2 id="next-title">Build your application</h2>
+          <ul>
+            <li><Link href="/brain/docs/concepts/sessions">Sessions:</Link> follow live output, reconnect and stop work.</li>
+            <li><Link href="/brain/docs/guides/write-a-tool">Tools:</Link> connect your API or database.</li>
+            <li><Link href="/brain/docs/guides/write-a-loop">Agent loops:</Link> customize how the agent works.</li>
+            <li><Link href="/brain/docs/guides/structured-output">Structured output:</Link> get a validated JSON answer.</li>
+            <li><a href="https://github.com/aexhq/aex/blob/main/docs/attachments.md">Images and PDFs:</a> upload files for the model.</li>
+            <li><a href="https://github.com/aexhq/aex/blob/main/docs/environments.md">Managed tools:</a> use a sandbox profile granted to your account.</li>
+          </ul>
+          <p>Aex uses Brain&apos;s session and extension APIs. Import shared helpers from
+            <code> @aexhq/sdk</code> when following the Brain guides.</p>
+          <p>Use <code>session.submit()</code> when your request must return before the work finishes.
+            Tools hosted outside that request can continue running; tools in <code>hostEnv</code>
+            still need their process connected. Aex accepts managed profiles from your account catalog,
+            not arbitrary environment URLs or images.</p>
+        </section>
+
+        <section className="site-section" aria-labelledby="cli-title">
+          <h2 id="cli-title">Use the CLI</h2>
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.46.0
 aex login
 aex keys create "My application"
-aex keys list
-aex keys rename KEY_ID "New name"
-aex keys revoke KEY_ID
-aex account
-aex billing
-aex usage
-aex docs
-aex logout`}</code></pre><p>Login opens your browser for sign-in or registration. Authorize the CLI on the same computer, then return to your terminal. Results are JSON. Account sessions expire after seven days; API key secrets are shown only at creation.</p>
-    <h2>SDK</h2><p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
-    <pre><code>npm install @aexhq/sdk@0.79.0 @aexhq/agentloop-pi@7.0.1 zod@4</code></pre>
-    <p>Set <code>AEX_API_KEY</code> and your provider&apos;s <code>OPENAI_API_KEY</code> in your application environment. Keep both on your server.</p>
-    <pre style={{ overflowX: "auto", margin: "1.5rem 0" }}><code>{example}</code></pre>
-    <p>SDK 0.79 uses Brain SDK 0.29 with Pi and Codex 7.0.1 and Tools 7.0.1. These versions include inclusive input-token usage and asynchronous observations. Existing sessions retain their admitted loop and tool schemas.</p>
-    <p><code>await aex.models()</code> returns Brain&apos;s full supported model catalogue and known capabilities. Aex passes model discovery and validation through to Brain. For DeepSeek, select <code>provider: &quot;deepseek&quot;, name: &quot;deepseek-flash&quot;</code> with your DeepSeek API key. See the <Link href="/brain/docs/concepts/model">model contract</Link> for supported protocols and media.</p>
-    <h2>Session and client lifetime</h2>
-    <p><code>session.interrupt()</code> stops the current turn and unfinished background Tools, including while the session is idle. <code>session.end()</code> finishes the conversation and keeps history. <code>session.delete()</code> removes an ended or failed session. SDK <code>interrupt()</code> replaces <code>cancel()</code>.</p>
-    <p><code>await aex.close()</code> releases client connections and local handlers. It is safe to repeat and leaves stored sessions available. The shared host connection stays open until close, including after failed creation, so creation belongs inside the try/finally scope. The official loops explain unanswered calls after interruption without automatically replaying them.</p>
-    <h2>Tool outcomes</h2>
-    <p>Use <code>return ctx.finish(value)</code> when a Tool has completed. Return alone ends its synchronous part; the Tool can later call <code>ctx.emitResult(value)</code> and <code>ctx.finish()</code>. Keep the host client connected until completion. A forgotten finish leaves the Tool open until its original deadline, cancellation or Environment loss.</p>
-    <p>Results and completion always enter the ordered journal. The Agentloop chooses model messages and acknowledges the processed sequence. Background observations wake the loop without a user message; the loop decides whether to call the model. Brain collects nearby wakeups for five milliseconds without delaying event commits.</p>
-    <p>Pass ordinary output or an Outcome to <code>ctx.finish()</code>. Returning a successful value directly emits it but leaves the Tool open; a non-success Outcome terminates it. Structured errors preserve code, message, retryable and details. Tool deadlines produce <code>timeout</code>; explicit cancellation produces <code>cancelled</code>. Use <code>unknown</code> when a dispatched operation has no reliable result. All three are failed Tool results, and timeout or cancellation does not promise rollback.</p>
-    <p>The top-level status values <code>ok</code>, <code>error</code>, <code>timeout</code>, <code>cancelled</code> and <code>unknown</code> declare outcomes. Malformed outcomes fail validation. Only successful values pass through the output schema. <Link href="/brain/docs/guides/write-a-tool#return-values-and-outcomes">Read the return-value contract and example</Link>.</p>
-    <h2>Structured output</h2>
-    <p>For hosted execution, configure a JSON Schema on Pi or Codex when creating the session. Validation and bounded corrections run in the hosted Agentloop, within one turn. Correction attempts cannot run additional tools.</p>
-    <pre><code>{`const agentloop = pi({
-  env: brainEnv({ name: "brain" }),
-  output: {
-    schema: {
-      type: "object", properties: { answer: { type: "string" } },
-      required: ["answer"], additionalProperties: false,
-    },
-    maxCorrections: 2,
-  },
-});`}</code></pre>
-    <p>Only a validated final answer is emitted. Provider refusal, truncation, cancellation and uncertain execution fail without a formatting retry. The terminal event contains the parsed result.</p>
-    <h3>Client validation</h3>
-    <p>Request a typed answer on an individual send by supplying a Zod schema.</p>
-    <pre><code>{`const person = await session.send("Ada is 37 years old. Extract her details.", {
-  output: {
-    type: z.object({ name: z.string(), age: z.number() }),
-    maxRetries: 2,
-  },
-});
-// person: { name: string; age: number }`}</code></pre>
-    <p>The SDK prompts for JSON and validates it locally. Two additional correction turns are allowed by default; zero disables retries. Exhaustion throws StructuredOutputError. No terminal Tool is required. Ordinary sends keep returning session state; idle alone does not establish turn success.</p>
-    <p>Corrections run in your client and use the session&apos;s existing Agentloop and tools. Use one caller for sends during the operation. Raw attempts remain visible in history and streams. <Link href="/brain/docs/guides/structured-output">Read the full structured-output contract</Link>.</p>
-    <h2>Where code runs</h2><p>The Agentloop runs in hosted Brain. This example&apos;s lookup function runs in your application through hostEnv. To host a Tool, supply a precompiled Brain-compatible Wasm Component and place it in brainEnv.</p>
-    <p>Hosted Components have bounded memory and execution time, and no access to server secrets, host files or native network grants. Aex also offers managed Modal profiles granted explicitly to your account; arbitrary HTTP drivers and images are rejected.</p>
-    <p>Prepare application Tool dependencies before registering hostEnv. Extensions do not declare dependency strings; each Environment owns preparation and resource access. Hosted brainEnv configuration must be empty.</p>
-    <p>Defaulted Tool arguments are optional in the model schema; Zod applies defaults and transforms before calling the handler. Ordinary objects strip extra fields and strict objects reject them. Pi dispatches in parallel; Tools and their Environments coordinate shared resources.</p>
-    <h2>Server Actions and managed tools</h2>
-    <p>Keep Aex and model keys in your server environment, including Vercel Server Actions. Select a profile and fixed command from your account&apos;s catalog, then submit a durable turn.</p>
-    <pre><code>{`import { modal } from "@aexhq/env-modal";
+aex usage`}</code></pre>
+          <p>Login opens your browser on the same computer. See the
+            <a href="https://github.com/aexhq/aex/blob/main/packages/cli/README.md"> command guide</a>
+            for keys, account management and billing.</p>
+        </section>
 
-const catalog = await aex.environments.list();
-const workspace = modal({
-  url: catalog.driver_url,
-  name: "analysis", profile: "python-v1", lifetimeMs: 300_000,
-});
-const calculate = tool({
-  name: "calculate", description: "Calculate a result",
-  input: z.object({ value: z.number() }),
-  implementation: { type: "modal_command", name: "calculate" },
-});
-// Create with tools: [calculate({ env: workspace })].
-const sequence = await session.submit("Calculate for 42.", {
-  idempotencyKey: "turn-once",
-});
-// session.id identifies the conversation; sequence identifies this turn.
-await aex.close();`}</code></pre>
-    <p>The example profile is illustrative; use an ID and command your catalog publishes. Managed compute requires accepted prices, prepaid credits and a per-operation cost ceiling. Set <code>maxCostMicroUsd</code> on the Aex client.</p>
-    <p><code>submit()</code> returns the saved turn&apos;s event sequence. Closing the client leaves the turn running. Load <code>session.transcript()</code> when opening a conversation, then read updates with <code>session.events(after)</code> or <code>session.stream(after)</code>, passing the last event sequence. Reuse the original idempotency key when a response is lost. Tools placed in hostEnv still require your host process to remain connected.</p>
-    <p>A prepared image contains Python, data and dependencies. One binding shares temporary files and has a fixed lifetime of at most five minutes. Commands receive JSON on stdin and return JSON on stdout. Store business data and durable files in your application database or object storage. Database administrator and provider keys stay outside the sandbox. <a href="https://github.com/aexhq/aex/blob/main/docs/environments.md">Managed environment contract</a>.</p>
-    <p>A Modal profile can set <code>terminateAfterTurn: true</code>. The extension registers its cleanup method with Brain, which saves the answer before calling it. Cleanup and its outcome appear in session events; the conversation and transcript remain available. Each Environment extension owns its provider configuration and deployment.</p>
-    <h2>Images and PDFs</h2>
-    <p>Publish bytes through <code>aex.attachments.upload()</code> and send the returned media as native model input. For Tool output, use the same media in the official loop envelope:</p>
-    <pre><code>{`const attachment = await aex.attachments.upload(session.id, pngBytes, {
-  contentType: "image/png", idempotencyKey: "chart-once",
-});
-await session.send({ message: "Explain this chart", media: [attachment.media] });
-
-// Inside a Tool handler, publish using context.sessionId, then finish:
-return context.finish({ type: "aex_tool_output", version: 1, content: "Chart ready", media: [attachment.media] });`}</code></pre>
-    <p>Images and PDFs use HTTPS URLs; JSON/base64 remains ordinary data. Tool-result media keeps its call ID and source order, including parallel batches with failed siblings. Keep attachments available while later turns need them; deleting or expiring one revokes future reads. <a href="https://github.com/aexhq/aex/blob/main/examples/image-tool.mjs">See the complete image Tool example</a> and <a href="https://github.com/aexhq/aex/blob/main/docs/attachments.md">attachment limits and lifetime</a>.</p>
-    <h2>Official extensions</h2>
-    <p><a href="https://github.com/aexhq/extensions/tree/main/packages/env-modal">@aexhq/env-modal</a> also runs independently of Aex hosting. Pass your own <code>createModalClient({"{ tokenId, tokenSecret }"})</code> to its controller and connect standalone Brain through the public Environment protocol. Modal credentials stay on the controller; the Environment connection token is separate. Aex admission, credits and managed keys are optional product integrations.</p>
-    <p><a href="https://github.com/aexhq/extensions/tree/main/packages/tools-mcp">@aexhq/tools-mcp</a> connects selected MCP Tools through your application&apos;s hostEnv. It preserves structured failures and original JSON Schemas, including conditional schemas and local references accepted by the validators. Invalid input fails before a remote call; unresolved external references fail during setup.</p>
-    <p>For standalone Brain, <a href="https://github.com/aexhq/extensions/tree/main/packages/env-local">@aexhq/env-local</a> supplies a Docker workspace with retained files and prepared Python projects, and <a href="https://github.com/aexhq/extensions/tree/main/packages/env-browser">@aexhq/env-browser</a> supplies browser actions and screenshots. These HTTP Environments need an operator deployment. MCP, Docker and browser extensions are version 0.4; Pi and Codex present their media results to the model.</p>
-    <p>Loop authors can run <code>npm run test:logic:watch -w packages/loop-pi</code> in the extensions checkout for quick policy edits. Full Component tests and compiled journeys still gate release.</p>
-    <h2>Events and storage</h2><p>Brain retains committed session history. Subscribe with session.stream(), reconnect from a committed sequence, and store application data wherever you choose. Account storage figures include active reservations.</p>
-    <p>This preview uses customer model keys and one serving node. Maintenance interrupts live work. PostgreSQL holds account and ownership data; Brain retains its journal on persistent disk. By default, idle session execution and the guest heap are released; shared workers, caches, connections and Environment resources can remain alive.</p>
-    <h2>Credits and spending</h2>
-    <p>Aex meters model hosting by reported input and output tokens, including model calls started by background work. Cached input is included once; reasoning is part of output, not an additional charge. You supply your model keys and pay the provider separately. Your application chooses its own end-user prices independently.</p>
-    <p>Pricebook <code>aex-us-20260922-tokens-v1</code> offers model hosting at <strong>$0.22 per million input + output tokens</strong>. This fixed rate is twice the estimated Aex infrastructure cost of $0.11 per million tokens, based on a reference workload with shared hosting costs allocated at 50% utilization. Input and output use the same rate. Your accepted pricebook controls the charge.</p>
-    <p>Sandbox, attachment storage and reads have separate meters. The resource offer uses 1.5 times published provider resource prices. A 1-core, 1-GiB Modal Sandbox in the broad US region is approximately $0.00477 per minute, including Modal&apos;s regional multiplier. Aex attachment storage is $0.0345 per GiB per 30 days and reads are $0.147 per GiB, including the proxied network path.</p>
-    <p>These are fixed resource prices based on the <a href="https://modal.com/pricing">Sandbox list prices</a> and AWS us-east-1 storage and network rates. They do not track provider free credits or invoice discounts. The dashboard shows the exact offered pricebook before you accept it.</p>
-    <p>The dashboard shows your offered prices, available credits, reservations, usage and ledger. Existing accounts stay in free preview until they accept a pricebook. Where Checkout is enabled, manual topups use Stripe; payment status and receipt links are available in the dashboard. Unused credits can be refunded to their original payment method.</p>
-    <p>Resource operations reserve their maximum charge before dispatch. For model hosting, Aex estimates unfinished usage and requests session interruption near the spending limit. Estimates are best effort and are never settled as token charges. Aex absorbs token hosting charges beyond available credits or your spending limit. Existing accepted offers remain in effect until you accept a new one.</p>
-    <p>These controls do not cap your separate model provider bill. Background Tools retain their timeout controls. No automatic topups are performed. Use <code>aex.account.modelUsage(session.id)</code> or <code>aex usage SESSION_ID</code> to inspect a session&apos;s reported tokens and hosting charges. <a href="https://github.com/aexhq/aex/blob/main/docs/billing.md">Billing API and recovery</a>.</p>
-    <p><Link href="/brain/docs">Brain documentation</Link> · <Link href="/brain/docs/reference/api">Session API reference</Link> · <a href="mailto:support@aex.dev">Support</a></p>
-  </article><SiteFooter /></main>;
+        <section className="site-section" id="pricing" aria-labelledby="pricing-title">
+          <h2 id="pricing-title">Hosting prices and limits</h2>
+          <p>Model hosting is offered at <strong>$0.22 per million input + output tokens</strong>.
+            Managed compute, attachment storage and downloads have separate prices.
+            You supply your model key and pay that provider separately.</p>
+          <p>The dashboard shows your exact offered and accepted prices. Existing preview accounts
+            stay in preview until they accept a pricebook. Prepaid services require accepted prices
+            and credits. Set a monthly spending limit; there are no automatic topups.</p>
+          <p>Spending controls can interrupt work but do not cap your separate model-provider bill.
+            Read the <a href="https://github.com/aexhq/aex/blob/main/docs/billing.md">billing guide</a>
+            for charges, estimates and refunds.</p>
+          <p>Aex is in early preview. APIs and limits may change. Maintenance can interrupt work;
+            saved history remains available, and uncertain actions are not automatically retried.</p>
+        </section>
+      </article>
+      <SiteFooter />
+    </main>
+  );
 }
