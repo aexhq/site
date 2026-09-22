@@ -8,6 +8,7 @@ type Payment = { key: string } & ({ kind: "topups"; input: TopupInput } | { kind
 const money = (amount: number) => formatMicroUsd(String(amount), 6);
 const date = (seconds: number) => new Date(seconds * 1000).toLocaleString();
 const units: Record<string, [number, string]> = {
+  model_tokens: [1000000, "Model hosting / million input + output tokens"],
   turn_ms: [1000, "Active turn / second"], sandbox_ms: [60000, "Sandbox / minute (1 core, 1 GiB)"],
   attachment_byte_secs: [1073741824 * 86400, "Attachment storage / GiB-day"], egress_bytes: [1073741824, "Attachment reads / GiB"],
 };
@@ -77,7 +78,7 @@ export function BillingPanel({ accountId }: { accountId: string }) {
     {error && <p role="alert">{error}</p>}
     {notice && <p role="status">{notice}</p>}
     {!wallet ? <p role="status">Loading billing…</p> : <>
-      <p>Model usage is billed by your model provider using your own key.</p>
+      <p>Your model provider bills your own key. Aex hosting charges follow your accepted pricebook.</p>
       {wallet.mode === "preview" && <p>Preview hosting is free. Managed compute requires prepaid credits and acceptance of the published prices.</p>}
       {wallet.payment_mode === "test" && <p className="billing-status">Test payments: use Stripe test cards. These credits are for the test payment mode.</p>}
       {wallet.suspended && <p role="alert">Billing is suspended. New spending is blocked; contact support@aex.dev.</p>}
@@ -85,9 +86,17 @@ export function BillingPanel({ accountId }: { accountId: string }) {
         <div><dt>Available credits</dt><dd>{money(wallet.available_micro_usd)}</dd></div>
         <div><dt>Balance</dt><dd>{money(wallet.balance_micro_usd)}</dd></div>
         <div><dt>Reserved for work and refunds</dt><dd>{money(wallet.reserved_micro_usd)}</dd></div>
+        <div><dt>Pending hosting estimate</dt><dd>{money(wallet.pending_estimate_micro_usd)}</dd></div>
         <div><dt>Usage charged this month (UTC)</dt><dd>{money(wallet.spent_this_month_micro_usd)}</dd></div>
       </dl>
-      <p className="muted">Reserved funds remain held until the operation is settled. Spend limits include charged usage and outstanding reservations; they do not cap your model provider bill.</p>
+      <p className="muted">Available credits account for resource reservations and estimated unfinished model work. Token spending controls are best effort; Aex absorbs hosting charges beyond available credit or the spending limit. These limits do not cap your provider bill.</p>
+      {wallet.accepted_rates && wallet.accepted_rates.id !== offered?.id && <>
+        <h4>Accepted prices · {wallet.accepted_rates.id}</h4>
+        <dl className="usage-list">{Object.entries(wallet.accepted_rates.rates).map(([meter, rate]) => {
+          const [quantity, label] = units[meter];
+          return <div key={meter}><dt>{label}</dt><dd>{formatMicroUsd(String(BigInt(rate.micro_usd) * BigInt(quantity) / BigInt(rate.units)), 6)}</dd></div>;
+        })}</dl>
+      </>}
       {offered ? <>
         <h4>Published prices · {offered.id}</h4>
         <dl className="usage-list">{Object.entries(offered.rates).map(([meter, rate]) => {

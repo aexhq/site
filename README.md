@@ -4,9 +4,9 @@ The public website and account dashboard for [Aex](https://aex.dev). It contains
 pages, Google sign-in, account and billing status, API-key management, usage, legal pages, and service
 status.
 
-The initial resource offer uses a 1.5× markup over published Modal Sandbox and AWS resource
-prices, with orchestration included. The dashboard reads its exact offered pricebook from
-Aex; public docs explain the units, provider credentials and standalone Modal extension.
+The dashboard reads offered and accepted pricebooks from Aex. It shows reported input and
+output tokens, hosting charges, absorbed charges and pending estimates. Model keys remain
+customer-owned; sandbox, attachment storage and reads have separate resource prices.
 
 ## Develop
 
@@ -35,8 +35,8 @@ The canonical SDK quickstart and API contracts live in
 [`aexhq/aex`](https://github.com/aexhq/aex). Production deployments use the protected Vercel
 workflow in `.github/workflows/deploy-vercel.yml`, dispatched on a CI-approved immutable
 `release/sha-<commit>` tag. It verifies public routes and the SDK/CLI pins after assigning
-`aex.dev` and `www.aex.dev`. The quickstart targets Aex SDK 0.76, CLI 0.43, Brain SDK 0.25 and
-Pi/Codex 6.2. It covers durable submit, hosted structured output, managed Modal profiles,
+`aex.dev` and `www.aex.dev`. The quickstart targets Aex SDK 0.79, CLI 0.46, Brain SDK 0.29 and
+Pi/Codex 7.0.1. It covers durable submit, hosted structured output, managed Modal profiles,
 attachment-backed media, Tool outcomes and credits. Billing uses the account API: explicit
 price acceptance, monthly limits, manual Checkout, refunds, receipts and ledger pagination.
 Pending payment intents persist locally before dispatch so reloads reuse the original key.

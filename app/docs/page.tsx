@@ -31,7 +31,7 @@ try {
 `;
 export default function Docs() {
   return <main><SiteHeader /><article className="shell preview-dashboard"><h1>Get started</h1>
-    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.45.0
+    <h2>CLI</h2><p>The dashboard, SDK and CLI use the same Aex HTTP API.</p><pre><code>{`npm install -g @aexhq/cli@0.46.0
 aex login
 aex keys create "My application"
 aex keys list
@@ -43,10 +43,10 @@ aex usage
 aex docs
 aex logout`}</code></pre><p>Login opens your browser for sign-in or registration. Authorize the CLI on the same computer, then return to your terminal. Results are JSON. Account sessions expire after seven days; API key secrets are shown only at creation.</p>
     <h2>SDK</h2><p>Create an API key in your <Link href="/dashboard">dashboard</Link>, then install the SDK and a compatible Agentloop.</p>
-    <pre><code>npm install @aexhq/sdk@0.78.0 @aexhq/agentloop-pi@7.0.0 zod@4</code></pre>
+    <pre><code>npm install @aexhq/sdk@0.79.0 @aexhq/agentloop-pi@7.0.1 zod@4</code></pre>
     <p>Set <code>AEX_API_KEY</code> and your provider&apos;s <code>OPENAI_API_KEY</code> in your application environment. Keep both on your server.</p>
     <pre style={{ overflowX: "auto", margin: "1.5rem 0" }}><code>{example}</code></pre>
-    <p>SDK 0.78 uses Brain SDK 0.28 with Pi and Codex 7.0.0 and Tools 7.0.0. Upgrade the matching packages together; existing sessions retain their admitted loop and tool schemas.</p>
+    <p>SDK 0.79 uses Brain SDK 0.29 with Pi and Codex 7.0.1 and Tools 7.0.1. These versions include inclusive input-token usage and asynchronous observations. Existing sessions retain their admitted loop and tool schemas.</p>
     <p><code>await aex.models()</code> returns Brain&apos;s full supported model catalogue and known capabilities. Aex passes model discovery and validation through to Brain. For DeepSeek, select <code>provider: &quot;deepseek&quot;, name: &quot;deepseek-flash&quot;</code> with your DeepSeek API key. See the <Link href="/brain/docs/concepts/model">model contract</Link> for supported protocols and media.</p>
     <h2>Session and client lifetime</h2>
     <p><code>session.interrupt()</code> stops the current turn and unfinished background Tools, including while the session is idle. <code>session.end()</code> finishes the conversation and keeps history. <code>session.delete()</code> removes an ended or failed session. SDK <code>interrupt()</code> replaces <code>cancel()</code>.</p>
@@ -126,10 +126,12 @@ return context.finish({ type: "aex_tool_output", version: 1, content: "Chart rea
     <h2>Events and storage</h2><p>Brain retains committed session history. Subscribe with session.stream(), reconnect from a committed sequence, and store application data wherever you choose. Account storage figures include active reservations.</p>
     <p>This preview uses customer model keys and one serving node. Maintenance interrupts live work. PostgreSQL holds account and ownership data; Brain retains its journal on persistent disk. By default, idle session execution and the guest heap are released; shared workers, caches, connections and Environment resources can remain alive.</p>
     <h2>Credits and spending</h2>
-    <p>The initial resource offer uses 1.5 times published provider resource prices. A 1-core, 1-GiB Modal Sandbox in the broad US region is approximately $0.00477 per minute, including Modal&apos;s regional multiplier. Aex attachment storage is $0.0345 per GiB per 30 days and reads are $0.147 per GiB, including the proxied network path. Orchestration and request overhead come out of the markup; there is no additional active-turn charge in this offer. Models remain BYOK.</p>
+    <p>Aex meters model hosting by reported input and output tokens, including model calls started by background work. Cached input is included once; reasoning is part of output, not an additional charge. You supply your model keys and pay the provider separately. Your application chooses its own end-user prices independently.</p>
+    <p>Sandbox, attachment storage and reads have separate meters. The resource offer uses 1.5 times published provider resource prices. A 1-core, 1-GiB Modal Sandbox in the broad US region is approximately $0.00477 per minute, including Modal&apos;s regional multiplier. Aex attachment storage is $0.0345 per GiB per 30 days and reads are $0.147 per GiB, including the proxied network path.</p>
     <p>These are fixed resource prices based on the <a href="https://modal.com/pricing">Sandbox list prices</a> and AWS us-east-1 storage and network rates. They do not track provider free credits or invoice discounts. The dashboard shows the exact offered pricebook before you accept it.</p>
     <p>The dashboard shows your offered prices, available credits, reservations, usage and ledger. Existing accounts stay in free preview until they accept a pricebook. Where Checkout is enabled, manual topups use Stripe; payment status and receipt links are available in the dashboard. Unused credits can be refunded to their original payment method.</p>
-    <p>Prepaid operations reserve their maximum charge before dispatch. Your monthly limit includes charged usage and outstanding holds. Sandbox waiting time counts after allocation; Aex attachment storage and reads have separate meters. These limits do not cap your model provider bill. No automatic topups are performed. <a href="https://github.com/aexhq/aex/blob/main/docs/billing.md">Billing API and recovery</a>.</p>
+    <p>Resource operations reserve their maximum charge before dispatch. For model hosting, Aex estimates unfinished usage and requests session interruption near the spending limit. Estimates are best effort and are never settled as token charges. Aex absorbs token hosting charges beyond available credits or your spending limit. Existing accepted offers remain in effect until you accept a new one.</p>
+    <p>These controls do not cap your separate model provider bill. Background Tools retain their timeout controls. No automatic topups are performed. Use <code>aex.account.modelUsage(session.id)</code> or <code>aex usage SESSION_ID</code> to inspect a session&apos;s reported tokens and hosting charges. <a href="https://github.com/aexhq/aex/blob/main/docs/billing.md">Billing API and recovery</a>.</p>
     <p><Link href="/brain/docs">Brain documentation</Link> · <Link href="/brain/docs/reference/api">Session API reference</Link> · <a href="mailto:support@aex.dev">Support</a></p>
   </article><SiteFooter /></main>;
 }
