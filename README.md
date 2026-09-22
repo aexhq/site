@@ -31,18 +31,14 @@ npx playwright install chromium
 npm test
 ```
 
-The canonical SDK quickstart and API contracts live in
-[`aexhq/aex`](https://github.com/aexhq/aex). Production deployments use the protected Vercel
-workflow in `.github/workflows/deploy-vercel.yml`, dispatched on a CI-approved immutable
-`release/sha-<commit>` tag. It verifies public routes and the SDK/CLI pins after assigning
-`aex.dev` and `www.aex.dev`. The quickstart targets Aex SDK 0.79, CLI 0.46, Brain SDK 0.29 and
-Pi/Codex 7.0.1. It covers durable submit, hosted structured output, managed Modal profiles,
-attachment-backed media, Tool outcomes and credits. Billing uses the account API: explicit
-price acceptance, monthly limits, manual Checkout, refunds, receipts and ledger pagination.
-Pending payment intents persist locally before dispatch so reloads reuse the original key.
-Checkout availability and prices come from Aex; this site never grants credits from a return URL.
+Public pages introduce the product, explain its benefit and show the next action. Follow the
+shared [wording guide](https://github.com/aexhq/brain/blob/main/references/documentation.md).
+The hosted quickstart follows [Aex's guide](https://github.com/aexhq/aex/blob/main/docs/quickstart.md).
 
-The Brain product page and documentation describe the standalone runtime. Canonical Brain prose
-and schemas are imported from the immutable revision in `docs.lock.json`; edit them in the Brain
-repository. Local validation can set `BRAIN_REPO_PATH` to a Brain checkout. Performance copy must
-name its workload and version; archived results are not current release claims.
+Brain owns the prose and contracts imported through the immutable revision in `docs.lock.json`.
+Edit them in Brain; `content/` is replaced at build time. Set `BRAIN_REPO_PATH` to a Brain checkout
+for local validation.
+
+Production uses `.github/workflows/deploy-vercel.yml` on a CI-approved annotated
+`release/sha-<commit>` tag. It verifies routes and SDK/CLI versions after assigning `aex.dev`
+and `www.aex.dev`. Account, billing and deployment behavior comes from the Aex API.

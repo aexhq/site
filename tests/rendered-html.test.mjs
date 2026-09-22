@@ -172,16 +172,15 @@ test("server-renders the minimal landing shell", async () => {
   assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
   const html = await response.text();
 
-  assert.match(html, /<title>Agent infra for next era<\/title>/i);
-  assert.match(html, /Agent infra for next era/);
+  assert.match(html, /<title>Run AI agents without operating an agent server\.<\/title>/i);
+  assert.match(html, /Aex hosts your agent sessions/);
   assert.match(html, /rel="icon"[^>]+href="\/icon\.svg/i);
   assert.match(html, /class="wordmark-mark"/);
   assert.match(html, /class="theme-toggle"/);
   assert.match(html, /href="https:\/\/github\.com\/aexhq"[^>]*>GitHub/);
   assert.match(html, /href="\/brain"[^>]*>Brain/);
 
-  // The hero carries the wordmark, the headline, and two links. Nothing else.
-  assert.doesNotMatch(html, /Pricing|Join the alpha|Provider cost|architecture-grid|feature-group/i);
+  assert.match(html, /href="\/docs"[^>]*>Get started/);
   assert.doesNotMatch(html, /High-performance, reliable, and simple infrastructure/i);
   assert.doesNotMatch(html, /admitAgentloop|tool_bindings|role="tablist"/);
 
@@ -191,24 +190,21 @@ test("server-renders the minimal landing shell", async () => {
   await access(new URL("public/og.png", templateRoot));
 });
 
-test("server-renders the Brain page in README order", async () => {
+test("server-renders the Brain introduction and runnable quickstart", async () => {
   const response = await render("/brain");
   assert.equal(response.status, 200);
   const html = await response.text();
   const text = html.replace(/<[^>]*>/g, "");
 
   assert.match(html, /<title>Brain · Aex<\/title>/i);
-  assert.match(text, /A minimal, extensible, distributed agent runtime\./);
-  assert.match(text, /extensible, distributed agent runtime/);
+  assert.match(text, /Run AI agents\. Keep their conversations and progress\./);
 
   const order = [
     "what-it-is-title",
     "features-title",
-    "benchmark-title",
-    "architecture-title",
-    "roadmap-title",
     "getting-started-title",
-    "license-title",
+    "build-title",
+    "why-title",
   ];
   let cursor = -1;
   for (const id of order) {
@@ -217,8 +213,6 @@ test("server-renders the Brain page in README order", async () => {
     cursor = at;
   }
 
-  assert.match(text, /Conversations outlive processes/);
-  assert.match(text, /including hostEnv for application functions/);
   assert.match(text, /agentloop: pi\(\{ env: brainEnv\(\{ name: (?:"|&quot;)brain(?:"|&quot;) \}\) \}\)/);
   assert.match(text, /token: &quot;quickstart&quot;/);
   assert.match(text, /BRAIN_LISTEN=0\.0\.0\.0:8080/);
@@ -229,8 +223,8 @@ test("server-renders the Brain page in README order", async () => {
   assert.match(html, /href="https:\/\/github\.com\/aexhq\/brain"/);
   assert.doesNotMatch(text, /env-aws-microvm|VERCEL_AI_GATEWAY_API_KEY/);
 
-  assert.match(text, /Transcripts and recorded Events remain readable from disk/);
-  assert.match(text, /Multiple authorized Tool placements and optional model-visible selection/);
+  assert.match(html, /href="\/brain\/docs\/guides\/write-a-tool"/);
+  assert.match(html, /href="\/brain\/docs\/guides\/write-a-loop"/);
   assert.match(html, /href="\/brain\/docs\/reference\/benchmarks"/);
   assert.doesNotMatch(text, /14 KiB|sub-millisecond session creation/);
   assert.doesNotMatch(text, /Apache/i);
@@ -242,10 +236,9 @@ test("serves the hosted SDK quickstart", async () => {
   const html = await response.text();
   assert.match(html, /@aexhq\/sdk@0.79.0/);
   assert.match(html, /Structured output/);
-  assert.match(html, /maxRetries/);
+  assert.match(html, /href="\/brain\/docs\/guides\/structured-output"/);
   assert.match(html, /hostEnv/);
-  assert.match(html, /managed Modal profiles/i);
-  assert.match(html, /maxCorrections/);
+  assert.match(html, /docs\/environments\.md/);
   assert.match(html, /session.submit/);
 });
 
@@ -253,14 +246,14 @@ test("serves the Brain documentation, generated API pages, and a static search i
   const intro = await render("/brain/docs");
   assert.equal(intro.status, 200);
   const introText = (await intro.text()).replace(/<[^>]*>/g, " ");
-  assert.match(introText, /Brain runs agent sessions/);
-  assert.match(introText, /Quickstart/);
+  assert.match(introText, /Brain runs AI agents/);
+  assert.match(introText, /Run your first agent/);
 
   const concept = await render("/brain/docs/concepts/agent-loop");
   assert.equal(concept.status, 200);
   assert.match(
     (await concept.text()).replace(/<[^>]*>/g, " "),
-    /Brain accepts an already-built WebAssembly Component/,
+    /An agent loop decides what the model sees/,
   );
 
   // Generated from Brain's crates/brain-http/generated/contract/session/v1/openapi.yaml, never written by hand.
