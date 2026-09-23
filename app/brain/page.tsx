@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Brain", description: tagline };
 const runExample = `docker run --rm -p 127.0.0.1:8080:8080 \\
   -e BRAIN_LISTEN=0.0.0.0:8080 -e BRAIN_API_TOKEN=quickstart \\
   -v brain-data:/var/lib/brain ghcr.io/aexhq/brain:latest`;
-const sessionExample = `import { Brain, brainEnv, hostEnv, tool } from "@aexhq/brain";
+const sessionExample = `import { Brain, brainEnv, tool } from "@aexhq/brain";
 import { pi } from "@aexhq/agentloop-pi";
 import { z } from "zod";
 
@@ -26,7 +26,7 @@ try {
   const session = await brain.sessions.create({
     model: { provider: "openai", name: "gpt-5-mini", apiKey: process.env.OPENAI_API_KEY },
     agentloop: pi({ env: brainEnv({ name: "brain" }) }),
-    tools: [lookupOrder({ env: hostEnv({ name: "app" }) })],
+    tools: [lookupOrder()],
   });
   try {
     await session.send("Look up order A-1001. Has it shipped?");
@@ -79,7 +79,7 @@ export default function BrainPage() {
           <p>You need Docker, Node.js 22 or newer, and an OpenAI API key. Start Brain:</p>
           <pre className="site-code" aria-label="Run Brain with Docker"><code>{runExample}</code></pre>
           <p>In another terminal, install the packages:</p>
-          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.29.0 @aexhq/agentloop-pi@7.0.1 zod@4</code></pre>
+          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.30.0 @aexhq/agentloop-pi@7.1.0 zod@4</code></pre>
           <p>Set <code>OPENAI_API_KEY</code> in your environment and save this as <code>order.mjs</code>:</p>
           <pre className="site-code" aria-label="Create a Brain session"><code>{sessionExample}</code></pre>
           <p>Run <code>node order.mjs</code>. The transcript includes the lookup result and an answer
