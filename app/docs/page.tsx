@@ -7,7 +7,7 @@ export const metadata = {
   description: "Connect your model and tools, then run your first AI agent on Aex.",
 };
 
-const example = `import { Aex, brainEnv, hostEnv, tool } from "@aexhq/sdk";
+const example = `import { Aex, brainEnv, tool } from "@aexhq/sdk";
 import { pi } from "@aexhq/agentloop-pi";
 import { z } from "zod";
 
@@ -23,7 +23,7 @@ try {
   const session = await aex.sessions.create({
     model: { provider: "openai", name: "gpt-4.1-mini", apiKey: process.env.OPENAI_API_KEY },
     agentloop: pi({ env: brainEnv({ name: "brain" }) }),
-    tools: [lookupOrder({ env: hostEnv({ name: "app" }) })],
+    tools: [lookupOrder()],
   });
   try {
     await session.send("Look up order A-1001. Has it shipped?");
@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.79.0 @aexhq/agentloop-pi@7.0.1 zod@4`}</code></pre>
+npm install @aexhq/sdk@0.80.0 @aexhq/agentloop-pi@7.1.0 zod@4`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -100,7 +100,7 @@ npm install @aexhq/sdk@0.79.0 @aexhq/agentloop-pi@7.0.1 zod@4`}</code></pre>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.46.0
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.47.0
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
