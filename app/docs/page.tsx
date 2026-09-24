@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.80.0 @aexhq/agentloop-pi@7.1.0 zod@4`}</code></pre>
+npm install @aexhq/sdk@0.81.0 @aexhq/agentloop-pi@7.1.1 zod@4`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -87,20 +87,22 @@ npm install @aexhq/sdk@0.80.0 @aexhq/agentloop-pi@7.1.0 zod@4`}</code></pre>
             <li><Link href="/brain/docs/guides/write-a-tool">Tools:</Link> connect your API or database.</li>
             <li><Link href="/brain/docs/guides/write-a-loop">Agent loops:</Link> customize how the agent works.</li>
             <li><Link href="/brain/docs/guides/structured-output">Structured output:</Link> get a validated JSON answer.</li>
-            <li><a href="https://github.com/aexhq/aex/blob/main/docs/attachments.md">Images and PDFs:</a> upload files for the model.</li>
+            <li><a href="https://github.com/aexhq/aex/blob/main/docs/attachments.md">Images and PDFs:</a> upload with a scoped grant and verify completion. Model file support varies.</li>
+            <li><a href="https://github.com/aexhq/aex/blob/main/docs/http-tools.md">Serverless application tools:</a> call your existing API while Aex runs the turn.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/environments.md">Managed tools:</a> use a sandbox profile granted to your account.</li>
           </ul>
           <p>Aex uses Brain&apos;s session and extension APIs. Import shared helpers from
             <code> @aexhq/sdk</code> when following the Brain guides.</p>
           <p>Use <code>session.submit()</code> when your request must return before the work finishes.
-            Tools hosted outside that request can continue running; tools in <code>hostEnv</code>
-            still need their process connected. Aex accepts managed profiles from your account catalog,
-            not arbitrary environment URLs or images.</p>
+            Save its turn sequence and use <code>session.outcome(sequence)</code> from a later request.
+            HTTP tools run as short authenticated calls to an account-approved endpoint in your API;
+            saved conversations can call them again on later turns. Your app hosts its business functions
+            and checks current user access. Inline <code>hostEnv</code> tools need their process connected.</p>
         </section>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.47.0
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.47.1
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>

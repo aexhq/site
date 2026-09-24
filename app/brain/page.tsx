@@ -79,7 +79,7 @@ export default function BrainPage() {
           <p>You need Docker, Node.js 22 or newer, and an OpenAI API key. Start Brain:</p>
           <pre className="site-code" aria-label="Run Brain with Docker"><code>{runExample}</code></pre>
           <p>In another terminal, install the packages:</p>
-          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.30.0 @aexhq/agentloop-pi@7.1.0 zod@4</code></pre>
+          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.31.0 @aexhq/agentloop-pi@7.1.1 zod@4</code></pre>
           <p>Set <code>OPENAI_API_KEY</code> in your environment and save this as <code>order.mjs</code>:</p>
           <pre className="site-code" aria-label="Create a Brain session"><code>{sessionExample}</code></pre>
           <p>Run <code>node order.mjs</code>. The transcript includes the lookup result and an answer
