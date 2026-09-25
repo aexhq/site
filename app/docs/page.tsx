@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.84.0 @aexhq/agentloop-pi@7.2.1 zod@4`}</code></pre>
+npm install @aexhq/sdk@0.84.0 @aexhq/agentloop-pi@7.2.2 zod@4`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
