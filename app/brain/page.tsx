@@ -24,7 +24,6 @@ const lookupOrder = tool({
 const brain = new Brain({ baseUrl: "http://127.0.0.1:8080", token: "quickstart" });
 try {
   const session = await brain.sessions.create({
-    environmentLifecycle: { default: "automatic" },
     model: { provider: "openai", name: "gpt-5-mini", apiKey: process.env.OPENAI_API_KEY },
     agentloop: pi({ env: brainEnv({ name: "brain" }) }),
     tools: [lookupOrder()],
@@ -84,7 +83,7 @@ export default function BrainPage() {
           <p>You need Docker, Node.js 22 or newer, and an OpenAI API key. Start Brain:</p>
           <pre className="site-code" aria-label="Run Brain with Docker"><code>{runExample}</code></pre>
           <p>In another terminal, install the packages:</p>
-          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.32.1 @aexhq/agentloop-pi@7.2.0 zod@4</code></pre>
+          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.33.0 @aexhq/agentloop-pi@7.2.1 zod@4</code></pre>
           <p>Set <code>OPENAI_API_KEY</code> in your environment and save this as <code>order.mjs</code>:</p>
           <pre className="site-code" aria-label="Create a Brain session"><code>{sessionExample}</code></pre>
           <p>Run <code>node order.mjs</code>. The transcript includes the lookup result and an answer
