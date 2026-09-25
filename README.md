@@ -34,6 +34,8 @@ npm test
 Public pages introduce the product, explain its benefit and show the next action. Follow the
 shared [wording guide](https://github.com/aexhq/brain/blob/main/references/documentation.md).
 The hosted quickstart follows [Aex's guide](https://github.com/aexhq/aex/blob/main/docs/quickstart.md).
+The hosted [typed-answer guide](https://aex.dev/docs#structured-output) follows Aex's SDK
+contract. Retired Brain structured-output URLs redirect there.
 
 Brain owns the prose and contracts imported through the immutable revision in `docs.lock.json`.
 Edit them in Brain; `content/` is replaced at build time. Set `BRAIN_REPO_PATH` to a Brain checkout

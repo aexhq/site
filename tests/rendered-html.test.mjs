@@ -234,12 +234,21 @@ test("serves the hosted SDK quickstart", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /@aexhq\/sdk@0.83.0/);
+  assert.match(html, /@aexhq\/sdk@0.84.0/);
   assert.match(html, /Structured output/);
-  assert.match(html, /href="\/brain\/docs\/guides\/structured-output"/);
+  assert.match(html, /id="structured-output"/);
+  assert.match(html, /StructuredOutputError/);
   assert.match(html, /hostEnv/);
   assert.match(html, /docs\/environments\.md/);
   assert.match(html, /session.submit/);
+});
+
+test("retired Brain typed-output guides redirect to the Aex contract", async () => {
+  for (const kind of ["guides", "reference"]) {
+    const response = await render(`/brain/docs/${kind}/structured-output`, { redirect: "manual" });
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get("location"), "/docs#structured-output");
+  }
 });
 
 test("serves the Brain documentation, generated API pages, and a static search index", async () => {

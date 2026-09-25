@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.83.0 @aexhq/agentloop-pi@7.2.1 zod@4`}</code></pre>
+npm install @aexhq/sdk@0.84.0 @aexhq/agentloop-pi@7.2.1 zod@4`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -87,7 +87,7 @@ npm install @aexhq/sdk@0.83.0 @aexhq/agentloop-pi@7.2.1 zod@4`}</code></pre>
             <li><Link href="/brain/docs/guides/write-a-tool">Tools:</Link> connect your API or database.</li>
             <li><Link href="/brain/docs/guides/write-a-loop">Agent loops:</Link> customize how the agent works.</li>
             <li><Link href="/brain/docs/guides/environment-control">Environment control:</Link> choose automatic setup and optional model diagnostics.</li>
-            <li><Link href="/brain/docs/guides/structured-output">Structured output:</Link> get a validated JSON answer.</li>
+            <li><a href="#structured-output">Structured output:</a> get a validated JSON answer.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/attachments.md">Images and PDFs:</a> upload with a scoped grant and verify completion. Model file support varies.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/http-tools.md">Serverless application tools:</a> call your existing API while Aex runs the turn.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/environments.md">Managed tools:</a> use a sandbox profile granted to your account.</li>
@@ -101,9 +101,44 @@ npm install @aexhq/sdk@0.83.0 @aexhq/agentloop-pi@7.2.1 zod@4`}</code></pre>
             and checks current user access. Inline <code>hostEnv</code> tools need their process connected.</p>
         </section>
 
+        <section className="site-section" aria-labelledby="structured-output">
+          <h2 id="structured-output">Structured output</h2>
+          <p>Use a typed answer when your application needs data it can validate and use directly.
+            On an Aex session, pass a Zod schema with the message before ending the session:</p>
+          <pre className="site-code"><code>{`const answer = await session.send("Return the order status", {
+  output: { type: z.object({ id: z.string(), status: z.string() }), maxRetries: 2 },
+});
+console.log(answer.status);`}</code></pre>
+          <p>Aex adds schema instructions to the prompt, parses the completed turn&apos;s assistant
+            answer as JSON and validates it locally. The return type follows the schema.
+            Ordinary sends return session state. Pi and Codex emit the assistant output this needs.</p>
+          <p><code>maxRetries</code> counts additional correction turns and defaults to two.
+            Zero checks one answer. Invalid JSON or schema issues trigger a request for a complete
+            corrected answer; Markdown fences and surrounding prose fail parsing. Zod defaults,
+            transforms and async refinements apply to the returned value. Exhaustion throws
+            <code> StructuredOutputError</code> with <code>attempts</code>, <code>lastOutput</code> and
+            <code> issues</code>. Provider and transport failures do not trigger corrections.</p>
+          <p>Keep the calling process alive and coordinate exclusive sends during the operation.
+            Each attempt is a separate durable turn, can call tools and remains visible in history
+            and streams. Local validation does not change a completed server turn. A top-level
+            <code> signal</code> cancels active work and stops further corrections. An
+            <code> idempotencyKey</code> lets unchanged requests and validation feedback reuse their
+            completed turns; the whole operation is not atomic.</p>
+          <p>For a short-lived caller using <code>submit()</code>, configure output validation in
+            the hosted Agentloop instead. That separate policy uses JSON Schema and cannot run your
+            local Zod refinements. See the <a href="https://github.com/aexhq/aex/blob/main/packages/sdk/README.md#structured-output">SDK guide</a>
+            for both contracts, error handling, replay and a complete example.</p>
+          <p>Starting with Brain SDK 0.34 and Aex SDK 0.84, this prompt and correction policy belongs
+            to Aex. Existing Aex typed sends keep their syntax. Import their types and errors from
+            <code> @aexhq/sdk</code>. Aex clients and handles now use composition; use
+            <code> AexSessionHandle</code> for explicit handle types. The
+            <a href="https://github.com/aexhq/aex/blob/main/packages/sdk/README.md#migrating-from-brain-sdk-typed-sends"> migration guide</a>
+            also shows how to wrap an existing standalone Brain handle.</p>
+        </section>
+
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.49.0
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.0
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>

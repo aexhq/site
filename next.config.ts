@@ -17,7 +17,10 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   async redirects() {
-    return [];
+    return [
+      { source: "/brain/docs/guides/structured-output", destination: "/docs#structured-output", permanent: true },
+      { source: "/brain/docs/reference/structured-output", destination: "/docs#structured-output", permanent: true },
+    ];
   },
   async headers() {
     return [
