@@ -4,7 +4,7 @@ import { SiteFooter } from "../components/SiteFooter";
 import { SiteHeader } from "../components/SiteHeader";
 import { brainRepoUrl } from "../site-copy";
 
-const tagline = "Run AI agents. Keep their conversations and progress.";
+const tagline = "A minimal agent core. Execution under your control.";
 export const metadata: Metadata = { title: "Brain", description: tagline };
 
 const runExample = `docker run --rm -p 127.0.0.1:8080:8080 \\
@@ -24,6 +24,7 @@ const lookupOrder = tool({
 const brain = new Brain({ baseUrl: "http://127.0.0.1:8080", token: "quickstart" });
 try {
   const session = await brain.sessions.create({
+    environmentLifecycle: { default: "automatic" },
     model: { provider: "openai", name: "gpt-5-mini", apiKey: process.env.OPENAI_API_KEY },
     agentloop: pi({ env: brainEnv({ name: "brain" }) }),
     tools: [lookupOrder()],
@@ -56,21 +57,25 @@ export default function BrainPage() {
 
         <section className="site-section" id="what-it-is" aria-labelledby="what-it-is-title">
           <h2 id="what-it-is-title">What is Brain?</h2>
-          <p>Brain is an open-source server for AI agents. Connect your model and tools, send a
-            message, and read the answer. Brain saves the conversation, tool results and progress
-            so your app can return to them later.</p>
+          <p>Brain is an open-source session engine for AI agents. Start with a small core, then
+            choose your Agentloop, Tools and Environments. Brain keeps the conversation and
+            execution history while your tools run where you need them.</p>
           <p>Run it on your own infrastructure, or use <Link href="/docs">Aex for hosting</Link>.</p>
         </section>
 
         <section className="site-section" aria-labelledby="features-title">
-          <h2 id="features-title">What you can do</h2>
+          <h2 id="features-title">Why build on Brain?</h2>
           <dl className="site-feature-list">
-            <div className="site-feature"><dt>Connect your application</dt>
-              <dd>Give the agent functions that look up orders, search data or call your APIs.</dd></div>
-            <div className="site-feature"><dt>Follow the work</dt>
-              <dd>Stream output, inspect tool results and read saved history after reconnecting.</dd></div>
-            <div className="site-feature"><dt>Choose the behavior</dt>
-              <dd>Bring your model key. Use Pi or Codex loops, or write your own logic and tools.</dd></div>
+            <div className="site-feature"><dt>Start minimal, extend what you need</dt>
+              <dd>Use Pi or Codex loops, or write your own. Official extensions use the same public
+                interfaces as yours.</dd></div>
+            <div className="site-feature"><dt>The conversation outlives the sandbox</dt>
+              <dd>Agentloop, Tool and Environment are separate roles. Losing a sandbox leaves
+                committed conversation and execution history in Brain, ready for inspection.</dd></div>
+            <div className="site-feature"><dt>Control execution and recovery</dt>
+              <dd>Place tools across environments, select automatic or manual lifecycle, and grant
+                the model access to inspection or resource controls when needed. Failures enter
+                the journal and model context; recovery stays explicit.</dd></div>
           </dl>
         </section>
 
@@ -79,7 +84,7 @@ export default function BrainPage() {
           <p>You need Docker, Node.js 22 or newer, and an OpenAI API key. Start Brain:</p>
           <pre className="site-code" aria-label="Run Brain with Docker"><code>{runExample}</code></pre>
           <p>In another terminal, install the packages:</p>
-          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.31.0 @aexhq/agentloop-pi@7.1.1 zod@4</code></pre>
+          <pre className="site-code" aria-label="Install the Brain packages"><code>npm install @aexhq/brain@0.32.1 @aexhq/agentloop-pi@7.2.0 zod@4</code></pre>
           <p>Set <code>OPENAI_API_KEY</code> in your environment and save this as <code>order.mjs</code>:</p>
           <pre className="site-code" aria-label="Create a Brain session"><code>{sessionExample}</code></pre>
           <p>Run <code>node order.mjs</code>. The transcript includes the lookup result and an answer
@@ -95,14 +100,16 @@ export default function BrainPage() {
             <li><Link href="/brain/docs/guides/write-a-tool">Write a tool in JavaScript, TypeScript, Rust or Python</Link></li>
             <li><Link href="/brain/docs/guides/write-a-loop">Customize the agent loop</Link></li>
             <li><Link href="/brain/docs/concepts/environment">Choose a browser or sandbox environment</Link></li>
+            <li><Link href="/brain/docs/guides/environment-control">Manage lifecycle and expose scoped environment controls</Link></li>
           </ul>
         </section>
 
         <section className="site-section" aria-labelledby="why-title">
-          <h2 id="why-title">Why Brain?</h2>
-          <p>An agent needs more than a model call. Conversations need history, tools need results,
-            and your app needs to know when work stops. Brain handles that session lifecycle while
-            you choose the model, tools and agent behavior.</p>
+          <h2 id="why-title">Built around clear boundaries</h2>
+          <p>Inspired by <a href="https://pi.dev">Pi&apos;s minimal core</a> and
+            <a href="https://www.anthropic.com/engineering/managed-agents"> Anthropic&apos;s separation
+              of agent and sandbox</a>, Brain keeps durable session state separate from replaceable
+            execution resources. Each Environment defines its own inspection and resource methods.</p>
           <p>Brain is in early preview. APIs may change before 1.0. Saved history survives a server
             restart; interrupted work is reported as failed and is not automatically retried.</p>
           <p>MIT licensed. Read the <Link href="/brain/docs/reference/api">API reference</Link>,
