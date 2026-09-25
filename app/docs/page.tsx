@@ -21,7 +21,6 @@ const lookupOrder = tool({
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY });
 try {
   const session = await aex.sessions.create({
-    environmentLifecycle: { default: "automatic" },
     model: { provider: "openai", name: "gpt-4.1-mini", apiKey: process.env.OPENAI_API_KEY },
     agentloop: pi({ env: brainEnv({ name: "brain" }) }),
     tools: [lookupOrder()],
@@ -65,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.82.0 @aexhq/agentloop-pi@7.2.0 zod@4`}</code></pre>
+npm install @aexhq/sdk@0.83.0 @aexhq/agentloop-pi@7.2.1 zod@4`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -104,7 +103,7 @@ npm install @aexhq/sdk@0.82.0 @aexhq/agentloop-pi@7.2.0 zod@4`}</code></pre>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.48.0
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.49.0
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
