@@ -1,5 +1,5 @@
 {
   "repo": "https://github.com/aexhq/brain.git",
-  "ref": "4ada23e314a9fd2678eb186e084179bf20dc6ac8",
+  "ref": "1229010ee19111820f78677ea7f2d7212f21fcb2",
   "comment": "The ref the documentation is built from. Set it to a tag or commit to freeze the docs against a Brain release."
 }

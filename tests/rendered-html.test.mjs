@@ -173,7 +173,7 @@ test("server-renders the minimal landing shell", async () => {
   const html = await response.text();
 
   assert.match(html, /<title>Run AI agents without operating an agent server\.<\/title>/i);
-  assert.match(html, /Aex hosts your agent sessions/);
+  assert.match(html, /Build from a minimal core/);
   assert.match(html, /rel="icon"[^>]+href="\/icon\.svg/i);
   assert.match(html, /class="wordmark-mark"/);
   assert.match(html, /class="theme-toggle"/);
@@ -197,7 +197,7 @@ test("server-renders the Brain introduction and runnable quickstart", async () =
   const text = html.replace(/<[^>]*>/g, "");
 
   assert.match(html, /<title>Brain · Aex<\/title>/i);
-  assert.match(text, /Run AI agents\. Keep their conversations and progress\./);
+  assert.match(text, /A minimal agent core\. Execution under your control\./);
 
   const order = [
     "what-it-is-title",
@@ -234,7 +234,7 @@ test("serves the hosted SDK quickstart", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /@aexhq\/sdk@0.81.0/);
+  assert.match(html, /@aexhq\/sdk@0.82.0/);
   assert.match(html, /Structured output/);
   assert.match(html, /href="\/brain\/docs\/guides\/structured-output"/);
   assert.match(html, /hostEnv/);

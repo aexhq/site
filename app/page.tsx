@@ -15,8 +15,9 @@ export default function Home() {
       <SiteHeader />
       <article className="home-hero">
         <h1>{siteHeadline}</h1>
-        <p>Aex hosts your agent sessions. Bring your model key, connect tools from your app,
-          and send a message. Follow the output as it arrives and return to saved conversations later.</p>
+        <p>Build from a minimal core: choose your agent loop, connect your tools, and control
+          where they run. Aex hosts the session, keeping its history and progress independent
+          of the environments executing your tools.</p>
         <nav className="site-links" aria-label="Primary">
           <Link href="/docs">Get started</Link>
           <Link href="/dashboard">Dashboard</Link>

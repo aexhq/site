@@ -21,6 +21,7 @@ const lookupOrder = tool({
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY });
 try {
   const session = await aex.sessions.create({
+    environmentLifecycle: { default: "automatic" },
     model: { provider: "openai", name: "gpt-4.1-mini", apiKey: process.env.OPENAI_API_KEY },
     agentloop: pi({ env: brainEnv({ name: "brain" }) }),
     tools: [lookupOrder()],
@@ -64,7 +65,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.81.0 @aexhq/agentloop-pi@7.1.1 zod@4`}</code></pre>
+npm install @aexhq/sdk@0.82.0 @aexhq/agentloop-pi@7.2.0 zod@4`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -86,6 +87,7 @@ npm install @aexhq/sdk@0.81.0 @aexhq/agentloop-pi@7.1.1 zod@4`}</code></pre>
             <li><Link href="/brain/docs/concepts/sessions">Sessions:</Link> follow live output, reconnect and stop work.</li>
             <li><Link href="/brain/docs/guides/write-a-tool">Tools:</Link> connect your API or database.</li>
             <li><Link href="/brain/docs/guides/write-a-loop">Agent loops:</Link> customize how the agent works.</li>
+            <li><Link href="/brain/docs/guides/environment-control">Environment control:</Link> choose automatic setup and optional model diagnostics.</li>
             <li><Link href="/brain/docs/guides/structured-output">Structured output:</Link> get a validated JSON answer.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/attachments.md">Images and PDFs:</a> upload with a scoped grant and verify completion. Model file support varies.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/http-tools.md">Serverless application tools:</a> call your existing API while Aex runs the turn.</li>
@@ -102,7 +104,7 @@ npm install @aexhq/sdk@0.81.0 @aexhq/agentloop-pi@7.1.1 zod@4`}</code></pre>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.47.1
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.48.0
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
