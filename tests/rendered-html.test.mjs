@@ -215,7 +215,7 @@ test("serves the hosted SDK quickstart", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /@aexhq\/sdk@0.84.1/);
+  assert.match(html, /@aexhq\/sdk@0.85.0/);
   assert.match(html, /Structured output/);
   assert.match(html, /id="structured-output"/);
   assert.match(html, /StructuredOutputError/);

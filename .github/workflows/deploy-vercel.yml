@@ -58,7 +58,7 @@ jobs:
       - name: Verify public routes
         run: |
           set -euo pipefail
-          for route in / /dashboard /docs /cli /brain /brain/docs /status /privacy /terms; do
+          for route in / /dashboard /docs /docs/application /docs/client-browser /cli /brain /brain/docs /status /privacy /terms; do
             curl --retry 6 --retry-all-errors --fail --silent --show-error "https://aex.dev$route" -o /dev/null
           done
           curl --fail --silent https://aex.dev/dashboard -o dashboard.html
