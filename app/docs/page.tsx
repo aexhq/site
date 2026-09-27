@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.84.0 @aexhq/agentloop-pi@7.2.2 zod@4`}</code></pre>
+npm install @aexhq/sdk@0.84.1 @aexhq/agentloop-pi@7.2.3 zod@4.4.3`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -138,7 +138,7 @@ console.log(answer.status);`}</code></pre>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.0
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.1
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
