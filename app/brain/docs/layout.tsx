@@ -16,7 +16,7 @@ export default function BrainDocsLayout({ children }: { children: ReactNode }) {
         defaultTheme: "system",
         enableSystem: true,
       }}
-      search={{ options: { type: "static" } }}
+      search={{ options: { type: "static", api: "/static.json" } }}
     >
       <DocsLayout
         tree={source.pageTree}
