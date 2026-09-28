@@ -7,7 +7,7 @@ export const metadata = {
   description: "Connect your model and tools, then run your first AI agent on Aex.",
 };
 
-const example = `import { Aex, brainEnv, tool } from "@aexhq/sdk";
+const example = `import { Aex, tool } from "@aexhq/sdk";
 import { pi } from "@aexhq/agentloop-pi";
 import { z } from "zod";
 
@@ -19,22 +19,22 @@ const lookupOrder = tool({
 });
 
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY });
-try {
-  const session = await aex.sessions.create({
-    model: { provider: "openai", name: "gpt-4.1-mini", apiKey: process.env.OPENAI_API_KEY },
-    agentloop: pi({ env: brainEnv({ name: "brain" }) }),
-    tools: [lookupOrder()],
-  });
-  try {
-    await session.send("Look up order A-1001. Has it shipped?");
-    console.log(JSON.stringify(await session.transcript(), null, 2));
-    console.log("Session:", session.id);
-  } finally {
-    await session.end();
+aex.sessions.create({
+  model: { provider: "openai", name: "gpt-4.1-mini", apiKey: process.env.OPENAI_API_KEY },
+  agentloop: pi(),
+  tools: [lookupOrder()],
+}).then(async session => {
+  const after = session.state.lastSequence;
+  await session.send("Look up order A-1001. Has it shipped?");
+  for await (const event of session.events(after)) {
+    if (event.type === "turn_failed") throw new Error(JSON.stringify(event.data));
   }
-} finally {
-  await aex.close();
-}`;
+  console.log(JSON.stringify(await session.transcript(), null, 2));
+  console.log("Session:", session.id);
+}).catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});`;
 
 export default function Docs() {
   return (
@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.85.0 @aexhq/agentloop-pi@7.2.4 zod@4.4.3`}</code></pre>
+npm install @aexhq/sdk@0.86.0 @aexhq/agentloop-pi@7.3.0 zod@4.4.3`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -74,10 +74,14 @@ npm install @aexhq/sdk@0.85.0 @aexhq/agentloop-pi@7.2.4 zod@4.4.3`}</code></pre>
           <pre className="site-code"><code>node order.mjs</code></pre>
           <p>The transcript includes the lookup result and an answer that order A-1001 has shipped.
             Replace the sample lookup with your own data. Add more <code>session.send(...)</code>
-            calls before <code>session.end()</code> to continue the conversation.</p>
-          <p>The loop runs on Aex. The lookup runs in your application through <code>hostEnv</code>,
-            so keep its process connected while the agent needs it. Ending the session keeps history;
-            <code> session.delete()</code> removes an ended session.</p>
+            calls in the callback to continue the conversation.</p>
+          <p>The loop runs on Aex and the lookup runs in your application. After five idle seconds,
+            the client releases its tool connection so this script can exit. A later send through
+            the same live client reconnects automatically. The session and its history remain available.</p>
+          <p>Use <code>connectionIdleTimeoutMs: 0</code> on <code>new Aex(...)</code> when other callers
+            or future autonomous events need these tools. Event subscriptions stay open until you stop them.
+            Explicit <code>aex.close()</code> disposes of the client; <code>session.end()</code> finishes
+            the conversation and <code>session.delete()</code> removes its history.</p>
         </section>
 
         <section className="site-section" aria-labelledby="next-title">
@@ -106,7 +110,7 @@ npm install @aexhq/sdk@0.85.0 @aexhq/agentloop-pi@7.2.4 zod@4.4.3`}</code></pre>
         <section className="site-section" aria-labelledby="structured-output">
           <h2 id="structured-output">Structured output</h2>
           <p>Use a typed answer when your application needs data it can validate and use directly.
-            On an Aex session, pass a Zod schema with the message before ending the session:</p>
+            Inside the callback, pass a Zod schema with the message:</p>
           <pre className="site-code"><code>{`const answer = await session.send("Return the order status", {
   output: { type: z.object({ id: z.string(), status: z.string() }), maxRetries: 2 },
 });
@@ -140,7 +144,7 @@ console.log(answer.status);`}</code></pre>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.2
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.3
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
