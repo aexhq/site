@@ -4,7 +4,7 @@ import { SiteFooter } from "../../components/SiteFooter";
 
 export const metadata = { title: "Browser tab tools", description: "Use tools in the user's browser tab through ordinary Aex session creation." };
 const composition = `// composition.ts
-import { brainEnv, clientBrowser, tool } from "@aexhq/sdk";
+import { clientBrowser, tool } from "@aexhq/sdk";
 import { pi } from "@aexhq/agentloop-pi";
 import { z } from "zod";
 const readSelection = tool({
@@ -14,7 +14,7 @@ const readSelection = tool({
   run: (_, ctx) => ctx.finish(window.getSelection()?.toString() ?? ""),
 });
 export const composition = {
-  agentloop: pi({ env: brainEnv({ name: "brain" }) }),
+  agentloop: pi(),
   tools: [readSelection({ env: clientBrowser({ name: "editor" }) })],
 };
 export const model = { provider: "openai", name: "gpt-4.1-mini" };`;
@@ -50,7 +50,7 @@ export default function BrowserTools() {
           Create sessions with <code>aex.sessions.create()</code>; the SDK opens the command stream
           and returns results. Account and model-provider keys stay on your backend.</p></header>
       <section className="site-section"><h2>Share the composition</h2>
-        <pre className="site-code"><code>npm install @aexhq/sdk@0.85.0 @aexhq/agentloop-pi@7.2.4 zod@4.4.3</code></pre>
+        <pre className="site-code"><code>npm install @aexhq/sdk@0.86.0 @aexhq/agentloop-pi@7.3.0 zod@4.4.3</code></pre>
         <pre className="site-code"><code>{composition}</code></pre>
         <p>The backend prepares this declaration without running the browser function. Serve the
           Agentloop package&apos;s Wasm asset with your frontend; bundlers that support
@@ -75,6 +75,10 @@ export default function BrowserTools() {
           to 24 hours; revoke access earlier with <code>aex.clients.revoke(access.id)</code> on your
           backend. Parent-key revocation and account suspension also apply.</p>
         <p>Use your application&apos;s HTTPS origin. HTTP localhost is supported for development.</p>
+        <p>The command connection suspends after five idle seconds and reconnects before the same
+          live client starts more work. History reads leave it asleep. Use <code>connectionIdleTimeoutMs: 0</code>
+          when other callers or future autonomous events must reach the tab; a suspended tab has no
+          remote wake-up channel. Access is checked again on reconnect.</p>
         <p>Closing the tab removes its tools and may interrupt their work; the durable session remains.
           Call <code>aex.close()</code> when the page no longer needs its client. Use an
           <Link href="/docs/application"> Application environment</Link> for backend tools that must outlive the tab.</p>

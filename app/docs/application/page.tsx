@@ -21,7 +21,7 @@ export const POST = createToolHandler({
     await requireCurrentSessionOwner(invocation.sessionId);
   },
 });`;
-const creation = `import { Aex, brainEnv } from "@aexhq/sdk";
+const creation = `import { Aex } from "@aexhq/sdk";
 import { pi } from "@aexhq/agentloop-pi";
 import { lookupOrder } from "./tools.js";
 const aex = new Aex({ apiKey: process.env.AEX_API_KEY! });
@@ -33,7 +33,7 @@ const app = aex.environments.application({
 });
 const session = await aex.sessions.create({
   model: { provider: "openai", name: "gpt-4.1-mini", apiKey: process.env.OPENAI_API_KEY! },
-  agentloop: pi({ env: brainEnv({ name: "brain" }) }),
+  agentloop: pi(),
   tools: [lookupOrder({ env: app })],
 });
 await saveSessionOwner(session.id, authenticatedUser);
@@ -48,7 +48,7 @@ export default function ApplicationTools() {
           Aex invokes your HTTPS endpoint for each tool call. Persistent servers and serverless functions
           use the same API; the request that submitted the turn can finish immediately.</p></header>
       <section className="site-section"><h2>Define your tools</h2>
-        <pre className="site-code"><code>npm install @aexhq/sdk@0.85.0 @aexhq/env-http@0.3.0 @aexhq/agentloop-pi@7.2.4 zod@4.4.3</code></pre>
+        <pre className="site-code"><code>npm install @aexhq/sdk@0.86.0 @aexhq/env-http@0.3.1 @aexhq/agentloop-pi@7.3.0 zod@4.4.3</code></pre>
         <pre className="site-code"><code>{declaration}</code></pre></section>
       <section className="site-section"><h2>Mount one handler</h2>
         <p>The handler accepts a Web Request and returns a Response. Mount it in your existing POST
