@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.86.0 @aexhq/agentloop-pi@7.3.0 zod@4.4.3`}</code></pre>
+npm install @aexhq/sdk@0.87.0 @aexhq/agentloop-pi@8.0.0 zod@4.4.3`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -107,6 +107,19 @@ npm install @aexhq/sdk@0.86.0 @aexhq/agentloop-pi@7.3.0 zod@4.4.3`}</code></pre>
             and checks current user access. Inline <code>hostEnv</code> tools need their process connected.</p>
         </section>
 
+        <section className="site-section" aria-labelledby="preparation">
+          <h2 id="preparation">Prepare code before requests arrive</h2>
+          <p>Aex prepares hosted loop and tool code during session setup. To move that work into
+            application startup, await preparation once and reuse the returned loop:</p>
+          <pre className="site-code"><code>{`const loop = await aex.prepare(pi());
+const session = await aex.sessions.create({ model, agentloop: loop, tools });`}</code></pre>
+          <p>Pi and Codex share a runtime and load their smaller program bundles separately.
+            Preparation can serve several sessions; ending a conversation does not unload it.
+            Imports remain passive, and preparation failures reject before session creation.</p>
+          <p>Read the <Link href="/brain/docs/reference/environment-runtime#prepare-before-creating-sessions">Environment
+            preparation reference</Link> for startup configuration, worker readiness and custom programs.</p>
+        </section>
+
         <section className="site-section" aria-labelledby="structured-output">
           <h2 id="structured-output">Structured output</h2>
           <p>Use a typed answer when your application needs data it can validate and use directly.
@@ -144,7 +157,7 @@ console.log(answer.status);`}</code></pre>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.3
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.4
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
