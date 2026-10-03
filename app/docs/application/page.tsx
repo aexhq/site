@@ -48,7 +48,7 @@ export default function ApplicationTools() {
           Aex invokes your HTTPS endpoint for each tool call. Persistent servers and serverless functions
           use the same API; the request that submitted the turn can finish immediately.</p></header>
       <section className="site-section"><h2>Define your tools</h2>
-        <pre className="site-code"><code>npm install @aexhq/sdk@0.87.0 @aexhq/env-http@0.3.2 @aexhq/agentloop-pi@8.0.0 zod@4.4.3</code></pre>
+        <pre className="site-code"><code>npm install @aexhq/sdk@0.88.0 @aexhq/env-http@0.3.3 @aexhq/agentloop-pi@9.0.0 zod@4.4.3</code></pre>
         <pre className="site-code"><code>{declaration}</code></pre></section>
       <section className="site-section"><h2>Mount one handler</h2>
         <p>The handler accepts a Web Request and returns a Response. Mount it in your existing POST

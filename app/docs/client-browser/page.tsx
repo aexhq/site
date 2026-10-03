@@ -50,7 +50,7 @@ export default function BrowserTools() {
           Create sessions with <code>aex.sessions.create()</code>; the SDK opens the command stream
           and returns results. Account and model-provider keys stay on your backend.</p></header>
       <section className="site-section"><h2>Share the composition</h2>
-        <pre className="site-code"><code>npm install @aexhq/sdk@0.87.0 @aexhq/agentloop-pi@8.0.0 zod@4.4.3</code></pre>
+        <pre className="site-code"><code>npm install @aexhq/sdk@0.88.0 @aexhq/agentloop-pi@9.0.0 zod@4.4.3</code></pre>
         <pre className="site-code"><code>{composition}</code></pre>
         <p>The backend prepares this declaration without running the browser function. Serve the
           Agentloop package&apos;s <code>runtime.component.wasm</code> and <code>loop.program.js</code>
