@@ -31,6 +31,10 @@ npx playwright install chromium
 npm test
 ```
 
+Next's lint directory lookup uses the local `fast-glob` workspace backed by `tinyglobby`.
+This removes the unpatched [braces recursion vulnerability](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
+while retaining Next's lint rules and the dependency audit.
+
 Public pages introduce the product, explain its benefit and show the next action. Follow the
 shared [wording guide](https://github.com/aexhq/brain/blob/main/references/documentation.md).
 The hosted quickstart follows [Aex's guide](https://github.com/aexhq/aex/blob/main/docs/quickstart.md).
