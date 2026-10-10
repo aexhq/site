@@ -173,7 +173,7 @@ test("server-renders the minimal landing shell", async () => {
   const html = await response.text();
 
   assert.match(html, /<title>Run AI agents without operating an agent server\.<\/title>/i);
-  assert.match(html, /Build from a minimal core/);
+  assert.match(html, /Start from a minimal core/);
   assert.match(html, /rel="icon"[^>]+href="\/icon\.svg/i);
   assert.match(html, /class="wordmark-mark"/);
   assert.match(html, /class="theme-toggle"/);
