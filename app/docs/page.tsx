@@ -43,20 +43,20 @@ export default function Docs() {
       <article className="site-overview prose-shell">
         <header className="site-intro">
           <h1>Run your first agent on Aex</h1>
-          <p>Aex hosts the agent session while your application supplies a model key and tools.
-            This example asks an agent to look up an order and prints its answer.</p>
+          <p>Aex hosts the agent session; your app brings a model key and tools. In a few steps
+            you&apos;ll ask an agent whether an order has shipped and print its answer.</p>
         </header>
 
         <section className="site-section" aria-labelledby="keys-title">
           <h2 id="keys-title">1. Get your keys</h2>
           <p>You need Node.js 22 or newer and an OpenAI API key. Sign in to the
-            <Link href="/dashboard"> dashboard</Link> and create an Aex API key. Save it when
-            it appears; the secret is shown only once.</p>
+            <Link href="/dashboard"> dashboard</Link> and create an Aex API key. Copy it right
+            away: the secret is only shown once.</p>
           <pre className="site-code"><code>{`export AEX_API_KEY="your-aex-key"
 export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <p>In PowerShell, use <code>$env:AEX_API_KEY = &quot;your-aex-key&quot;</code> and
             <code> $env:OPENAI_API_KEY = &quot;your-openai-key&quot;</code>. Keep keys on your server
-            and out of source control. Your model provider bills calls separately.</p>
+            and out of source control. Your model provider bills its calls separately.</p>
         </section>
 
         <section className="site-section" aria-labelledby="install-title">
@@ -72,20 +72,21 @@ npm install @aexhq/sdk@0.88.1 @aexhq/agentloop-pi@9.0.1 zod@4.4.3`}</code></pre>
           <p>Save this as <code>order.mjs</code>. The same API works in TypeScript.</p>
           <pre className="site-code"><code>{example}</code></pre>
           <pre className="site-code"><code>node order.mjs</code></pre>
-          <p>The transcript includes the lookup result and an answer that order A-1001 has shipped.
-            Replace the sample lookup with your own data. Add more <code>session.send(...)</code>
-            calls in the callback to continue the conversation.</p>
-          <p>The loop runs on Aex and the lookup runs in your application. After five idle seconds,
-            the client releases its tool connection so this script can exit. A later send through
-            the same live client reconnects automatically. The session and its history remain available.</p>
-          <p>Use <code>connectionIdleTimeoutMs: 0</code> on <code>new Aex(...)</code> when other callers
-            or future autonomous events need these tools. Event subscriptions stay open until you stop them.
-            Explicit <code>aex.close()</code> disposes of the client; <code>session.end()</code> finishes
-            the conversation and <code>session.delete()</code> removes its history.</p>
+          <p>You&apos;ll see the lookup result in the transcript, followed by an answer that order
+            A-1001 has shipped. Now swap the sample lookup for your own data, or add more
+            <code> session.send(...)</code> calls in the callback to keep the conversation going.</p>
+          <p>The loop ran on Aex and the lookup ran in your app. After five idle seconds the client
+            released its tool connection so the script could exit; the session and its history are
+            still there. A later send through the same live client reconnects automatically.</p>
+          <p>If other callers or future autonomous events need these tools, pass
+            <code> connectionIdleTimeoutMs: 0</code> to <code>new Aex(...)</code>. Event subscriptions
+            stay open until you stop them. <code>aex.close()</code> disposes of the client,
+            <code> session.end()</code> finishes the conversation and <code>session.delete()</code>
+            removes its history.</p>
         </section>
 
         <section className="site-section" aria-labelledby="next-title">
-          <h2 id="next-title">Build your application</h2>
+          <h2 id="next-title">Keep building</h2>
           <ul>
             <li><Link href="/brain/docs/concepts/sessions">Sessions:</Link> follow live output, reconnect and stop work.</li>
             <li><Link href="/brain/docs/guides/write-a-tool">Tools:</Link> connect your API or database.</li>
@@ -97,20 +98,21 @@ npm install @aexhq/sdk@0.88.1 @aexhq/agentloop-pi@9.0.1 zod@4.4.3`}</code></pre>
             <li><a href="/docs/client-browser">Client browser tools:</a> work in the user&apos;s connected tab with scoped access.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/environments.md">Managed tools:</a> use a sandbox profile granted to your account.</li>
           </ul>
-          <p>Aex uses Brain&apos;s session and extension APIs. Import shared helpers from
-            <code> @aexhq/sdk</code> when following the Brain guides.</p>
-          <p>Use <code>session.submit()</code> when your request must return before the work finishes.
-            Save its turn sequence and use <code>session.outcome(sequence)</code> from a later request.
-            Declare your backend with <code>aex.environments.application()</code> and place ordinary
-            tools there. Aex admits the endpoint when you call <code>sessions.create()</code>;
-            saved conversations can call it again on later turns. Your app hosts its business functions
-            and checks current user access. Inline <code>hostEnv</code> tools need their process connected.</p>
+          <p>Aex is built on Brain&apos;s session and extension APIs, so the Brain guides apply here
+            too. Import their shared helpers from <code>@aexhq/sdk</code>.</p>
+          <p>Use <code>session.submit()</code> when your request has to return before the work finishes.
+            Save the turn sequence it returns and call <code>session.outcome(sequence)</code> from a
+            later request. Declare your backend with <code>aex.environments.application()</code> and
+            place ordinary tools there. Aex admits the endpoint when you call
+            <code> sessions.create()</code>, and saved conversations can call it again on later turns.
+            Your app hosts its business functions and checks current user access. Inline
+            <code> hostEnv</code> tools need their process connected.</p>
         </section>
 
         <section className="site-section" aria-labelledby="preparation">
           <h2 id="preparation">Prepare code before requests arrive</h2>
-          <p>Aex prepares hosted loop and tool code during session setup. To move that work into
-            application startup, await preparation once and reuse the returned loop:</p>
+          <p>Aex prepares hosted loop and tool code during session setup. To do that work at
+            application startup instead, await preparation once and             reuse the returned loop:</p>
           <pre className="site-code"><code>{`const loop = await aex.prepare(pi());
 const session = await aex.sessions.create({ model, agentloop: loop, tools });`}</code></pre>
           <p>Pi and Codex share a runtime and load their smaller program bundles separately.
@@ -161,9 +163,9 @@ console.log(answer.status);`}</code></pre>
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
-          <p>Login opens your browser on the same computer. See the
+          <p>Login opens your browser on the same computer. The
             <a href="https://github.com/aexhq/aex/blob/main/packages/cli/README.md"> command guide</a>
-            for keys, account management and billing.</p>
+            covers keys, account management and billing.</p>
         </section>
 
         <section className="site-section" id="pricing" aria-labelledby="pricing-title">
@@ -177,8 +179,8 @@ aex usage`}</code></pre>
           <p>Spending controls can interrupt work but do not cap your separate model-provider bill.
             Read the <a href="https://github.com/aexhq/aex/blob/main/docs/billing.md">billing guide</a>
             for charges, estimates and refunds.</p>
-          <p>Aex is in early preview. APIs and limits may change. Maintenance can interrupt work;
-            saved history remains available, and uncertain actions are not automatically retried.</p>
+          <p>Aex is in early preview, and APIs and limits may change. Maintenance can interrupt
+            work; saved history stays available, and uncertain actions are never retried automatically.</p>
         </section>
       </article>
       <SiteFooter />

@@ -1,7 +1,7 @@
 export const siteHeadline = "Run AI agents without operating an agent server.";
 
 export const siteDescription =
-  "Aex hosts agents built on Brain's minimal core. Choose your loop, tools and execution environments, with saved history and observable failures.";
+  "Aex hosts agents built on Brain. Choose your loop, tools and where they run; Aex keeps the history and records every failure for you to inspect.";
 
 export const siteSocialTitle = `Aex: ${siteHeadline}`;
 

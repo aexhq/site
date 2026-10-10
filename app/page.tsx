@@ -15,18 +15,18 @@ export default function Home() {
       <SiteHeader />
       <article className="home-hero">
         <h1>{siteHeadline}</h1>
-        <p>Build from a minimal core: choose your agent loop, connect your tools, and control
-          where they run. Aex hosts the session, keeping its history and progress independent
-          of the environments executing your tools.</p>
+        <p>Start from a minimal core: pick your agent loop, connect your tools and decide where
+          each one runs. Aex hosts the session, so its history and progress live apart from the
+          environments running your tools.</p>
         <nav className="site-links" aria-label="Primary">
           <Link href="/docs">Get started</Link>
           <Link href="/dashboard">Dashboard</Link>
           <a href={orgRepoUrl}>GitHub</a>
         </nav>
-        <p className="home-detail">Prefer to run it yourself? <Link href="/brain">Brain</Link> is
-          our open-source agent server. Aex adds hosting, accounts and usage tracking.</p>
-        <p className="home-detail">Early preview. Bring your own model-provider key.
-          <Link href="/docs#pricing"> Hosting prices and limits</Link>.</p>
+        <p className="home-detail">Rather run it yourself? <Link href="/brain">Brain</Link> is
+          our open-source agent runtime. Aex adds hosting, accounts and usage tracking.</p>
+        <p className="home-detail">Early preview. Bring your own model key.
+          <Link href="/docs#pricing"> See hosting prices and limits</Link>.</p>
       </article>
       <SiteFooter />
     </main>
