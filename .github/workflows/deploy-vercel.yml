@@ -70,4 +70,7 @@ jobs:
             grep -Fq "$expected" docs.html
           done
           test "$(curl --silent -o /dev/null -w '%{http_code}' https://api.aex.dev/health/ready)" = 204
+          curl --fail --silent https://aex.dev/brain/docs/concepts/agent-loop -o agentloop.html
+          grep -q 'BRAIN_AGENTLOOPS' agentloop.html
+          grep -q 'brain-agentloops' agentloop.html
           echo 'Deployed and verified https://aex.dev' >> "$GITHUB_STEP_SUMMARY"

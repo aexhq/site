@@ -288,7 +288,9 @@ test("docs search opens a matching result and API pages show examples without a 
     assert.ok(await page.locator("pre").count(), "request and response examples remain readable");
     const request = await page.locator("pre").first().textContent();
     assert.match(request, /Authorization: Bearer YOUR_TOKEN/);
-    assert.match(request, /brain_component/);
+    assert.match(request, /"agentloop"/);
+    assert.match(request, /"name": "pi"/);
+    assert.doesNotMatch(request, /brain_component/);
 
     await page.goto(`${origin}/brain/docs/reference/api/ready`);
     await page.getByRole("heading", { level: 1 }).waitFor();
