@@ -64,7 +64,7 @@ export OPENAI_API_KEY="your-openai-key"`}</code></pre>
           <pre className="site-code"><code>{`mkdir aex-example
 cd aex-example
 npm init -y
-npm install @aexhq/sdk@0.88.1 @aexhq/agentloop-pi@9.0.1 zod@4.4.3`}</code></pre>
+npm install @aexhq/sdk@0.89.0 @aexhq/agentloop-pi@11.0.0 zod@4.4.3`}</code></pre>
         </section>
 
         <section className="site-section" aria-labelledby="run-title">
@@ -90,7 +90,7 @@ npm install @aexhq/sdk@0.88.1 @aexhq/agentloop-pi@9.0.1 zod@4.4.3`}</code></pre>
           <ul>
             <li><Link href="/brain/docs/concepts/sessions">Sessions:</Link> follow live output, reconnect and stop work.</li>
             <li><Link href="/brain/docs/guides/write-a-tool">Tools:</Link> connect your API or database.</li>
-            <li><Link href="/brain/docs/guides/write-a-loop">Agent loops:</Link> customize how the agent works.</li>
+            <li><Link href="/brain/docs/concepts/agent-loop">Agent loops:</Link> choose how the agent works.</li>
             <li><Link href="/brain/docs/guides/environment-control">Environment control:</Link> choose automatic setup and optional model diagnostics.</li>
             <li><a href="#structured-output">Structured output:</a> get a validated JSON answer.</li>
             <li><a href="https://github.com/aexhq/aex/blob/main/docs/attachments.md">Images and PDFs:</a> upload with a scoped grant and verify completion. Model file support varies.</li>
@@ -109,17 +109,18 @@ npm install @aexhq/sdk@0.88.1 @aexhq/agentloop-pi@9.0.1 zod@4.4.3`}</code></pre>
             <code> hostEnv</code> tools need their process connected.</p>
         </section>
 
-        <section className="site-section" aria-labelledby="preparation">
-          <h2 id="preparation">Prepare code before requests arrive</h2>
-          <p>Aex prepares hosted loop and tool code during session setup. To do that work at
-            application startup instead, await preparation once and             reuse the returned loop:</p>
-          <pre className="site-code"><code>{`const loop = await aex.prepare(pi());
-const session = await aex.sessions.create({ model, agentloop: loop, tools });`}</code></pre>
-          <p>Pi and Codex share a runtime and load their smaller program bundles separately.
-            Preparation can serve several sessions; ending a conversation does not unload it.
-            Imports remain passive, and preparation failures reject before session creation.</p>
-          <p>Read the <Link href="/brain/docs/reference/environment-runtime#prepare-before-creating-sessions">Environment
-            preparation reference</Link> for startup configuration, worker readiness and custom programs.</p>
+        <section className="site-section" aria-labelledby="agentloops">
+          <h2 id="agentloops">Choose an agent loop</h2>
+          <p>Aex runs Pi, Codex and OpenCode on the server. Import a factory from its extension
+            package and pass it to session creation:</p>
+          <pre className="site-code"><code>{`import { pi } from "@aexhq/agentloop-pi";
+const session = await aex.sessions.create({ model, agentloop: pi({ maxTokens: 4096 }), tools });`}</code></pre>
+          <p>Use Pi 11.0.0, Codex 11.0.0 or OpenCode 1.0.0 with Aex SDK 0.89.0. Each factory
+            selects an installed runtime and passes its session settings. Executables and worker
+            capacity are configured when the server starts.</p>
+          <p>Hosted Tools still support <code>aex.prepare(tool)</code> to load code before requests
+            arrive. Read the <Link href="/brain/docs/reference/environment-runtime#prepare-before-creating-sessions">Environment
+            preparation reference</Link> for Tool runtimes and custom programs.</p>
         </section>
 
         <section className="site-section" aria-labelledby="structured-output">
@@ -145,10 +146,10 @@ console.log(answer.status);`}</code></pre>
             <code> signal</code> cancels active work and stops further corrections. An
             <code> idempotencyKey</code> lets unchanged requests and validation feedback reuse their
             completed turns; the whole operation is not atomic.</p>
-          <p>For a short-lived caller using <code>submit()</code>, configure output validation in
-            the hosted Agentloop instead. That separate policy uses JSON Schema and cannot run your
-            local Zod refinements. See the <a href="https://github.com/aexhq/aex/blob/main/packages/sdk/README.md#structured-output">SDK guide</a>
-            for both contracts, error handling, replay and a complete example.</p>
+          <p>A short-lived caller can use <code>submit()</code>, read the completed transcript later
+            and validate it in application code. Typed answers require the caller to stay connected
+            through <code>send()</code>. See the <a href="https://github.com/aexhq/aex/blob/main/packages/sdk/README.md#structured-output">SDK guide</a>
+            for error handling, replay and a complete example.</p>
           <p>Starting with Brain SDK 0.34 and Aex SDK 0.84, this prompt and correction policy belongs
             to Aex. Existing Aex typed sends keep their syntax. Import their types and errors from
             <code> @aexhq/sdk</code>. Aex clients and handles now use composition; use
@@ -159,7 +160,7 @@ console.log(answer.status);`}</code></pre>
 
         <section className="site-section" aria-labelledby="cli-title">
           <h2 id="cli-title">Use the CLI</h2>
-          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.50.6
+          <pre className="site-code"><code>{`npm install -g @aexhq/cli@0.51.0
 aex login
 aex keys create "My application"
 aex usage`}</code></pre>
