@@ -50,12 +50,11 @@ export default function BrowserTools() {
           Create sessions with <code>aex.sessions.create()</code>; the SDK opens the command stream
           and returns results. Account and model-provider keys stay on your backend.</p></header>
       <section className="site-section"><h2>Share the composition</h2>
-        <pre className="site-code"><code>npm install @aexhq/sdk@0.88.1 @aexhq/agentloop-pi@9.0.1 zod@4.4.3</code></pre>
+        <pre className="site-code"><code>npm install @aexhq/sdk@0.89.0 @aexhq/agentloop-pi@11.0.0 zod@4.4.3</code></pre>
         <pre className="site-code"><code>{composition}</code></pre>
-        <p>The backend prepares this declaration without running the browser function. Serve the
-          Agentloop package&apos;s <code>runtime.component.wasm</code> and <code>loop.program.js</code>
-          assets with your frontend; bundlers that support
-          <code> new URL(..., import.meta.url)</code> can include both.</p></section>
+        <p>The backend authorizes this declaration without running the browser function.
+          The Agentloop factory selects Pi on Aex; your frontend only needs the JavaScript
+          selection and its browser tools.</p></section>
       <section className="site-section"><h2>Authorize the application user</h2>
         <p>Your backend checks the user&apos;s permission to run this composition before issuing
           access. The authorization helper below belongs to your application.</p>
