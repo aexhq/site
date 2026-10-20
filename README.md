@@ -10,7 +10,7 @@ customer-owned; sandbox, attachment storage and reads have separate resource pri
 
 ## Develop
 
-Requires Node.js 22 or later.
+Requires Node.js 24.
 
 ```sh
 npm ci
@@ -36,7 +36,7 @@ This removes the unpatched [braces recursion vulnerability](https://github.com/a
 while retaining Next's lint rules and the dependency audit.
 
 Public pages introduce the product, explain its benefit and show the next action. Follow the
-shared [wording guide](https://github.com/aexhq/brain/blob/main/references/documentation.md).
+shared [wording guide](https://github.com/aexhq/brain/blob/main/docs/writing.md).
 The hosted quickstart follows [Aex's guide](https://github.com/aexhq/aex/blob/main/docs/quickstart.md).
 The hosted [typed-answer guide](https://aex.dev/docs#structured-output) follows Aex's SDK
 contract. Retired Brain structured-output URLs redirect there.

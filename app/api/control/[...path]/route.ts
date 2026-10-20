@@ -9,7 +9,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     || (method === "PUT" && path === "billing")
     || (["PATCH", "DELETE"].includes(method) && /^keys\/key_[a-f0-9]{64}$/.test(path))
     || (method === "DELETE" && path === "account/session");
-  const error = (status: number, message: string) => NextResponse.json({ message }, { status, headers: { "cache-control": "no-store" } });
+  const error = (status: number, message: string) => NextResponse.json({ error: { code: "request_failed", message } }, { status, headers: { "cache-control": "no-store" } });
   const query = request.nextUrl.searchParams;
   const before = query.get("before");
   const validCursor = method === "GET" && path === "billing/ledger" && Array.from(query.keys()).length === 1

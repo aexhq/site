@@ -5,7 +5,7 @@
 //
 // Set BRAIN_REPO_PATH to build against a local checkout instead of the pinned ref.
 import { execFileSync } from "node:child_process";
-import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
+import { cp, mkdtemp, readFile, rm, readdir, writeFile, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,8 +13,7 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const contentDocs = join(root, "content", "docs");
 const contentContract = join(root, "content", "contract");
-// Rendered by `cargo run -p brain-http --bin brain-http-contract` in the Brain repository; never hand-written.
-const openapi = "session/v1/openapi.yaml";
+const openapi = "openapi.json";
 
 async function sourceDir() {
   const local = process.env.BRAIN_REPO_PATH;
@@ -37,12 +36,26 @@ const { dir, cleanup } = await sourceDir();
 try {
   await rm(contentDocs, { recursive: true, force: true });
   await rm(contentContract, { recursive: true, force: true });
-  await cp(join(dir, "docs"), contentDocs, { recursive: true });
+  await cp(join(dir, "website", "content", "docs"), contentDocs, { recursive: true });
+  // Mount upstream links under the hosted Brain section without changing its prose.
+  async function mountedLinks(directory) {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) await mountedLinks(path);
+      else if (entry.name.endsWith(".mdx")) {
+        const text = await readFile(path, "utf8");
+        await writeFile(path, text.replace(/([("'=])\/docs(?=[/\)"'#])/g, "$1/brain/docs").replaceAll("(/openapi.json)", "(/brain/openapi.json)"));
+      }
+    }
+  }
+  await mountedLinks(contentDocs);
   await cp(
-    join(dir, "crates", "brain-http", "generated", "contract", openapi),
+    join(dir, "api", openapi),
     join(contentContract, openapi),
   );
-  console.log("docs: synced docs/ and the session OpenAPI contract into content/");
+  await mkdir(join(root, "public", "brain"), { recursive: true });
+  await cp(join(contentContract, openapi), join(root, "public", "brain", openapi));
+  console.log("docs: synced published MDX and the Brain OpenAPI contract");
 } finally {
   await cleanup();
 }

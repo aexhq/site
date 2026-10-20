@@ -9,20 +9,17 @@ import { generateFiles } from "fumadocs-openapi";
 import { createOpenAPI } from "fumadocs-openapi/server";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const out = join(root, "content", "docs", "reference", "api");
+const out = join(root, "content", "docs", "api", "generated");
 
 // Relative, so the generated pages stay portable between a laptop and CI.
 const openapi = createOpenAPI({
-  input: ["content/contract/session/v1/openapi.yaml"],
+  input: ["content/contract/openapi.json"],
 });
 const [{ bundled: contract }] = Object.values(await openapi.getSchemas());
-const operations = Object.values(contract.paths).flatMap((path) =>
-  Object.values(path).filter((operation) => operation.operationId),
-);
-const groups = contract.tags.map((tag) => ({
-  title: tag.name,
-  pages: operations.filter((operation) => operation.tags?.includes(tag.name)).map((operation) => operation.operationId),
-})).filter((group) => group.pages.length > 0);
+const groups = ["sessions", "executors", "health", "tools"].map(prefix => ({
+  title: prefix[0].toUpperCase() + prefix.slice(1),
+  pages: Object.entries(contract.paths).filter(([path]) => path.split("/")[1] === prefix).flatMap(([, path]) => Object.values(path).filter(operation => operation.operationId).map(operation => operation.operationId)),
+})).filter(group => group.pages.length);
 
 await rm(out, { recursive: true, force: true });
 await generateFiles({
@@ -39,7 +36,7 @@ await generateFiles({
         only: groups.flatMap((group) => group.pages.map((page) => `${page}.mdx`)),
       },
     ],
-    url: (file) => `/brain/docs/reference/api/${basename(file, extname(file))}`,
+    url: (file) => `/brain/docs/api/generated/${basename(file, extname(file))}`,
   },
 });
 
@@ -50,4 +47,4 @@ await writeFile(metaPath, `${JSON.stringify({
   pages: ["index", ...groups.flatMap((group) => [`---${group.title}---`, ...group.pages])],
 }, null, 2)}\n`);
 
-console.log("docs: generated the API reference from session/v1/openapi.yaml");
+console.log("docs: generated the API reference from api/openapi.json");

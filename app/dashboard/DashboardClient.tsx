@@ -3,7 +3,8 @@ import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { api } from "./control";
 import { BillingPanel } from "./BillingPanel";
-import type { Account, ApiKey as Key } from "@aexhq/sdk";
+import type { Account, IssuedKey } from "@aexhq/sdk";
+type Key = IssuedKey["key"];
 import { formatMicroUsd } from "./exact-format";
 export function DashboardClient({ hasDashboardSession, signInError, showBilling }: { hasDashboardSession: boolean; signInError: boolean; showBilling: boolean }) {
   const [section, setSection] = useState<"keys" | "account">(showBilling ? "account" : "keys");

@@ -123,7 +123,7 @@ test("billing browser flow requires price acceptance and recovers one payment in
       return res.end(JSON.stringify(wallet));
     }
     if (req.url === "/v1/billing/topups" && req.method === "POST") {
-      if (lost) { lost = false; res.statusCode = 503; return res.end('{"message":"Payment response was lost"}'); }
+      if (lost) { lost = false; res.statusCode = 503; return res.end('{"error":{"code":"unavailable","message":"Payment response was lost"}}'); }
       return res.end(JSON.stringify({ id: "topup-fixture", state: "open", checkout_url: "https://checkout.stripe.com/c/pay/cs_test_fixture" }));
     }
     if (req.url === "/v1/billing/ledger") return res.end('{"entries":[]}');
@@ -200,13 +200,13 @@ test("server-renders the Brain introduction and canonical quickstart link", asyn
   assert.match(text, /MIT/);
   assert.match(html, /href="\/brain\/docs\/quickstart"/);
   assert.match(html, /href="\/brain\/docs"/);
-  assert.match(html, /href="\/brain\/docs\/reference\/api"/);
+  assert.match(html, /href="\/brain\/docs\/api"/);
   assert.match(html, /href="https:\/\/github\.com\/aexhq\/brain"/);
   assert.doesNotMatch(text, /env-aws-microvm|VERCEL_AI_GATEWAY_API_KEY/);
 
-  assert.match(html, /href="\/brain\/docs\/guides\/write-a-tool"/);
-  assert.match(html, /href="\/brain\/docs\/concepts\/agent-loop"/);
-  assert.match(html, /href="\/brain\/docs\/reference\/benchmarks"/);
+  assert.match(html, /href="\/brain\/docs\/tools"/);
+  assert.match(html, /href="\/brain\/docs\/adapters\/harness"/);
+  assert.match(html, /href="\/brain\/docs\/architecture"/);
   assert.doesNotMatch(text, /14 KiB|sub-millisecond session creation/);
   assert.doesNotMatch(text, /Apache/i);
 });
@@ -215,13 +215,13 @@ test("serves the hosted SDK quickstart", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /@aexhq\/sdk@0.89.0/);
+  assert.match(html, /@aexhq\/sdk@1.0.0/);
   assert.match(html, /Structured output/);
   assert.match(html, /id="structured-output"/);
   assert.match(html, /StructuredOutputError/);
-  assert.match(html, /hostEnv/);
+  assert.match(html, /session.rebind/);
   assert.match(html, /docs\/environments\.md/);
-  assert.match(html, /session.submit/);
+  assert.match(html, /submit/);
 });
 
 test("retired Brain typed-output guides redirect to the Aex contract", async () => {
@@ -239,27 +239,27 @@ test("serves the Brain documentation, generated API pages, and a static search i
   assert.match(introText, /Brain/);
   assert.match(introText, /[Qq]uickstart/);
 
-  const concept = await render("/brain/docs/concepts/agent-loop");
+  const concept = await render("/brain/docs/adapters/harness");
   assert.equal(concept.status, 200);
   assert.match(
     (await concept.text()).replace(/<[^>]*>/g, " "),
-    /[Aa]gent loop/,
+    /[Hh]arness/,
   );
 
-  // Generated from Brain's crates/brain-http/generated/contract/session/v1/openapi.yaml, never written by hand.
-  const apiIndex = await render("/brain/docs/reference/api");
+  // Generated from Brain's api/openapi.json, never written by hand.
+  const apiIndex = await render("/brain/docs/api/generated");
   assert.equal(apiIndex.status, 200);
   const apiIndexHtml = await apiIndex.text();
   assert.match(apiIndexHtml.replace(/<[^>]*>/g, " "), /Create a session/);
-  assert.match(apiIndexHtml, /href="\/brain\/docs\/reference\/api\/createSession"/);
+  assert.match(apiIndexHtml, /href="\/brain\/docs\/api\/generated\/create"/);
   assert.doesNotMatch(apiIndexHtml, /%5C/);
 
-  const api = await render("/brain/docs/reference/api/createSession");
+  const api = await render("/brain/docs/api/generated/create");
   assert.equal(api.status, 200);
   const apiText = (await api.text()).replace(/<[^>]*>/g, " ");
   assert.match(apiText, /Create a session/);
   assert.match(apiText, /POST/);
-  assert.match(apiText, /[/]v1[/]sessions/);
+  assert.match(apiText, /[/]sessions/);
 
   const index = await render("/static.json", { headers: { accept: "application/json" } });
   assert.equal(index.status, 200);
@@ -275,26 +275,26 @@ test("docs search opens a matching result and API pages show examples without a 
     await page.getByRole("button", { name: /Search/ }).first().click();
     const dialog = page.getByRole("dialog");
     await dialog.getByPlaceholder("Search").fill("stream");
-    const result = dialog.getByRole("button").filter({ hasText: /sessions/i }).first();
+    const result = dialog.getByRole("button").filter({ hasText: /session lifecycle/i }).first();
     await result.waitFor();
     await result.click();
-    await page.waitForURL(`${origin}/brain/docs/concepts/sessions**`);
+    await page.waitForURL(`${origin}/brain/docs/guides/sessions**`);
     await dialog.waitFor({ state: "hidden" });
     assert.ok(await page.getByRole("heading", { level: 1 }).textContent());
 
-    await page.goto(`${origin}/brain/docs/reference/api/createSession`);
+    await page.goto(`${origin}/brain/docs/api/generated/create`);
     await page.getByRole("heading", { level: 1 }).waitFor();
     assert.equal(await page.getByRole("button", { name: "Send", exact: true }).count(), 0);
     assert.ok(await page.locator("pre").count(), "request and response examples remain readable");
     const request = await page.locator("pre").first().textContent();
     assert.match(request, /Authorization: Bearer YOUR_TOKEN/);
-    assert.match(request, /"agentloop"/);
-    assert.match(request, /"name": "pi"/);
+    assert.match(request, /"harness"/);
+    assert.match(request, /"config"/);
     assert.doesNotMatch(request, /brain_component/);
 
-    await page.goto(`${origin}/brain/docs/reference/api/ready`);
+    await page.goto(`${origin}/brain/docs/guides/operations`);
     await page.getByRole("heading", { level: 1 }).waitFor();
-    assert.doesNotMatch(await page.locator("pre").first().textContent(), /Authorization/);
+    assert.match(await page.locator("main").innerText(), /health/);
   } finally {
     await browser.close();
   }
