@@ -44,3 +44,4 @@ content/
 .source/
 
 /public/brain/openapi.json
+*.tsbuildinfo
