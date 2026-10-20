@@ -42,3 +42,6 @@ next-env.d.ts
 /work/
 content/
 .source/
+
+/public/brain/openapi.json
+*.tsbuildinfo

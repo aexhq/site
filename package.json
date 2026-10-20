@@ -2,9 +2,11 @@
   "name": "aex-site",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["tools/next-glob"],
+  "workspaces": [
+    "tools/next-glob"
+  ],
   "engines": {
-    "node": ">=22.13.0 <25"
+    "node": ">=24 <25"
   },
   "scripts": {
     "dev": "next dev",
@@ -30,7 +32,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@aexhq/sdk": "0.89.0",
+    "@aexhq/sdk": "1.0.0",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.18",

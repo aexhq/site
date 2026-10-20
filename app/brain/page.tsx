@@ -48,28 +48,28 @@ export default function BrainPage() {
           <p>The <Link href="/brain/docs/quickstart">quickstart</Link> gives an agent a function from
             your app and asks whether an order has shipped. It includes the server command, matching
             package versions, a complete program and the expected result.</p>
-          <p>You need Docker, Node.js 22 or newer and an OpenAI API key, which is billed by OpenAI.
+          <p>You need Docker, Node.js 24 and an OpenAI API key, which is billed by OpenAI.
             Your app&apos;s functions run in your process, so keep it connected while the agent needs them.</p>
         </section>
 
         <section className="site-section" aria-labelledby="build-title">
           <h2 id="build-title">Keep building</h2>
           <ul>
-            <li><Link href="/brain/docs/concepts/sessions">Send messages, stream progress and collect results</Link></li>
-            <li><Link href="/brain/docs/guides/write-a-tool">Connect your app&apos;s functions as tools</Link></li>
-            <li><Link href="/brain/docs/concepts/environment">Choose where tools run</Link></li>
-            <li><Link href="/brain/docs/concepts/agent-loop">Pick or write an agent loop</Link></li>
+            <li><Link href="/brain/docs/guides/sessions">Send messages, stream progress and collect results</Link></li>
+            <li><Link href="/brain/docs/tools">Connect your app&apos;s functions as tools</Link></li>
+            <li><Link href="/brain/docs/tools">Choose where tools run</Link></li>
+            <li><Link href="/brain/docs/adapters/harness">Pick or write an agent loop</Link></li>
             <li><Link href="/brain/docs/reference/configuration">Configure a self-hosted server</Link></li>
           </ul>
         </section>
 
         <section className="site-section" aria-labelledby="status-title">
           <h2 id="status-title">Project status</h2>
-          <p>Brain is in early preview, and APIs may change before 1.0. Saved history survives a
-            server restart when storage is intact. Interrupted work is marked as failed, not
+          <p>Brain 2.1 provides native Pi, Codex and OpenCode harnesses. Saved history survives a
+            server restart when storage is intact. Interrupted work requires an explicit decision before it is
             resumed or retried, and history can&apos;t restore lost browser or sandbox files.</p>
-          <p>MIT licensed. Explore the <Link href="/brain/docs/reference/api">API reference</Link>,
-            <Link href="/brain/docs/reference/benchmarks"> benchmarks</Link> or
+          <p>MIT licensed. Explore the <Link href="/brain/docs/api">API reference</Link>,
+            <Link href="/brain/docs/architecture"> architecture</Link> or
             <a href={`${brainRepoUrl}/blob/main/CONTRIBUTING.md`}> contributor guide</a>.</p>
         </section>
       </article>
